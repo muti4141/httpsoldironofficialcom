@@ -96,3 +96,33 @@ function FilterGroup({ label, children }: { label: string; children: React.React
     </div>
   );
 }
+
+function ProductCard({ product: p }: { product: Product }) {
+  const add = useCart((s) => s.add);
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    add(p, "M");
+    toast.success(`${p.name} (M) Warenkorb hinzugefügt`);
+  };
+  return (
+    <Link to="/product/$id" params={{ id: p.id }} className="group flex flex-col bg-surface-container steel-bevel relative overflow-hidden">
+      {p.badge && (
+        <div className="absolute top-4 left-4 z-10">
+          <span className="bg-primary text-on-primary px-3 py-1 text-[12px] font-semibold uppercase tracking-widest">{p.badge}</span>
+        </div>
+      )}
+      <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
+        <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
+        <button onClick={handleQuickAdd} className="absolute bottom-4 right-4 bg-primary text-on-primary w-12 h-12 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110" aria-label="Add to cart">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
+        </button>
+      </div>
+      <div className="p-gutter space-y-2">
+        <p className="text-[12px] text-outline uppercase tracking-widest">{p.categoryLabel}</p>
+        <h3 className="font-headline text-[24px] text-primary uppercase">{p.name}</h3>
+        <p className="text-[16px] text-secondary-fixed-dim">{p.price.toFixed(2)} €</p>
+      </div>
+    </Link>
+  );
+}
