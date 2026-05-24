@@ -120,6 +120,13 @@ function CartPage() {
           <p className="text-[14px] font-semibold uppercase tracking-widest text-outline mt-2">Präzision in jeder Naht.</p>
         </header>
 
+        {checkoutData ? (
+          <div className="bg-surface-container-low steel-bevel p-6">
+            <StripeCartCheckout {...checkoutData} />
+          </div>
+        ) : null}
+
+
         {items.length === 0 ? (
           <div className="bg-surface-container-low p-12 text-center steel-bevel">
             <p className="text-[18px] text-secondary mb-6">Dein Warenkorb ist leer.</p>
