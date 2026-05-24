@@ -186,7 +186,6 @@ function AccountPage() {
           </section>
         )}
 
-        )}
       </main>
       <Footer />
     </div>
