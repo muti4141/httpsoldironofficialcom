@@ -25,6 +25,12 @@ function CartPage() {
   const navigate = useNavigate();
   const [terms, setTerms] = useState(false);
   const [placing, setPlacing] = useState(false);
+  const [checkoutData, setCheckoutData] = useState<null | {
+    orderId: string;
+    items: { productId: string; name: string; unitAmountCents: number; quantity: number }[];
+    shippingCents: number;
+    returnUrl: string;
+  }>(null);
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const tax = subtotal * 0.19;
   const shipping = subtotal >= 75 ? 0 : 5.9;
@@ -83,9 +89,20 @@ function CartPage() {
         }))
       );
       if (itemsErr) throw itemsErr;
+
+      const orderId = order.id as string;
+      setCheckoutData({
+        orderId,
+        items: items.map((i) => ({
+          productId: i.productId,
+          name: `${i.name} — ${i.size}`,
+          unitAmountCents: cents(i.price),
+          quantity: i.qty,
+        })),
+        shippingCents: cents(shipping),
+        returnUrl: `${window.location.origin}/checkout/return?order_id=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
+      });
       clear();
-      toast.success("Bestellung aufgegeben.");
-      navigate({ to: "/order/$id", params: { id: order.id } });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Bestellung fehlgeschlagen.";
       toast.error(msg);
