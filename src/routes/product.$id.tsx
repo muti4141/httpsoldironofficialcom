@@ -31,7 +31,7 @@ function ProductPage() {
 
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <Nav cartCount={2} />
+      <Nav />
       <main className="pt-[100px] max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-md md:py-stack-lg">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter lg:gap-16 items-start">
           {/* Gallery */}
