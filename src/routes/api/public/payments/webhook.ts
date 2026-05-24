@@ -127,8 +127,7 @@ async function handleCheckoutCompleted(session: any) {
 async function handleCheckoutExpired(session: any) {
   const orderId = session.metadata?.orderId;
   if (!orderId) return;
-  await getSupabase()
-    .from("orders")
+  await (getSupabase().from("orders") as any)
     .update({ status: "expired", updated_at: new Date().toISOString() })
     .eq("id", orderId)
     .eq("status", "pending");
