@@ -5,6 +5,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/stores/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { StripeCartCheckout } from "@/components/StripeCartCheckout";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
