@@ -1,8 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { findProduct, products } from "@/data/products";
+import { useCart } from "@/stores/cart";
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ params }) => {
@@ -27,7 +29,14 @@ export const Route = createFileRoute("/product/$id")({
 function ProductPage() {
   const { product } = Route.useLoaderData();
   const [size, setSize] = useState("L");
+  const addToCart = useCart((s) => s.add);
   const related = products.filter((p) => p.id !== product.id).slice(0, 4);
+
+  const handleAdd = () => {
+    addToCart(product, size);
+    toast.success(`${product.name} (${size}) Warenkorb hinzugefügt`);
+  };
+
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -98,7 +107,7 @@ function ProductPage() {
             </section>
 
             <div className="flex flex-col gap-4">
-              <button className="bg-primary-container text-on-secondary-fixed py-5 px-8 font-headline text-[24px] uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
+              <button onClick={handleAdd} className="bg-primary-container text-on-secondary-fixed py-5 px-8 font-headline text-[24px] uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-3">
                 <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_cart</span>
                 In den Warenkorb
               </button>
