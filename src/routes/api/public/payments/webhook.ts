@@ -111,8 +111,7 @@ async function handleCheckoutCompleted(session: any) {
     return;
   }
   const supabase = getSupabase();
-  const { error } = await supabase
-    .from("orders")
+  const { error } = await (supabase.from("orders") as any)
     .update({
       status: "paid",
       updated_at: new Date().toISOString(),
