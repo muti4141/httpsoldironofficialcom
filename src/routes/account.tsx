@@ -52,21 +52,30 @@ function AccountPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
 
   useEffect(() => {
     (async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
       setEmail(userData.user.email ?? "");
-      const { data } = await supabase
-        .from("profiles")
-        .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country")
-        .eq("id", userData.user.id)
-        .maybeSingle();
-      if (data) setProfile(data);
+      const [{ data: prof }, { data: ords }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country")
+          .eq("id", userData.user.id)
+          .maybeSingle(),
+        supabase
+          .from("orders")
+          .select("id, created_at, total_cents, currency, status")
+          .order("created_at", { ascending: false }),
+      ]);
+      if (prof) setProfile(prof);
+      setOrders((ords as OrderRow[]) ?? []);
       setLoading(false);
     })();
   }, []);
+
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
