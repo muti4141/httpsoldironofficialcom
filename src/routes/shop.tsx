@@ -1,7 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { products } from "@/data/products";
+import { products, type Product } from "@/data/products";
+import { useCart } from "@/stores/cart";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -16,7 +18,7 @@ export const Route = createFileRoute("/shop")({
 function Shop() {
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <Nav cartCount={2} />
+      <Nav />
       <main className="pt-[100px] max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
         <header className="mb-stack-lg">
           <h1 className="font-display text-[56px] md:text-[64px] uppercase tracking-tight text-primary leading-none">
@@ -67,24 +69,7 @@ function Shop() {
           {/* Product Grid */}
           <div className="md:col-span-9 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
             {products.map((p) => (
-              <Link to="/product/$id" params={{ id: p.id }} key={p.id} className="group flex flex-col bg-surface-container steel-bevel relative overflow-hidden">
-                {p.badge && (
-                  <div className="absolute top-4 left-4 z-10">
-                    <span className="bg-primary text-on-primary px-3 py-1 text-[12px] font-semibold uppercase tracking-widest">{p.badge}</span>
-                  </div>
-                )}
-                <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
-                  <button className="absolute bottom-4 right-4 bg-primary text-on-primary w-12 h-12 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300" aria-label="Add to cart">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
-                  </button>
-                </div>
-                <div className="p-gutter space-y-2">
-                  <p className="text-[12px] text-outline uppercase tracking-widest">{p.categoryLabel}</p>
-                  <h3 className="font-headline text-[24px] text-primary uppercase">{p.name}</h3>
-                  <p className="text-[16px] text-secondary-fixed-dim">{p.price.toFixed(2)} €</p>
-                </div>
-              </Link>
+              <ProductCard key={p.id} product={p} />
             ))}
           </div>
         </div>
@@ -109,5 +94,35 @@ function FilterGroup({ label, children }: { label: string; children: React.React
       <h4 className="text-[14px] font-semibold text-secondary uppercase tracking-widest">{label}</h4>
       <div className="flex flex-col gap-2">{children}</div>
     </div>
+  );
+}
+
+function ProductCard({ product: p }: { product: Product }) {
+  const add = useCart((s) => s.add);
+  const handleQuickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    add(p, "M");
+    toast.success(`${p.name} (M) Warenkorb hinzugefügt`);
+  };
+  return (
+    <Link to="/product/$id" params={{ id: p.id }} className="group flex flex-col bg-surface-container steel-bevel relative overflow-hidden">
+      {p.badge && (
+        <div className="absolute top-4 left-4 z-10">
+          <span className="bg-primary text-on-primary px-3 py-1 text-[12px] font-semibold uppercase tracking-widest">{p.badge}</span>
+        </div>
+      )}
+      <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
+        <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
+        <button onClick={handleQuickAdd} className="absolute bottom-4 right-4 bg-primary text-on-primary w-12 h-12 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110" aria-label="Add to cart">
+          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
+        </button>
+      </div>
+      <div className="p-gutter space-y-2">
+        <p className="text-[12px] text-outline uppercase tracking-widest">{p.categoryLabel}</p>
+        <h3 className="font-headline text-[24px] text-primary uppercase">{p.name}</h3>
+        <p className="text-[16px] text-secondary-fixed-dim">{p.price.toFixed(2)} €</p>
+      </div>
+    </Link>
   );
 }
