@@ -33,7 +33,7 @@ function Home() {
   const bestsellers = products.slice(0, 3);
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <Nav cartCount={2} />
+      <Nav />
       <main className="pt-[72px]">
         {/* Hero */}
         <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden">

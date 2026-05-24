@@ -48,7 +48,7 @@ function CartPage() {
 
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <Nav cartCount={items.length} />
+      <Nav />
       <main className="pt-stack-lg pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
         <header className="mb-stack-md pt-8">
           <h1 className="font-display text-[56px] md:text-[64px] uppercase tracking-tight text-primary leading-none">Warenkorb</h1>

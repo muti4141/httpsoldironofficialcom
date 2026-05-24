@@ -16,7 +16,7 @@ export const Route = createFileRoute("/shop")({
 function Shop() {
   return (
     <div className="bg-background text-foreground min-h-screen">
-      <Nav cartCount={2} />
+      <Nav />
       <main className="pt-[100px] max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
         <header className="mb-stack-lg">
           <h1 className="font-display text-[56px] md:text-[64px] uppercase tracking-tight text-primary leading-none">
