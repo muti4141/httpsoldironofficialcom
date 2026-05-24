@@ -156,6 +156,37 @@ function AccountPage() {
             </button>
           </form>
         )}
+
+        {!loading && (
+          <section className="mt-stack-md bg-surface-container-low border border-outline-variant/30 p-gutter">
+            <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Bestellungen</h2>
+            {orders.length === 0 ? (
+              <p className="text-secondary text-[14px]">Noch keine Bestellungen.</p>
+            ) : (
+              <ul className="divide-y divide-outline-variant/20">
+                {orders.map((o) => (
+                  <li key={o.id}>
+                    <Link
+                      to="/order/$id"
+                      params={{ id: o.id }}
+                      className="flex items-center justify-between py-4 hover:bg-surface-container/40 px-2 -mx-2 transition-colors"
+                    >
+                      <div>
+                        <p className="font-mono text-primary text-[14px]">#{o.id.slice(0, 8).toUpperCase()}</p>
+                        <p className="text-[12px] text-outline uppercase tracking-widest mt-1">
+                          {new Date(o.created_at).toLocaleDateString("de-DE")} · {o.status}
+                        </p>
+                      </div>
+                      <span className="text-primary font-headline">{(o.total_cents / 100).toFixed(2)} €</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+
+        )}
       </main>
       <Footer />
     </div>
