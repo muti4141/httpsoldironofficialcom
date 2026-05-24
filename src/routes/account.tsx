@@ -1,10 +1,19 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { signOut } from "@/hooks/use-auth";
+
+type OrderRow = {
+  id: string;
+  created_at: string;
+  total_cents: number;
+  currency: string;
+  status: string;
+};
+
 
 export const Route = createFileRoute("/account")({
   head: () => ({
@@ -43,21 +52,30 @@ function AccountPage() {
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [orders, setOrders] = useState<OrderRow[]>([]);
 
   useEffect(() => {
     (async () => {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) return;
       setEmail(userData.user.email ?? "");
-      const { data } = await supabase
-        .from("profiles")
-        .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country")
-        .eq("id", userData.user.id)
-        .maybeSingle();
-      if (data) setProfile(data);
+      const [{ data: prof }, { data: ords }] = await Promise.all([
+        supabase
+          .from("profiles")
+          .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country")
+          .eq("id", userData.user.id)
+          .maybeSingle(),
+        supabase
+          .from("orders")
+          .select("id, created_at, total_cents, currency, status")
+          .order("created_at", { ascending: false }),
+      ]);
+      if (prof) setProfile(prof);
+      setOrders((ords as OrderRow[]) ?? []);
       setLoading(false);
     })();
   }, []);
+
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,6 +156,36 @@ function AccountPage() {
             </button>
           </form>
         )}
+
+        {!loading && (
+          <section className="mt-stack-md bg-surface-container-low border border-outline-variant/30 p-gutter">
+            <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Bestellungen</h2>
+            {orders.length === 0 ? (
+              <p className="text-secondary text-[14px]">Noch keine Bestellungen.</p>
+            ) : (
+              <ul className="divide-y divide-outline-variant/20">
+                {orders.map((o) => (
+                  <li key={o.id}>
+                    <Link
+                      to="/order/$id"
+                      params={{ id: o.id }}
+                      className="flex items-center justify-between py-4 hover:bg-surface-container/40 px-2 -mx-2 transition-colors"
+                    >
+                      <div>
+                        <p className="font-mono text-primary text-[14px]">#{o.id.slice(0, 8).toUpperCase()}</p>
+                        <p className="text-[12px] text-outline uppercase tracking-widest mt-1">
+                          {new Date(o.created_at).toLocaleDateString("de-DE")} · {o.status}
+                        </p>
+                      </div>
+                      <span className="text-primary font-headline">{(o.total_cents / 100).toFixed(2)} €</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
+
       </main>
       <Footer />
     </div>

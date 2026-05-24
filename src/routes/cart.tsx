@@ -1,8 +1,10 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/stores/cart";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -18,9 +20,78 @@ function CartPage() {
   const items = useCart((s) => s.items);
   const updateQty = useCart((s) => s.updateQty);
   const remove = useCart((s) => s.remove);
+  const clear = useCart((s) => s.clear);
+  const navigate = useNavigate();
   const [terms, setTerms] = useState(false);
+  const [placing, setPlacing] = useState(false);
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const tax = subtotal * 0.19;
+  const shipping = subtotal >= 75 ? 0 : 5.9;
+  const total = subtotal + shipping;
+
+  const checkout = async () => {
+    setPlacing(true);
+    try {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) {
+        navigate({ to: "/auth", search: { mode: "login", redirect: "/cart" } });
+        return;
+      }
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country")
+        .eq("id", userData.user.id)
+        .maybeSingle();
+      if (!profile?.shipping_address || !profile.shipping_city || !profile.shipping_zip) {
+        toast.error("Bitte hinterlege zuerst deine Lieferadresse.");
+        navigate({ to: "/account" });
+        return;
+      }
+      const cents = (n: number) => Math.round(n * 100);
+      const { data: order, error: orderErr } = await supabase
+        .from("orders")
+        .insert({
+          user_id: userData.user.id,
+          email: userData.user.email!,
+          full_name: profile.display_name ?? userData.user.email!.split("@")[0],
+          phone: profile.phone,
+          shipping_address: profile.shipping_address,
+          shipping_city: profile.shipping_city,
+          shipping_zip: profile.shipping_zip,
+          shipping_country: profile.shipping_country ?? "DE",
+          subtotal_cents: cents(subtotal),
+          tax_cents: cents(tax),
+          shipping_cents: cents(shipping),
+          total_cents: cents(total),
+          currency: "EUR",
+          status: "pending",
+        })
+        .select("id")
+        .single();
+      if (orderErr || !order) throw orderErr ?? new Error("Bestellung fehlgeschlagen.");
+      const { error: itemsErr } = await supabase.from("order_items").insert(
+        items.map((i) => ({
+          order_id: order.id,
+          product_id: i.productId,
+          product_name: i.name,
+          product_image: i.image,
+          size: i.size,
+          quantity: i.qty,
+          unit_price_cents: cents(i.price),
+          line_total_cents: cents(i.price * i.qty),
+        }))
+      );
+      if (itemsErr) throw itemsErr;
+      clear();
+      toast.success("Bestellung aufgegeben.");
+      navigate({ to: "/order/$id", params: { id: order.id } });
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "Bestellung fehlgeschlagen.";
+      toast.error(msg);
+    } finally {
+      setPlacing(false);
+    }
+  };
 
   return (
     <div className="bg-background text-foreground min-h-screen">
@@ -76,10 +147,10 @@ function CartPage() {
                 <h2 className="font-headline text-[24px] uppercase text-primary">Zusammenfassung</h2>
                 <div className="space-y-3 text-[16px] text-secondary border-b border-outline-variant/30 pb-6">
                   <div className="flex justify-between"><span>Zwischensumme</span><span>{subtotal.toFixed(2)} €</span></div>
-                  <div className="flex justify-between"><span>Versandkosten</span><span>{subtotal >= 75 ? "Kostenlos" : "5.90 €"}</span></div>
+                  <div className="flex justify-between"><span>Versandkosten</span><span>{shipping === 0 ? "Kostenlos" : `${shipping.toFixed(2)} €`}</span></div>
                   <div className="flex justify-between pt-4 text-primary font-bold">
                     <span className="uppercase tracking-widest">Gesamtsumme</span>
-                    <span className="text-xl">{(subtotal + (subtotal >= 75 ? 0 : 5.9)).toFixed(2)} €</span>
+                    <span className="text-xl">{total.toFixed(2)} €</span>
                   </div>
                   <p className="text-[10px] text-outline italic">Inkl. 19% MwSt. ({tax.toFixed(2)} €)</p>
                 </div>
@@ -91,12 +162,14 @@ function CartPage() {
                     </span>
                   </label>
                   <button
-                    disabled={!terms}
+                    onClick={checkout}
+                    disabled={!terms || placing}
                     className="w-full bg-primary-container text-on-secondary-fixed font-headline text-[24px] py-4 hover:brightness-110 active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    Sicher zur Kasse
+                    {placing ? "Wird verarbeitet..." : "Sicher zur Kasse"}
                   </button>
                 </div>
+
               </div>
               <div className="bg-surface-container-low p-gutter grid grid-cols-2 gap-4 border border-outline-variant/20">
                 {[
