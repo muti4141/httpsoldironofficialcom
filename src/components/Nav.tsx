@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useCartCount } from "@/stores/cart";
 
-export function Nav({ cartCount = 0 }: { cartCount?: number }) {
+export function Nav() {
+  const cartCount = useCartCount();
   return (
     <nav className="bg-background/95 backdrop-blur-md border-b border-outline-variant/50 fixed top-0 z-50 w-full">
       <div className="flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-[1440px] mx-auto">
@@ -22,9 +24,11 @@ export function Nav({ cartCount = 0 }: { cartCount?: number }) {
           </button>
           <Link to="/cart" className="relative text-secondary hover:text-primary transition-colors">
             <span className="material-symbols-outlined">shopping_cart</span>
-            <span className="absolute -top-2 -right-2 bg-primary text-on-primary text-[10px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
-              {cartCount}
-            </span>
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-primary text-on-primary text-[10px] min-w-4 h-4 px-1 flex items-center justify-center rounded-full font-bold">
+                {cartCount}
+              </span>
+            )}
           </Link>
         </div>
       </div>
