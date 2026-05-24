@@ -23,16 +23,18 @@ async function sendOrderEmails(orderId: string) {
   const adminEmail = process.env.ADMIN_ORDER_EMAIL;
 
   const supabase = getSupabase();
-  const { data: order } = await supabase
+  const { data: orderRow } = await supabase
     .from("orders")
     .select("*")
     .eq("id", orderId)
     .maybeSingle();
-  if (!order) return;
-  const { data: items } = await supabase
+  if (!orderRow) return;
+  const order = orderRow as any;
+  const { data: itemsRows } = await supabase
     .from("order_items")
     .select("*")
     .eq("order_id", orderId);
+  const items = (itemsRows || []) as any[];
 
   const fmt = (cents: number) => `€${(cents / 100).toFixed(2)}`;
   const itemRows = (items || [])
