@@ -5,6 +5,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/stores/cart";
 import { supabase } from "@/integrations/supabase/client";
+import { StripeCartCheckout } from "@/components/StripeCartCheckout";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -24,6 +25,12 @@ function CartPage() {
   const navigate = useNavigate();
   const [terms, setTerms] = useState(false);
   const [placing, setPlacing] = useState(false);
+  const [checkoutData, setCheckoutData] = useState<null | {
+    orderId: string;
+    items: { productId: string; name: string; unitAmountCents: number; quantity: number }[];
+    shippingCents: number;
+    returnUrl: string;
+  }>(null);
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const tax = subtotal * 0.19;
   const shipping = subtotal >= 75 ? 0 : 5.9;
@@ -82,9 +89,20 @@ function CartPage() {
         }))
       );
       if (itemsErr) throw itemsErr;
+
+      const orderId = order.id as string;
+      setCheckoutData({
+        orderId,
+        items: items.map((i) => ({
+          productId: i.productId,
+          name: `${i.name} — ${i.size}`,
+          unitAmountCents: cents(i.price),
+          quantity: i.qty,
+        })),
+        shippingCents: cents(shipping),
+        returnUrl: `${window.location.origin}/checkout/return?order_id=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
+      });
       clear();
-      toast.success("Bestellung aufgegeben.");
-      navigate({ to: "/order/$id", params: { id: order.id } });
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Bestellung fehlgeschlagen.";
       toast.error(msg);
@@ -102,7 +120,11 @@ function CartPage() {
           <p className="text-[14px] font-semibold uppercase tracking-widest text-outline mt-2">Präzision in jeder Naht.</p>
         </header>
 
-        {items.length === 0 ? (
+        {checkoutData ? (
+          <div className="bg-surface-container-low steel-bevel p-6">
+            <StripeCartCheckout {...checkoutData} />
+          </div>
+        ) : items.length === 0 ? (
           <div className="bg-surface-container-low p-12 text-center steel-bevel">
             <p className="text-[18px] text-secondary mb-6">Dein Warenkorb ist leer.</p>
             <Link to="/shop" className="inline-block bg-primary-container text-on-secondary-fixed font-headline text-[20px] px-8 py-3 uppercase tracking-widest hover:brightness-110">

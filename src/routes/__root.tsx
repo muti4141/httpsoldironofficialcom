@@ -11,6 +11,7 @@ import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -115,6 +116,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthSync />
+      <PaymentTestModeBanner />
       <Outlet />
       <Toaster theme="dark" position="bottom-right" />
     </QueryClientProvider>
