@@ -147,10 +147,10 @@ function CartPage() {
                 <h2 className="font-headline text-[24px] uppercase text-primary">Zusammenfassung</h2>
                 <div className="space-y-3 text-[16px] text-secondary border-b border-outline-variant/30 pb-6">
                   <div className="flex justify-between"><span>Zwischensumme</span><span>{subtotal.toFixed(2)} €</span></div>
-                  <div className="flex justify-between"><span>Versandkosten</span><span>{subtotal >= 75 ? "Kostenlos" : "5.90 €"}</span></div>
+                  <div className="flex justify-between"><span>Versandkosten</span><span>{shipping === 0 ? "Kostenlos" : `${shipping.toFixed(2)} €`}</span></div>
                   <div className="flex justify-between pt-4 text-primary font-bold">
                     <span className="uppercase tracking-widest">Gesamtsumme</span>
-                    <span className="text-xl">{(subtotal + (subtotal >= 75 ? 0 : 5.9)).toFixed(2)} €</span>
+                    <span className="text-xl">{total.toFixed(2)} €</span>
                   </div>
                   <p className="text-[10px] text-outline italic">Inkl. 19% MwSt. ({tax.toFixed(2)} €)</p>
                 </div>
@@ -162,12 +162,14 @@ function CartPage() {
                     </span>
                   </label>
                   <button
-                    disabled={!terms}
+                    onClick={checkout}
+                    disabled={!terms || placing}
                     className="w-full bg-primary-container text-on-secondary-fixed font-headline text-[24px] py-4 hover:brightness-110 active:scale-[0.98] transition-all uppercase tracking-widest disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    Sicher zur Kasse
+                    {placing ? "Wird verarbeitet..." : "Sicher zur Kasse"}
                   </button>
                 </div>
+
               </div>
               <div className="bg-surface-container-low p-gutter grid grid-cols-2 gap-4 border border-outline-variant/20">
                 {[
