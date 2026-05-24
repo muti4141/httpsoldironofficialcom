@@ -1,10 +1,19 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { signOut } from "@/hooks/use-auth";
+
+type OrderRow = {
+  id: string;
+  created_at: string;
+  total_cents: number;
+  currency: string;
+  status: string;
+};
+
 
 export const Route = createFileRoute("/account")({
   head: () => ({
