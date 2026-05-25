@@ -120,7 +120,11 @@ function Home() {
             {bestsellers.map((p, i) => (
               <Link to="/product/$id" params={{ id: p.id }} key={p.id} className="group cursor-pointer">
                 <div className="bg-surface-container aspect-square overflow-hidden relative steel-bevel mb-4">
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:scale-105 transition-transform duration-500" />
+                  {p.video ? (
+                    <video src={p.video} poster={p.image} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:scale-105 transition-transform duration-500" />
+                  )}
                   <div className="absolute bottom-0 left-0 right-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 py-3 text-center">
                     <span className="text-[14px] font-semibold text-on-primary uppercase tracking-widest">In den Warenkorb</span>
                   </div>
