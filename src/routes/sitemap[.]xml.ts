@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { products } from "@/data/products";
 
-const BASE_URL = "";
+const BASE_URL = "https://oldironofficial.com";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
@@ -12,6 +12,11 @@ export const Route = createFileRoute("/sitemap.xml")({
           { path: "/", changefreq: "weekly", priority: "1.0" },
           { path: "/shop", changefreq: "weekly", priority: "0.9" },
           { path: "/cart", changefreq: "monthly", priority: "0.3" },
+          { path: "/legal/impressum", changefreq: "yearly", priority: "0.2" },
+          { path: "/legal/datenschutz", changefreq: "yearly", priority: "0.2" },
+          { path: "/legal/agb", changefreq: "yearly", priority: "0.2" },
+          { path: "/legal/widerruf", changefreq: "yearly", priority: "0.2" },
+          { path: "/legal/versand", changefreq: "yearly", priority: "0.3" },
           ...products.map((p) => ({ path: `/product/${p.id}`, changefreq: "monthly", priority: "0.7" })),
         ];
         const urls = entries
