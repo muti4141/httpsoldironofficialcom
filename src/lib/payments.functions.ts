@@ -31,6 +31,14 @@ export const createCartCheckout = createServerFn({ method: "POST" })
     const { data: userResp } = await supabase.auth.getUser();
     const email = userResp.user?.email;
 
+    // Load order shipping for tax location.
+    const { data: orderRow } = await supabase
+      .from("orders")
+      .select("full_name, shipping_address, shipping_city, shipping_zip, shipping_country, phone")
+      .eq("id", data.orderId)
+      .maybeSingle();
+    const order = orderRow as any;
+
     const stripe = createStripeClient(data.environment);
 
     // Resolve or create a Customer with metadata.userId for searchability.
@@ -58,12 +66,39 @@ export const createCartCheckout = createServerFn({ method: "POST" })
       customerId = created.id;
     }
 
+    // Set customer name + address (required by Stripe Tax for location-based calc).
+    if (order) {
+      await stripe.customers.update(customerId, {
+        name: order.full_name,
+        ...(order.phone && { phone: order.phone }),
+        address: {
+          line1: order.shipping_address,
+          city: order.shipping_city,
+          postal_code: order.shipping_zip,
+          country: order.shipping_country || "DE",
+        },
+        shipping: {
+          name: order.full_name,
+          ...(order.phone && { phone: order.phone }),
+          address: {
+            line1: order.shipping_address,
+            city: order.shipping_city,
+            postal_code: order.shipping_zip,
+            country: order.shipping_country || "DE",
+          },
+        },
+      });
+    }
+
+    // tax_behavior: "inclusive" → existing EUR prices already include VAT (typical DE B2C).
+    // tax_code txcd_30011000 = General Apparel.
     const line_items = data.items.map((i) => ({
       quantity: i.quantity,
       price_data: {
         currency: "eur",
-        product_data: { name: `${i.name}` },
+        product_data: { name: i.name, tax_code: "txcd_30011000" },
         unit_amount: i.unitAmountCents,
+        tax_behavior: "inclusive" as const,
       },
     }));
 
@@ -72,8 +107,10 @@ export const createCartCheckout = createServerFn({ method: "POST" })
         quantity: 1,
         price_data: {
           currency: "eur",
-          product_data: { name: "Versand" },
+          // txcd_92010001 = Shipping
+          product_data: { name: "Versand", tax_code: "txcd_92010001" },
           unit_amount: data.shippingCents,
+          tax_behavior: "inclusive" as const,
         },
       });
     }
@@ -84,6 +121,7 @@ export const createCartCheckout = createServerFn({ method: "POST" })
       ui_mode: "embedded_page",
       return_url: data.returnUrl,
       customer: customerId,
+      customer_update: { address: "auto", shipping: "auto", name: "auto" },
       automatic_tax: { enabled: true },
       payment_intent_data: { description: `OLD IRON Bestellung #${data.orderId.slice(0, 8)}` },
       metadata: { userId, orderId: data.orderId },
@@ -91,3 +129,4 @@ export const createCartCheckout = createServerFn({ method: "POST" })
 
     return session.client_secret;
   });
+
