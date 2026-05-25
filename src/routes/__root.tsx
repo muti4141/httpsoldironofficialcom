@@ -12,6 +12,7 @@ import { useEffect } from "react";
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { CookieBanner } from "@/components/CookieBanner";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -123,6 +124,7 @@ function RootComponent() {
       <AuthSync />
       <PaymentTestModeBanner />
       <Outlet />
+      <CookieBanner />
       <Toaster theme="dark" position="bottom-right" />
     </QueryClientProvider>
   );
