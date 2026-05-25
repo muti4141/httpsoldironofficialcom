@@ -54,7 +54,19 @@ function ProductPage() {
             </div>
             <div className="md:col-span-10">
               <div className="aspect-[3/4] bg-surface-container border border-outline-variant/50 relative overflow-hidden">
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale contrast-125" />
+                {product.video ? (
+                  <video
+                    src={product.video}
+                    poster={product.image}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale contrast-125" />
+                )}
                 <div className="absolute bottom-6 left-6 flex gap-2">
                   <div className="bg-surface-container-highest px-3 py-1 text-[12px] uppercase tracking-widest border border-outline-variant">
                     {product.categoryLabel}
