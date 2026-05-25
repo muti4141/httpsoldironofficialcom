@@ -32,6 +32,7 @@ export const products: Product[] = [
     categoryLabel: "Oberteile",
     price: 34.9,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBA7JSDohkLHUhKePu-LuIVNjGeTG1uYVf6nspubBNi9mlYsprcF3GjlOvdmyTLysZxHjBb-jEA7uruUipLPmji-jbYSzwQlcP8JTcIMxLMdNanExU7CXE0lCWBgSaYxMUMW03EhMPQtUn_9TgPmMM294MKsqhVCibWW_wqIMJ_lYYYWSAjKcUr5Hgi9qJQQhCMvdioPfVPwMGhHIBMZ-dyOPu9h373c-MIsoxtvFgSJd-uCQbcKD-c_ZrC5w8Ksv_7GHHIwQG8n6I",
+    video: "/videos/stringer-hustle.mp4",
     subtitle: "Classic Cut Charcoal",
     description: "Tiefer Armausschnitt. Schwerer Stoff. Maximale Bewegungsfreiheit im Gym.",
   },
