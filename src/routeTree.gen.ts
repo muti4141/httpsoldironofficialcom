@@ -24,6 +24,7 @@ import { Route as LegalImpressumRouteImport } from './routes/legal.impressum'
 import { Route as LegalDatenschutzRouteImport } from './routes/legal.datenschutz'
 import { Route as LegalAgbRouteImport } from './routes/legal.agb'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
@@ -102,6 +103,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/admin/orders',
+  path: '/admin/orders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailQueueProcessRoute =
   LovableEmailQueueProcessRouteImport.update({
     id: '/lovable/email/queue/process',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/legal': typeof LegalRouteWithChildren
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/legal/agb': typeof LegalAgbRoute
   '/legal/datenschutz': typeof LegalDatenschutzRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/legal': typeof LegalRouteWithChildren
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/legal/agb': typeof LegalAgbRoute
   '/legal/datenschutz': typeof LegalDatenschutzRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/legal': typeof LegalRouteWithChildren
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/legal/agb': typeof LegalAgbRoute
   '/legal/datenschutz': typeof LegalDatenschutzRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/shop'
     | '/sitemap.xml'
+    | '/admin/orders'
     | '/checkout/return'
     | '/legal/agb'
     | '/legal/datenschutz'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/shop'
     | '/sitemap.xml'
+    | '/admin/orders'
     | '/checkout/return'
     | '/legal/agb'
     | '/legal/datenschutz'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/legal'
     | '/shop'
     | '/sitemap.xml'
+    | '/admin/orders'
     | '/checkout/return'
     | '/legal/agb'
     | '/legal/datenschutz'
@@ -241,6 +253,7 @@ export interface RootRouteChildren {
   LegalRoute: typeof LegalRouteWithChildren
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   OrderIdRoute: typeof OrderIdRoute
   ProductIdRoute: typeof ProductIdRoute
@@ -355,6 +368,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/admin/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/queue/process': {
       id: '/lovable/email/queue/process'
       path: '/lovable/email/queue/process'
@@ -398,6 +418,7 @@ const rootRouteChildren: RootRouteChildren = {
   LegalRoute: LegalRouteWithChildren,
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   OrderIdRoute: OrderIdRoute,
   ProductIdRoute: ProductIdRoute,
@@ -407,3 +428,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
