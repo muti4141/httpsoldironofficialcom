@@ -11,12 +11,18 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as ShopRouteImport } from './routes/shop'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as CartRouteImport } from './routes/cart'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductIdRouteImport } from './routes/product.$id'
 import { Route as OrderIdRouteImport } from './routes/order.$id'
+import { Route as LegalWiderrufRouteImport } from './routes/legal.widerruf'
+import { Route as LegalVersandRouteImport } from './routes/legal.versand'
+import { Route as LegalImpressumRouteImport } from './routes/legal.impressum'
+import { Route as LegalDatenschutzRouteImport } from './routes/legal.datenschutz'
+import { Route as LegalAgbRouteImport } from './routes/legal.agb'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
@@ -29,6 +35,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
 const ShopRoute = ShopRouteImport.update({
   id: '/shop',
   path: '/shop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CartRoute = CartRouteImport.update({
@@ -61,6 +72,31 @@ const OrderIdRoute = OrderIdRouteImport.update({
   path: '/order/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalWiderrufRoute = LegalWiderrufRouteImport.update({
+  id: '/widerruf',
+  path: '/widerruf',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalVersandRoute = LegalVersandRouteImport.update({
+  id: '/versand',
+  path: '/versand',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalImpressumRoute = LegalImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalDatenschutzRoute = LegalDatenschutzRouteImport.update({
+  id: '/datenschutz',
+  path: '/datenschutz',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalAgbRoute = LegalAgbRouteImport.update({
+  id: '/agb',
+  path: '/agb',
+  getParentRoute: () => LegalRoute,
+} as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
   path: '/checkout/return',
@@ -84,9 +120,15 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
+  '/legal': typeof LegalRouteWithChildren
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/agb': typeof LegalAgbRoute
+  '/legal/datenschutz': typeof LegalDatenschutzRoute
+  '/legal/impressum': typeof LegalImpressumRoute
+  '/legal/versand': typeof LegalVersandRoute
+  '/legal/widerruf': typeof LegalWiderrufRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$id': typeof ProductIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -97,9 +139,15 @@ export interface FileRoutesByTo {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
+  '/legal': typeof LegalRouteWithChildren
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/agb': typeof LegalAgbRoute
+  '/legal/datenschutz': typeof LegalDatenschutzRoute
+  '/legal/impressum': typeof LegalImpressumRoute
+  '/legal/versand': typeof LegalVersandRoute
+  '/legal/widerruf': typeof LegalWiderrufRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$id': typeof ProductIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -111,9 +159,15 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/auth': typeof AuthRoute
   '/cart': typeof CartRoute
+  '/legal': typeof LegalRouteWithChildren
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/agb': typeof LegalAgbRoute
+  '/legal/datenschutz': typeof LegalDatenschutzRoute
+  '/legal/impressum': typeof LegalImpressumRoute
+  '/legal/versand': typeof LegalVersandRoute
+  '/legal/widerruf': typeof LegalWiderrufRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$id': typeof ProductIdRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
@@ -126,9 +180,15 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/cart'
+    | '/legal'
     | '/shop'
     | '/sitemap.xml'
     | '/checkout/return'
+    | '/legal/agb'
+    | '/legal/datenschutz'
+    | '/legal/impressum'
+    | '/legal/versand'
+    | '/legal/widerruf'
     | '/order/$id'
     | '/product/$id'
     | '/api/public/payments/webhook'
@@ -139,9 +199,15 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/cart'
+    | '/legal'
     | '/shop'
     | '/sitemap.xml'
     | '/checkout/return'
+    | '/legal/agb'
+    | '/legal/datenschutz'
+    | '/legal/impressum'
+    | '/legal/versand'
+    | '/legal/widerruf'
     | '/order/$id'
     | '/product/$id'
     | '/api/public/payments/webhook'
@@ -152,9 +218,15 @@ export interface FileRouteTypes {
     | '/account'
     | '/auth'
     | '/cart'
+    | '/legal'
     | '/shop'
     | '/sitemap.xml'
     | '/checkout/return'
+    | '/legal/agb'
+    | '/legal/datenschutz'
+    | '/legal/impressum'
+    | '/legal/versand'
+    | '/legal/widerruf'
     | '/order/$id'
     | '/product/$id'
     | '/api/public/payments/webhook'
@@ -166,6 +238,7 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AuthRoute: typeof AuthRoute
   CartRoute: typeof CartRoute
+  LegalRoute: typeof LegalRouteWithChildren
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -189,6 +262,13 @@ declare module '@tanstack/react-router' {
       path: '/shop'
       fullPath: '/shop'
       preLoaderRoute: typeof ShopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cart': {
@@ -233,6 +313,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/widerruf': {
+      id: '/legal/widerruf'
+      path: '/widerruf'
+      fullPath: '/legal/widerruf'
+      preLoaderRoute: typeof LegalWiderrufRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/versand': {
+      id: '/legal/versand'
+      path: '/versand'
+      fullPath: '/legal/versand'
+      preLoaderRoute: typeof LegalVersandRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/impressum': {
+      id: '/legal/impressum'
+      path: '/impressum'
+      fullPath: '/legal/impressum'
+      preLoaderRoute: typeof LegalImpressumRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/datenschutz': {
+      id: '/legal/datenschutz'
+      path: '/datenschutz'
+      fullPath: '/legal/datenschutz'
+      preLoaderRoute: typeof LegalDatenschutzRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/agb': {
+      id: '/legal/agb'
+      path: '/agb'
+      fullPath: '/legal/agb'
+      preLoaderRoute: typeof LegalAgbRouteImport
+      parentRoute: typeof LegalRoute
+    }
     '/checkout/return': {
       id: '/checkout/return'
       path: '/checkout/return'
@@ -257,11 +372,30 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface LegalRouteChildren {
+  LegalAgbRoute: typeof LegalAgbRoute
+  LegalDatenschutzRoute: typeof LegalDatenschutzRoute
+  LegalImpressumRoute: typeof LegalImpressumRoute
+  LegalVersandRoute: typeof LegalVersandRoute
+  LegalWiderrufRoute: typeof LegalWiderrufRoute
+}
+
+const LegalRouteChildren: LegalRouteChildren = {
+  LegalAgbRoute: LegalAgbRoute,
+  LegalDatenschutzRoute: LegalDatenschutzRoute,
+  LegalImpressumRoute: LegalImpressumRoute,
+  LegalVersandRoute: LegalVersandRoute,
+  LegalWiderrufRoute: LegalWiderrufRoute,
+}
+
+const LegalRouteWithChildren = LegalRoute._addFileChildren(LegalRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountRoute: AccountRoute,
   AuthRoute: AuthRoute,
   CartRoute: CartRoute,
+  LegalRoute: LegalRouteWithChildren,
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
