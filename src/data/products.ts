@@ -18,10 +18,12 @@ export const products: Product[] = [
     categoryLabel: "Oberteile",
     price: 49.9,
     image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDoX_FBqhWDcebtTIAaXVwx8QkcSXLMNKBE2Cd1hUndxKSrsAZxlGpx57gDLcccigHC--sYKhCjYwQuy8uXi5U_envAlkMjJH1hvkyfkh2yHRZ5YLwuUiZ9hsiAFvJIApi7yOmwKR1DfDY0jQtk_ss9wOcK2rQx9IH2pNSgbI-z3JcqgZO3yZha5_2FNtdp5GLlt1bzme8ntTjmsT9cUDQFOlj4jfyqZc6ZNZ6DWk7xFsPmP8NrHDDh5SCjWNn-eSLE53edCKaXnCA",
+    video: "/videos/iron-tee.mp4",
     badge: "Bestseller",
     subtitle: "Heavy Cotton Oversized",
     description: "Der ultimative Pump-Cover. Gefertigt aus schwerer 300gsm Baumwolle für maximale Strapazierfähigkeit und Komfort. Designed für Athleten, die im Gym keine Kompromisse eingehen.",
   },
+
   {
     id: "stringer-hustle",
     name: "Stringer 'Hustle'",
