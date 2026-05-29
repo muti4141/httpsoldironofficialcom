@@ -13,15 +13,13 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const HERO = "https://lh3.googleusercontent.com/aida-public/AB6AXuBWDngKBQvsQkClnou3bXcFYLim_QxLfLje6eW7MGt5qyStVwB8Ckv8HOmq3gLWDBDj1N4NkiE-BQ6djYhqM-AKif2HfYhBc6RIVvWacG0nj0rYUl8GHSGAHy6N8wwtsjwct96N27WqcZS_Ygiv6DWp8n_4_Px1XONf9WBwKd5ZjUT0mvjNBtTnT494cHLao3OBhpWcsmPMD3kPaw0udZyJWYrKt_62hVmD4-ZpIJRUG4UlkwNaVfPDWB5IZ37IwLyGb4jPA-5Ybls";
-const ANVIL = "https://lh3.googleusercontent.com/aida-public/AB6AXuDeN2Gvyj5fcfZEMYPqSA1jOBP26QHF_V8DbnYEMyXGn5NjfvDvbKR64gYc2BdFBJP00MLDZ23J9wzVuP75f6_DCmKSbiTz5KOSCwHX_y5B31MuVP7bLetg_bKT264Nc5L7VjMh3llDslfycW_-pkOcckJvDQYGwuN66HrzZsRq-I_9e_CDxymWod4jM1VXkbIYkdDog4-XQMM5AmYTLRNhvXnrxu5-LnHxBJTlFIXoNJLd04tfKnYx1T_ltefeudxwWf4ZnbCdYnQ";
-
 const categories = [
-  { name: "Oversized T-Shirts", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAy1OAC-EuAw2hc8zqYFrri0yQwHDzdVWBMs-7cAgvP78uQyZUqVYZ_XJfy-cOESfz1V_JX1DlsIk1gKhkBkMiLS8HcLO69388G0ItMsgnUt8yk_fUo22YTswXrx_cFpWfn4OKyjVoDF_ek98PvUHiNAtwuJ-LFvVFs3y7g6O9JDzxYn4hSVeAV77rf1I_FGCtMDBK81r2Im6YD4SxWJNxaKHVF0hrNMfdMJjeO4vkJBFe_biGAMmp1w7xb85IRGYHQKioQ3zqITcs" },
-  { name: "Stringer Tank Tops", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCu-IlCV1KVniFh6iGlAOAE9mEDwAvU3hnj3dIQezXl2r0YYOIBCOSVYvT8fJCsZH8lMAafvzTDUpK2CRQn4TyT0zUGBokQafbKyxxcUIPFA6Lj2QlpD0xJQ9UOxy4avg3IcrQqPz_-Tu_oYwf-IUegIiFAMT0cLxwEq46--5Y5SRGO1DS00oeK4rtba_3PTEaYEmTvWNsh5IdFrJ546ud3EIWzAn-dDtsYVi-xgjaCH5bF-AXJ3SrA5x2UrMMFX3DiZ8gNx4wHqcQ" },
-  { name: "Gym Shorts", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAjHu_anVIQM_9oXk31U4g6akkWFEgHrTTpDJdt_vNIFZ8X0fMrie3UranaUiJubRG9h1TM6X9OmvzWiF3NsgpZe6ql303sCEZkIuWPkNDMQo7CtytfVdyrJyU_69JelacHA6CVF6z017KzMuga-Ha6ozU8lMaNttcg9B6L2Ra5z6WS10xum7oqQy7Z6D9xgxOXTqJyCttZ02cEDpieP3cA5ketbVZWcl4Qhz3Wpg9wbZ8ZlSYjUxGJtjtNI25eRBX2CB6vvEAOyEc" },
-  { name: "Performance Wear", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDE6mBBdP8lxUPOYFx_jRa-NYqqsHK1kQtwSoDw3J26hKx2B_JdDeKkuk5gVFqj8VLEovu2x8I4gy4VclugTrB1ziQwnIrj3qGnMkjiYBJTJtkxUJcyG1l0dpWvHJQifnLUXiz9F2cx_XLQK9TTz9dpgLlLyyClDzSzFWJvStcRNAxozdGvQW3XdJh_dCLzY7tgn74Tk6jhlKooQB9bPSEt9Rnu1_X6PkDTbjCVl8QjGQRI4Zj6kghe0RKMN-J29GfGYQeIQcBz1mo" },
+  { name: "Oversized T-Shirts" },
+  { name: "Stringer Tank Tops" },
+  { name: "Gym Shorts" },
+  { name: "Performance Wear" },
 ];
+
 
 const testimonials = [
   { quote: "Die Qualität des Stoffs ist unübertroffen. Man spürt die Schwere und die Beständigkeit. Perfekt für ein hartes Training.", name: "Markus Wagner", role: "Leistungssportler" },
@@ -38,7 +36,7 @@ function Home() {
         {/* Hero */}
         <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <video src="/videos/hero.mp4" poster={HERO} autoPlay muted loop playsInline className="w-full h-full object-contain md:object-cover md:object-top md:grayscale md:opacity-60 bg-background" />
+            <video src="/videos/hero.mp4" autoPlay muted loop playsInline className="w-full h-full object-contain md:object-cover md:object-top md:grayscale md:opacity-60 bg-background" />
             <div className="absolute inset-0 hero-gradient" />
           </div>
           <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full">
@@ -71,7 +69,8 @@ function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {categories.map((c) => (
               <Link to="/shop" key={c.name} className="group relative aspect-[3/4] overflow-hidden bg-surface-container steel-bevel">
-                <img src={c.img} alt={c.name} className="w-full h-full object-cover grayscale opacity-70 transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest" />
+                <div className="absolute inset-0 grain-overlay opacity-40" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-transparent flex items-end p-6">
                   <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                     <h3 className="font-headline text-[20px] md:text-[24px] text-white uppercase mb-2">{c.name}</h3>
@@ -89,8 +88,11 @@ function Home() {
         <section className="bg-surface-container-low py-stack-lg">
           <div className="px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-stack-lg items-center">
             <div className="order-2 lg:order-1">
-              <div className="relative steel-bevel p-4 inline-block">
-                <img src={ANVIL} alt="Anvil" className="w-full max-w-md grayscale brightness-75 contrast-125" />
+              <div className="relative steel-bevel p-4 inline-block w-full max-w-md">
+                <div className="aspect-square bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 grain-overlay opacity-40" />
+                  <p className="font-headline text-[64px] text-primary/30 uppercase tracking-widest">Old Iron</p>
+                </div>
                 <div className="absolute -bottom-6 -right-6 bg-primary p-6 text-on-primary">
                   <p className="font-headline text-[32px] leading-none">EST. 2024</p>
                 </div>
@@ -121,9 +123,12 @@ function Home() {
               <Link to="/product/$id" params={{ id: p.id }} key={p.id} className="group cursor-pointer">
                 <div className="bg-surface-container aspect-square overflow-hidden relative steel-bevel mb-4">
                   {p.video ? (
-                    <video src={p.video} poster={p.image} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:scale-105 transition-transform duration-500" />
+                    <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
+                      <div className="absolute inset-0 grain-overlay opacity-40" />
+                      <p className="font-headline text-[32px] text-primary/30 uppercase tracking-widest text-center px-4">{p.name}</p>
+                    </div>
                   )}
                   <div className="absolute bottom-0 left-0 right-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 py-3 text-center">
                     <span className="text-[14px] font-semibold text-on-primary uppercase tracking-widest">In den Warenkorb</span>

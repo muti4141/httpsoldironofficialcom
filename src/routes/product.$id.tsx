@@ -46,9 +46,10 @@ function ProductPage() {
           {/* Gallery */}
           <div className="lg:col-span-7 grid grid-cols-1 md:grid-cols-12 gap-4">
             <div className="hidden md:flex md:col-span-2 flex-col gap-4">
-              {[product.image, product.image, product.image].map((src, i) => (
-                <div key={i} className="aspect-[3/4] bg-surface-container border border-outline-variant/30 cursor-pointer hover:border-primary transition-colors">
-                  <img src={src} alt="" className="w-full h-full object-cover grayscale brightness-75" />
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="aspect-[3/4] bg-surface-container border border-outline-variant/30 cursor-pointer hover:border-primary transition-colors relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-surface-container-high to-surface-container-lowest" />
+                  <div className="absolute inset-0 grain-overlay opacity-40" />
                 </div>
               ))}
             </div>
@@ -57,7 +58,6 @@ function ProductPage() {
                 {product.video ? (
                   <video
                     src={product.video}
-                    poster={product.image}
                     autoPlay
                     muted
                     loop
@@ -65,7 +65,10 @@ function ProductPage() {
                     className="w-full h-full object-cover"
                   />
                 ) : (
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover grayscale contrast-125" />
+                  <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
+                    <div className="absolute inset-0 grain-overlay opacity-40" />
+                    <p className="font-headline text-[48px] text-primary/30 uppercase tracking-widest text-center px-6">{product.name}</p>
+                  </div>
                 )}
                 <div className="absolute bottom-6 left-6 flex gap-2">
                   <div className="bg-surface-container-highest px-3 py-1 text-[12px] uppercase tracking-widest border border-outline-variant">
@@ -174,7 +177,14 @@ function ProductPage() {
             {related.map((p) => (
               <Link to="/product/$id" params={{ id: p.id }} key={p.id} className="group cursor-pointer">
                 <div className="aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-outline-variant/30 group-hover:border-primary transition-all">
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale brightness-75 group-hover:brightness-100 transition-all duration-500 group-hover:scale-105" />
+                  {p.video ? (
+                    <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
+                      <div className="absolute inset-0 grain-overlay opacity-40" />
+                      <p className="font-headline text-[20px] text-primary/30 uppercase tracking-widest text-center px-2">{p.name}</p>
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="text-[12px] text-secondary uppercase tracking-widest">{p.categoryLabel}</p>
