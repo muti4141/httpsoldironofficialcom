@@ -13,15 +13,13 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const HERO = "https://lh3.googleusercontent.com/aida-public/AB6AXuBWDngKBQvsQkClnou3bXcFYLim_QxLfLje6eW7MGt5qyStVwB8Ckv8HOmq3gLWDBDj1N4NkiE-BQ6djYhqM-AKif2HfYhBc6RIVvWacG0nj0rYUl8GHSGAHy6N8wwtsjwct96N27WqcZS_Ygiv6DWp8n_4_Px1XONf9WBwKd5ZjUT0mvjNBtTnT494cHLao3OBhpWcsmPMD3kPaw0udZyJWYrKt_62hVmD4-ZpIJRUG4UlkwNaVfPDWB5IZ37IwLyGb4jPA-5Ybls";
-const ANVIL = "https://lh3.googleusercontent.com/aida-public/AB6AXuDeN2Gvyj5fcfZEMYPqSA1jOBP26QHF_V8DbnYEMyXGn5NjfvDvbKR64gYc2BdFBJP00MLDZ23J9wzVuP75f6_DCmKSbiTz5KOSCwHX_y5B31MuVP7bLetg_bKT264Nc5L7VjMh3llDslfycW_-pkOcckJvDQYGwuN66HrzZsRq-I_9e_CDxymWod4jM1VXkbIYkdDog4-XQMM5AmYTLRNhvXnrxu5-LnHxBJTlFIXoNJLd04tfKnYx1T_ltefeudxwWf4ZnbCdYnQ";
-
 const categories = [
-  { name: "Oversized T-Shirts", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAy1OAC-EuAw2hc8zqYFrri0yQwHDzdVWBMs-7cAgvP78uQyZUqVYZ_XJfy-cOESfz1V_JX1DlsIk1gKhkBkMiLS8HcLO69388G0ItMsgnUt8yk_fUo22YTswXrx_cFpWfn4OKyjVoDF_ek98PvUHiNAtwuJ-LFvVFs3y7g6O9JDzxYn4hSVeAV77rf1I_FGCtMDBK81r2Im6YD4SxWJNxaKHVF0hrNMfdMJjeO4vkJBFe_biGAMmp1w7xb85IRGYHQKioQ3zqITcs" },
-  { name: "Stringer Tank Tops", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuCu-IlCV1KVniFh6iGlAOAE9mEDwAvU3hnj3dIQezXl2r0YYOIBCOSVYvT8fJCsZH8lMAafvzTDUpK2CRQn4TyT0zUGBokQafbKyxxcUIPFA6Lj2QlpD0xJQ9UOxy4avg3IcrQqPz_-Tu_oYwf-IUegIiFAMT0cLxwEq46--5Y5SRGO1DS00oeK4rtba_3PTEaYEmTvWNsh5IdFrJ546ud3EIWzAn-dDtsYVi-xgjaCH5bF-AXJ3SrA5x2UrMMFX3DiZ8gNx4wHqcQ" },
-  { name: "Gym Shorts", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuAjHu_anVIQM_9oXk31U4g6akkWFEgHrTTpDJdt_vNIFZ8X0fMrie3UranaUiJubRG9h1TM6X9OmvzWiF3NsgpZe6ql303sCEZkIuWPkNDMQo7CtytfVdyrJyU_69JelacHA6CVF6z017KzMuga-Ha6ozU8lMaNttcg9B6L2Ra5z6WS10xum7oqQy7Z6D9xgxOXTqJyCttZ02cEDpieP3cA5ketbVZWcl4Qhz3Wpg9wbZ8ZlSYjUxGJtjtNI25eRBX2CB6vvEAOyEc" },
-  { name: "Performance Wear", img: "https://lh3.googleusercontent.com/aida-public/AB6AXuDE6mBBdP8lxUPOYFx_jRa-NYqqsHK1kQtwSoDw3J26hKx2B_JdDeKkuk5gVFqj8VLEovu2x8I4gy4VclugTrB1ziQwnIrj3qGnMkjiYBJTJtkxUJcyG1l0dpWvHJQifnLUXiz9F2cx_XLQK9TTz9dpgLlLyyClDzSzFWJvStcRNAxozdGvQW3XdJh_dCLzY7tgn74Tk6jhlKooQB9bPSEt9Rnu1_X6PkDTbjCVl8QjGQRI4Zj6kghe0RKMN-J29GfGYQeIQcBz1mo" },
+  { name: "Oversized T-Shirts" },
+  { name: "Stringer Tank Tops" },
+  { name: "Gym Shorts" },
+  { name: "Performance Wear" },
 ];
+
 
 const testimonials = [
   { quote: "Die Qualität des Stoffs ist unübertroffen. Man spürt die Schwere und die Beständigkeit. Perfekt für ein hartes Training.", name: "Markus Wagner", role: "Leistungssportler" },
