@@ -38,7 +38,7 @@ function Home() {
         {/* Hero */}
         <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <img src={HERO} alt="Athlete in dark gym" className="w-full h-full object-cover object-top grayscale opacity-60" />
+            <video src="/videos/hero.mp4" poster={HERO} autoPlay muted loop playsInline className="w-full h-full object-cover object-top grayscale opacity-60" />
             <div className="absolute inset-0 hero-gradient" />
           </div>
           <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full">
