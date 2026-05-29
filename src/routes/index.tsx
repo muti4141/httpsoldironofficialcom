@@ -42,46 +42,45 @@ function Home() {
       <Nav />
       <main className="pt-[72px]">
         {/* Hero */}
-        <section className="relative h-[80vh] min-h-[500px] md:min-h-[600px] flex items-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <video
-              ref={heroVideoRef}
-              src="/videos/hero.mp4"
-              autoPlay
-              muted
-              playsInline
-              onEnded={handleHeroEnded}
-              className={`w-full h-full object-cover object-center md:object-top grayscale opacity-60 bg-background ${heroEnded ? "hidden" : "block"}`}
+        <section className="relative min-h-screen flex items-center overflow-hidden">
+          <video
+            ref={heroVideoRef}
+            src="/videos/hero.mp4"
+            autoPlay
+            muted
+            playsInline
+            onEnded={handleHeroEnded}
+            className={`absolute inset-0 w-full h-full object-cover object-center md:object-top grayscale opacity-60 bg-background ${heroEnded ? "hidden" : "block"}`}
+          />
+          {heroEnded && (
+            <img
+              src="/images/hero-end.jpg"
+              alt="Old Iron"
+              className="absolute inset-0 w-full h-full object-cover object-center grayscale opacity-60 bg-background"
             />
-            {heroEnded && (
-              <img
-                src="/images/hero-end.jpg"
-                alt="Old Iron"
-                className="w-full h-full object-cover object-center grayscale opacity-60 bg-background"
-              />
-            )}
-            <div className="absolute inset-0 hero-gradient" />
-          </div>
-          <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full">
+          )}
+          <div className="absolute inset-0 hero-gradient z-[1]" />
+          <div className="relative z-10 px-4 md:px-margin-desktop max-w-[1440px] mx-auto w-full">
             <div className="max-w-2xl">
               <p className="text-[14px] font-semibold text-primary uppercase tracking-[0.3em] mb-4">Das Vermächtnis des Stahls</p>
-              <h1 className="font-display text-[72px] md:text-[96px] leading-[0.9] text-white mb-6 text-glow uppercase">
+              <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-[96px] leading-[0.9] text-white mb-6 text-glow uppercase">
                 Geschmiedet aus Disziplin
               </h1>
-              <p className="text-[18px] text-secondary mb-10 max-w-lg">
+              <p className="text-base md:text-[18px] text-secondary mb-10 max-w-lg">
                 Old School Mentalität. Moderne Stärke. Kleidung für diejenigen, die die Stille der schweren Eisen bevorzugen.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Link to="/shop" className="bg-primary-container text-on-secondary-fixed font-headline text-[24px] px-10 py-4 hover:brightness-110 active:scale-95 transition-all uppercase tracking-widest">
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/shop" className="w-full sm:w-auto text-center bg-primary-container text-on-secondary-fixed font-headline text-xl md:text-[24px] px-10 py-4 hover:brightness-110 active:scale-95 transition-all uppercase tracking-widest">
                   Jetzt Shoppen
                 </Link>
-                <Link to="/shop" className="border-2 border-outline-variant text-primary font-headline text-[24px] px-10 py-4 hover:bg-surface-container transition-all active:scale-95 uppercase tracking-widest">
+                <Link to="/shop" className="w-full sm:w-auto text-center border-2 border-outline-variant text-primary font-headline text-xl md:text-[24px] px-10 py-4 hover:bg-surface-container transition-all active:scale-95 uppercase tracking-widest">
                   Kollektion Entdecken
                 </Link>
               </div>
             </div>
           </div>
         </section>
+
 
         {/* Categories */}
         <section className="py-stack-lg px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
