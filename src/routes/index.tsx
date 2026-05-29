@@ -34,12 +34,12 @@ function Home() {
       <Nav />
       <main className="pt-[72px]">
         {/* Hero */}
-        <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <video src="/videos/hero.mp4" autoPlay muted loop playsInline className="w-full h-full object-contain md:object-cover md:object-top md:grayscale md:opacity-60 bg-background" />
+        <section className="relative md:h-[80vh] md:min-h-[600px] flex flex-col md:items-center overflow-hidden">
+          <div className="relative md:absolute md:inset-0 z-0 w-full">
+            <video src="/videos/hero.mp4" autoPlay muted loop playsInline className="w-full h-auto md:h-full object-cover md:object-top md:grayscale md:opacity-60 bg-background block" />
             <div className="absolute inset-0 hero-gradient" />
           </div>
-          <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full">
+          <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full py-stack-md md:py-0">
             <div className="max-w-2xl">
               <p className="text-[14px] font-semibold text-primary uppercase tracking-[0.3em] mb-4">Das Vermächtnis des Stahls</p>
               <h1 className="font-display text-[72px] md:text-[96px] leading-[0.9] text-white mb-6 text-glow uppercase">
