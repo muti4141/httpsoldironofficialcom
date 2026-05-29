@@ -123,9 +123,12 @@ function Home() {
               <Link to="/product/$id" params={{ id: p.id }} key={p.id} className="group cursor-pointer">
                 <div className="bg-surface-container aspect-square overflow-hidden relative steel-bevel mb-4">
                   {p.video ? (
-                    <video src={p.video} poster={p.image} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:scale-105 transition-transform duration-500" />
+                    <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
+                      <div className="absolute inset-0 grain-overlay opacity-40" />
+                      <p className="font-headline text-[32px] text-primary/30 uppercase tracking-widest text-center px-4">{p.name}</p>
+                    </div>
                   )}
                   <div className="absolute bottom-0 left-0 right-0 bg-primary translate-y-full group-hover:translate-y-0 transition-transform duration-300 py-3 text-center">
                     <span className="text-[14px] font-semibold text-on-primary uppercase tracking-widest">In den Warenkorb</span>
