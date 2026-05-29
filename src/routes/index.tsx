@@ -36,7 +36,7 @@ function Home() {
         {/* Hero */}
         <section className="relative h-[80vh] min-h-[600px] flex items-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <video src="/videos/hero.mp4" poster={HERO} autoPlay muted loop playsInline className="w-full h-full object-contain md:object-cover md:object-top md:grayscale md:opacity-60 bg-background" />
+            <video src="/videos/hero.mp4" autoPlay muted loop playsInline className="w-full h-full object-contain md:object-cover md:object-top md:grayscale md:opacity-60 bg-background" />
             <div className="absolute inset-0 hero-gradient" />
           </div>
           <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full">
@@ -69,7 +69,8 @@ function Home() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {categories.map((c) => (
               <Link to="/shop" key={c.name} className="group relative aspect-[3/4] overflow-hidden bg-surface-container steel-bevel">
-                <img src={c.img} alt={c.name} className="w-full h-full object-cover grayscale opacity-70 transition-transform duration-700 group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest" />
+                <div className="absolute inset-0 grain-overlay opacity-40" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-transparent flex items-end p-6">
                   <div className="transform transition-transform duration-500 group-hover:-translate-y-2">
                     <h3 className="font-headline text-[20px] md:text-[24px] text-white uppercase mb-2">{c.name}</h3>
@@ -87,8 +88,11 @@ function Home() {
         <section className="bg-surface-container-low py-stack-lg">
           <div className="px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-stack-lg items-center">
             <div className="order-2 lg:order-1">
-              <div className="relative steel-bevel p-4 inline-block">
-                <img src={ANVIL} alt="Anvil" className="w-full max-w-md grayscale brightness-75 contrast-125" />
+              <div className="relative steel-bevel p-4 inline-block w-full max-w-md">
+                <div className="aspect-square bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 grain-overlay opacity-40" />
+                  <p className="font-headline text-[64px] text-primary/30 uppercase tracking-widest">Old Iron</p>
+                </div>
                 <div className="absolute -bottom-6 -right-6 bg-primary p-6 text-on-primary">
                   <p className="font-headline text-[32px] leading-none">EST. 2024</p>
                 </div>
