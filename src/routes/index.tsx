@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { products } from "@/data/products";
+import { useRef } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -29,6 +30,14 @@ const testimonials = [
 
 function Home() {
   const bestsellers = products.slice(0, 3);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const handleHeroEnded = () => {
+    const v = heroVideoRef.current;
+    if (!v) return;
+    const target = Math.min(3, v.duration || 3);
+    v.currentTime = target;
+    v.pause();
+  };
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
@@ -36,7 +45,7 @@ function Home() {
         {/* Hero */}
         <section className="relative md:h-[80vh] md:min-h-[600px] flex flex-col md:items-center overflow-hidden">
           <div className="relative md:absolute md:inset-0 z-0 w-full">
-            <video src="/videos/hero.mp4" autoPlay muted loop playsInline className="w-full h-auto md:h-full object-cover md:object-top md:grayscale md:opacity-60 bg-background block" />
+            <video ref={heroVideoRef} src="/videos/hero.mp4" autoPlay muted playsInline onEnded={handleHeroEnded} className="w-full h-auto md:h-full object-cover md:object-top md:grayscale md:opacity-60 bg-background block" />
             <div className="absolute inset-0 hero-gradient" />
           </div>
           <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full py-stack-md md:py-0">
