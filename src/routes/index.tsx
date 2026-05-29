@@ -31,24 +31,38 @@ const testimonials = [
 function Home() {
   const bestsellers = products.slice(0, 3);
   const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const [heroEnded, setHeroEnded] = useState(false);
   const handleHeroEnded = () => {
     const v = heroVideoRef.current;
-    if (!v) return;
-    const target = Math.min(2.3, v.duration || 2.3);
-    v.currentTime = target;
-    v.pause();
+    if (v) v.pause();
+    setHeroEnded(true);
   };
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
       <main className="pt-[72px]">
         {/* Hero */}
-        <section className="relative md:h-[80vh] md:min-h-[600px] flex flex-col md:items-center overflow-hidden">
-          <div className="relative md:absolute md:inset-0 z-0 w-full">
-            <video ref={heroVideoRef} src="/videos/hero.mp4" autoPlay muted playsInline onEnded={handleHeroEnded} className="w-full h-auto md:h-full object-cover md:object-top md:grayscale md:opacity-60 bg-background block" />
+        <section className="relative h-[80vh] min-h-[500px] md:min-h-[600px] flex items-center overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <video
+              ref={heroVideoRef}
+              src="/videos/hero.mp4"
+              autoPlay
+              muted
+              playsInline
+              onEnded={handleHeroEnded}
+              className={`w-full h-full object-cover object-center md:object-top grayscale opacity-60 bg-background ${heroEnded ? "hidden" : "block"}`}
+            />
+            {heroEnded && (
+              <img
+                src="/images/hero-end.jpg"
+                alt="Old Iron"
+                className="w-full h-full object-cover object-center grayscale opacity-60 bg-background"
+              />
+            )}
             <div className="absolute inset-0 hero-gradient" />
           </div>
-          <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full py-stack-md md:py-0">
+          <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full">
             <div className="max-w-2xl">
               <p className="text-[14px] font-semibold text-primary uppercase tracking-[0.3em] mb-4">Das Vermächtnis des Stahls</p>
               <h1 className="font-display text-[72px] md:text-[96px] leading-[0.9] text-white mb-6 text-glow uppercase">
