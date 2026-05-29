@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { products } from "@/data/products";
+import { useRef } from "react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
