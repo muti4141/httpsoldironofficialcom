@@ -114,9 +114,12 @@ function ProductCard({ product: p }: { product: Product }) {
       )}
       <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
         {p.video ? (
-          <video src={p.video} poster={p.image} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
-          <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
+          <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
+            <div className="absolute inset-0 grain-overlay opacity-40" />
+            <p className="font-headline text-[28px] text-primary/30 uppercase tracking-widest text-center px-4">{p.name}</p>
+          </div>
         )}
         <button onClick={handleQuickAdd} className="absolute bottom-4 right-4 bg-primary text-on-primary w-12 h-12 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110" aria-label="Add to cart">
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
