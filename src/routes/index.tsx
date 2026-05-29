@@ -34,7 +34,7 @@ function Home() {
   const handleHeroEnded = () => {
     const v = heroVideoRef.current;
     if (!v) return;
-    const target = Math.min(3, v.duration || 3);
+    const target = Math.min(2.3, v.duration || 2.3);
     v.currentTime = target;
     v.pause();
   };
