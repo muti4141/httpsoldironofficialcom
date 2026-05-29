@@ -174,7 +174,14 @@ function ProductPage() {
             {related.map((p) => (
               <Link to="/product/$id" params={{ id: p.id }} key={p.id} className="group cursor-pointer">
                 <div className="aspect-[3/4] bg-surface-container overflow-hidden mb-4 border border-outline-variant/30 group-hover:border-primary transition-all">
-                  <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale brightness-75 group-hover:brightness-100 transition-all duration-500 group-hover:scale-105" />
+                  {p.video ? (
+                    <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
+                      <div className="absolute inset-0 grain-overlay opacity-40" />
+                      <p className="font-headline text-[20px] text-primary/30 uppercase tracking-widest text-center px-2">{p.name}</p>
+                    </div>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1">
                   <p className="text-[12px] text-secondary uppercase tracking-widest">{p.categoryLabel}</p>
