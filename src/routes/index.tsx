@@ -40,9 +40,10 @@ function Home() {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
-      <main className="pt-[72px]">
+      <main>
         {/* Hero */}
-        <section className="relative min-h-screen flex items-center overflow-hidden">
+        <section className="relative min-h-screen -mt-[72px] pt-[72px] flex items-center overflow-hidden">
+
           <video
             ref={heroVideoRef}
             src="/videos/hero.mp4"
