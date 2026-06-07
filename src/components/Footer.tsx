@@ -39,11 +39,9 @@ export function Footer() {
           {/* Brand column */}
           <div className="md:col-span-4">
             {/* Logo */}
-            <div className="flex items-center gap-2.5 mb-5">
-              <div className="w-7 h-7 border border-accent-warm/50 flex items-center justify-center">
-                <div className="w-3 h-3 bg-accent-warm" />
-              </div>
-              <span className="font-headline text-[22px] text-primary uppercase tracking-[0.14em]">OLD IRON</span>
+            <div className="mb-5">
+              <img src="/images/logo.png" alt="OLD IRON"
+                className="h-[60px] w-auto object-contain invert brightness-75 opacity-80" />
             </div>
 
             <p className="text-[13px] text-secondary leading-relaxed mb-6 max-w-xs">

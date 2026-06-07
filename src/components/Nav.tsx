@@ -48,14 +48,15 @@ export function Nav() {
 
           {/* ── Logo ── */}
           <Link to="/" onClick={() => setMobileOpen(false)}
-            className="flex items-center gap-2.5 group cursor-pointer">
-            {/* Icon mark */}
-            <div className="w-7 h-7 border border-accent-warm/60 flex items-center justify-center group-hover:border-accent-warm transition-colors">
-              <div className="w-3 h-3 bg-accent-warm group-hover:scale-110 transition-transform" />
-            </div>
-            <span className="font-headline text-[22px] leading-none text-primary uppercase tracking-[0.14em] group-hover:text-accent-warm transition-colors">
-              OLD IRON
-            </span>
+            className="flex items-center cursor-pointer group">
+            <img
+              src="/images/logo.png"
+              alt="OLD IRON"
+              className="h-[52px] w-auto object-contain
+                invert brightness-90
+                group-hover:brightness-[1.15] group-hover:[filter:invert(1)_sepia(1)_saturate(3)_hue-rotate(345deg)_brightness(1.1)]
+                transition-all duration-300"
+            />
           </Link>
 
           {/* ── Desktop Links ── */}
@@ -227,12 +228,8 @@ export function Nav() {
 
           {/* Header */}
           <div className="flex items-center justify-between px-6 h-[68px] border-b border-outline-variant/20 flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 border border-accent-warm/60 flex items-center justify-center">
-                <div className="w-2 h-2 bg-accent-warm" />
-              </div>
-              <span className="font-headline text-[20px] text-primary uppercase tracking-[0.12em]">OLD IRON</span>
-            </div>
+            <img src="/images/logo.png" alt="OLD IRON"
+              className="h-[44px] w-auto object-contain invert brightness-90" />
             <button onClick={() => setMobileOpen(false)}
               className="w-8 h-8 flex items-center justify-center text-secondary hover:text-primary cursor-pointer">
               <span className="material-symbols-outlined">close</span>
