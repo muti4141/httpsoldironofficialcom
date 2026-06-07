@@ -252,7 +252,7 @@ function ProductPage() {
                   ["local_shipping",    "500₺ üzeri ücretsiz kargo"],
                   ["keyboard_return",   "14 gün iade hakkı"],
                   ["verified_user",     "Güvenli ödeme"],
-                  ["workspace_premium", "Almanya Menşei"],
+                  ["workspace_premium", "Almanya'da Üretildi"],
                 ].map(([icon, label]) => (
                   <div key={label} className="flex items-center gap-2 bg-surface-container-low border border-outline-variant/20 px-3 py-2">
                     <span className="material-symbols-outlined text-[16px] text-accent-warm">{icon}</span>

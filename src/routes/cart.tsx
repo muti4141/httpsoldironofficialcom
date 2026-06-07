@@ -200,7 +200,7 @@ function CartPage() {
                 {[
                   ["verified_user",    "Güvenli Ödeme"],
                   ["local_shipping",   "Hızlı Kargo"],
-                  ["workspace_premium","Almanya Menşei"],
+                  ["workspace_premium","Almanya'da Üretildi"],
                   ["keyboard_return",  "14 Gün İade"],
                 ].map(([icon, label]) => (
                   <div key={label} className="flex flex-col items-center text-center gap-2">

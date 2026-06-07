@@ -21,7 +21,7 @@ const stats = [
   { value: "300gsm",     label: "Pamuk Ağırlığı" },
   { value: "24g",        label: "Protein / Porsiyon" },
   { value: "100%",       label: "Saf & Doğal" },
-  { value: "Almanya",    label: "Menşei" },
+  { value: "Almanya",    label: "Üretim Yeri" },
 ];
 
 const testimonials = [
@@ -34,7 +34,7 @@ const marqueeItems = [
   "DİSİPLİNDEN DÖVÜLMÜŞ",
   "PREMİUM SPOR GİYİM",
   "IRON SUPPLEMENT",
-  "ALMANYA MENŞEİ",
+  "ALMANYA'DA ÜRETİLDİ",
   "UZLAŞMA YOK",
   "AĞIR PAMUK",
   "SAF PROTEİN",
@@ -93,7 +93,7 @@ function Home() {
         {/* Hero copy */}
         <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full">
           <p className="animate-fade-up-1 text-[12px] font-semibold text-accent-warm uppercase tracking-[0.4em] mb-5">
-            Çeliğin Mirası · Almanya Menşei
+            Çeliğin Mirası · Almanya'da Üretildi
           </p>
           <h1 className="animate-fade-up-2 font-display text-display-fluid text-white uppercase text-glow max-w-4xl mb-6">
             Disiplinden<br />
@@ -291,7 +291,7 @@ function Home() {
               dövüp güçlendirdiğimiz iradeden bahsediyoruz. Her ürün, bodybuildingin altın çağına bir saygı duruşudur.
             </p>
             <p className="text-[17px] text-secondary mb-5 leading-relaxed">
-              Almanya menşeimizle Avrupa kalite standartlarında üretilen her ürün; uzlaşma tanımayan,
+              Almanya'da üretilen her ürün, Avrupa'nın en katı kalite standartlarını taşır. Uzlaşma tanımayan,
               kısa yol aramayan sporcular için tasarlandı.
             </p>
             <p className="text-[17px] text-secondary mb-10 leading-relaxed">
