@@ -4,131 +4,301 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { products, type Product } from "@/data/products";
 import { useCart } from "@/stores/cart";
+import { useState } from "react";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Shop — OLD IRON | Alle Kollektionen" },
-      { name: "description", content: "Alle OLD IRON Kollektionen. Heavy Cotton Tees, Stringers, Shorts, Hoodies und Accessoires." },
+      { title: "Shop — OLD IRON | Gym Wear & Supplements" },
+      {
+        name: "description",
+        content:
+          "Premium Gym Wear & Supplements. Heavy Cotton Tees, Stringers, Shorts, Hoodies, Protein, Kreatin und mehr.",
+      },
     ],
   }),
   component: Shop,
 });
 
+const APPAREL_CATEGORIES = [
+  { value: "tops",        label: "Oberteile" },
+  { value: "bottoms",     label: "Unterteile" },
+  { value: "accessories", label: "Accessoires" },
+];
+
+const SUPPLEMENT_CATEGORIES = [
+  { value: "protein",     label: "Protein" },
+  { value: "creatine",    label: "Kreatin" },
+  { value: "preworkout",  label: "Pre-Workout" },
+  { value: "aminoacids",  label: "Aminosäuren" },
+  { value: "vitamins",    label: "Vitamine & Omega" },
+];
+
+type Tab = "all" | "apparel" | "supplement";
+
 function Shop() {
+  const [activeTab, setActiveTab] = useState<Tab>("all");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [maxPrice, setMaxPrice] = useState(150);
+  const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">("default");
+
+  const toggleCategory = (cat: string) => {
+    setSelectedCategories((prev) =>
+      prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
+    );
+  };
+
+  const filtered = products
+    .filter((p) => {
+      if (activeTab === "apparel" && p.type !== "apparel") return false;
+      if (activeTab === "supplement" && p.type !== "supplement") return false;
+      if (selectedCategories.length > 0 && !selectedCategories.includes(p.category)) return false;
+      if (p.price > maxPrice) return false;
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortBy === "price-asc") return a.price - b.price;
+      if (sortBy === "price-desc") return b.price - a.price;
+      return 0;
+    });
+
+  const currentCategories =
+    activeTab === "supplement"
+      ? SUPPLEMENT_CATEGORIES
+      : activeTab === "apparel"
+      ? APPAREL_CATEGORIES
+      : [...APPAREL_CATEGORIES, ...SUPPLEMENT_CATEGORIES];
+
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
-      <main className="pt-[100px] max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
-        <header className="mb-stack-lg">
-          <h1 className="font-display text-[56px] md:text-[64px] uppercase tracking-tight text-primary leading-none">
-            Alle Kollektionen
-          </h1>
-          <p className="text-[18px] text-secondary-fixed-dim max-w-xl border-l-2 border-primary-container pl-4 mt-4">
-            Ausrüstung für Grenzgänger. Geschmiedet für die, die keine Entschuldigungen kennen.
-          </p>
-        </header>
+      <main className="pt-[80px]">
+        {/* Header */}
+        <div className="bg-surface-container-low border-b border-outline-variant/20 py-10 px-margin-mobile md:px-margin-desktop">
+          <div className="max-w-[1440px] mx-auto">
+            <h1 className="font-display text-[clamp(2.5rem,7vw,5rem)] uppercase text-primary leading-none mb-3">
+              Shop
+            </h1>
+            <p className="text-[16px] text-secondary border-l-2 border-accent-warm pl-4 max-w-xl">
+              Premium Gym Wear & Supplements. Ausrüstung für Grenzgänger.
+            </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
-          {/* Filters */}
-          <aside className="md:col-span-3 space-y-stack-md md:sticky md:top-32 h-fit">
-            <div className="border-b border-outline-variant/30 pb-stack-sm">
-              <h3 className="font-headline text-[24px] text-primary uppercase mb-stack-sm">Filter</h3>
-            </div>
-            <FilterGroup label="Kategorie">
-              {["Oversized Tees", "Stringers", "Shorts", "Accessoires"].map((c, i) => (
-                <label key={c} className="flex items-center gap-3 cursor-pointer group">
-                  <input type="checkbox" defaultChecked={i === 1} className="w-4 h-4 bg-surface-container border-outline text-primary focus:ring-primary" />
-                  <span className="text-[16px] text-on-surface-variant group-hover:text-primary transition-colors">{c}</span>
-                </label>
+            {/* Tabs */}
+            <div className="flex gap-2 mt-8 flex-wrap">
+              {(["all", "apparel", "supplement"] as Tab[]).map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => { setActiveTab(tab); setSelectedCategories([]); }}
+                  className={`px-6 py-2.5 text-[12px] font-semibold uppercase tracking-widest transition-all cursor-pointer border ${
+                    activeTab === tab
+                      ? "bg-accent-warm text-on-primary-container border-accent-warm"
+                      : "border-outline-variant text-secondary hover:text-primary hover:border-primary/50"
+                  }`}
+                >
+                  {tab === "all" ? "Alle" : tab === "apparel" ? "Gym Wear" : "Supplements"}
+                  <span className="ml-2 opacity-60">
+                    ({tab === "all" ? products.length : products.filter((p) => p.type === tab).length})
+                  </span>
+                </button>
               ))}
-            </FilterGroup>
-            <FilterGroup label="Größe">
-              <div className="grid grid-cols-4 gap-2">
-                {["S", "M", "L", "XL"].map((s) => (
-                  <button key={s} className={`py-2 border text-center text-[12px] font-semibold uppercase tracking-widest transition-colors ${s === "M" ? "border-primary bg-primary text-on-primary" : "border-outline-variant hover:border-primary"}`}>{s}</button>
-                ))}
-              </div>
-            </FilterGroup>
-            <FilterGroup label="Farbe">
-              <div className="flex gap-3">
-                {["#000000", "#1A1A1A", "#353535", "#e3e2e2"].map((c, i) => (
-                  <button key={c} style={{ background: c }} className={`w-8 h-8 rounded-full border border-outline cursor-pointer transition-all ${i === 0 ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : "hover:ring-1 hover:ring-outline"}`} />
-                ))}
-              </div>
-            </FilterGroup>
-            <FilterGroup label="Preis">
-              <input type="range" className="w-full accent-primary bg-surface-container h-1.5 rounded-lg appearance-none cursor-pointer" />
-              <div className="flex justify-between text-[12px] text-outline mt-1">
-                <span>0€</span>
-                <span>150€</span>
-              </div>
-            </FilterGroup>
-          </aside>
-
-          {/* Product Grid */}
-          <div className="md:col-span-9 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
-            {products.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
+            </div>
           </div>
         </div>
 
-        <section className="mt-stack-lg pt-stack-lg border-t border-outline-variant/30">
-          <div className="max-w-3xl">
-            <h2 className="font-headline text-[24px] text-primary uppercase mb-stack-sm">Elite Gym Wear aus Deutschland</h2>
-            <p className="text-[16px] text-on-surface-variant leading-relaxed">
-              OLD IRON steht für kompromisslose Qualität und zeitloses Design. Unsere Kollektionen werden in Deutschland konzipiert, um den extremen Belastungen des professionellen Bodybuildings und Kraftsports standzuhalten. Wir verwenden ausschließlich schwere, langlebige Stoffe und setzen auf minimalistische Schnitte, die den Fokus auf das Wesentliche lenken: Deine Leistung.
-            </p>
+        <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+
+            {/* Sidebar Filters */}
+            <aside className="md:col-span-3 space-y-8 md:sticky md:top-28 h-fit">
+
+              {/* Sort */}
+              <div className="space-y-3">
+                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Sortieren</h4>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+                  className="w-full bg-surface-container border border-outline-variant text-[13px] text-primary px-3 py-2.5 focus:border-accent-warm focus:outline-none uppercase tracking-widest cursor-pointer"
+                  aria-label="Sortierung"
+                >
+                  <option value="default">Standard</option>
+                  <option value="price-asc">Preis: aufsteigend</option>
+                  <option value="price-desc">Preis: absteigend</option>
+                </select>
+              </div>
+
+              {/* Categories */}
+              <div className="space-y-3">
+                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Kategorie</h4>
+                <div className="flex flex-col gap-2">
+                  {currentCategories.map((c) => (
+                    <label key={c.value} className="flex items-center gap-3 cursor-pointer group">
+                      <input
+                        type="checkbox"
+                        checked={selectedCategories.includes(c.value)}
+                        onChange={() => toggleCategory(c.value)}
+                        className="w-4 h-4 bg-surface-container border-outline-variant accent-accent-warm cursor-pointer"
+                      />
+                      <span className="text-[14px] text-secondary group-hover:text-primary transition-colors">
+                        {c.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Price range */}
+              <div className="space-y-3">
+                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Max. Preis</h4>
+                <input
+                  type="range"
+                  min={10}
+                  max={150}
+                  step={5}
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(Number(e.target.value))}
+                  className="w-full accent-accent-warm bg-surface-container h-1.5 rounded-lg appearance-none cursor-pointer"
+                  aria-label="Maximaler Preis"
+                />
+                <div className="flex justify-between text-[12px] text-outline">
+                  <span>10 €</span>
+                  <span className="text-primary font-semibold">{maxPrice} €</span>
+                </div>
+              </div>
+
+              {/* Reset */}
+              {(selectedCategories.length > 0 || maxPrice < 150) && (
+                <button
+                  onClick={() => { setSelectedCategories([]); setMaxPrice(150); }}
+                  className="text-[12px] uppercase tracking-widest text-accent-warm hover:text-primary transition-colors border-b border-accent-warm/40 pb-0.5 cursor-pointer"
+                >
+                  Filter zurücksetzen
+                </button>
+              )}
+            </aside>
+
+            {/* Product Grid */}
+            <div className="md:col-span-9">
+              <p className="text-[12px] text-outline uppercase tracking-widest mb-6">
+                {filtered.length} Produkte
+              </p>
+              {filtered.length === 0 ? (
+                <div className="text-center py-20">
+                  <span className="material-symbols-outlined text-[48px] text-outline/40 mb-4 block">search_off</span>
+                  <p className="text-secondary uppercase tracking-widest text-[14px]">Keine Produkte gefunden</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
+                  {filtered.map((p) => (
+                    <ProductCard key={p.id} product={p} />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </section>
+
+          {/* SEO Text */}
+          <section className="mt-stack-lg pt-stack-lg border-t border-outline-variant/20">
+            <div className="max-w-3xl">
+              <h2 className="font-headline text-[22px] text-primary uppercase mb-4">
+                Elite Gym Wear & Supplements aus Deutschland
+              </h2>
+              <p className="text-[15px] text-on-surface-variant leading-relaxed">
+                OLD IRON vereint premium Gym Wear und hochwertige Supplements unter einem Dach.
+                Unsere Kleidung wird aus 300gsm Baumwolle gefertigt — designed für Athleten, die
+                keine Kompromisse machen. Unsere Supplements werden ohne Füllstoffe produziert,
+                lab-getestet und bieten maximale Wirkstoffkonzentrationen. Geschmiedet aus
+                Disziplin — für die Elite.
+              </p>
+            </div>
+          </section>
+        </div>
       </main>
       <Footer />
     </div>
   );
 }
 
-function FilterGroup({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-3">
-      <h4 className="text-[14px] font-semibold text-secondary uppercase tracking-widest">{label}</h4>
-      <div className="flex flex-col gap-2">{children}</div>
-    </div>
-  );
-}
-
 function ProductCard({ product: p }: { product: Product }) {
   const add = useCart((s) => s.add);
+
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    add(p, "M");
-    toast.success(`${p.name} (M) Warenkorb hinzugefügt`);
+    add(p, p.type === "supplement" ? "Standard" : "M");
+    toast.success(`${p.name} in den Warenkorb`, { duration: 2000 });
   };
+
+  const isSupp = p.type === "supplement";
+
   return (
-    <Link to="/product/$id" params={{ id: p.id }} className="group flex flex-col bg-surface-container steel-bevel relative overflow-hidden">
+    <Link
+      to="/product/$id"
+      params={{ id: p.id }}
+      className={`group flex flex-col relative overflow-hidden cursor-pointer ${
+        isSupp ? "supplement-card-glow orange-bevel" : "steel-bevel"
+      } bg-surface-container`}
+    >
       {p.badge && (
         <div className="absolute top-4 left-4 z-10">
-          <span className="bg-primary text-on-primary px-3 py-1 text-[12px] font-semibold uppercase tracking-widest">{p.badge}</span>
+          <span className={`text-[11px] font-semibold uppercase tracking-widest px-3 py-1 ${isSupp ? "bg-accent-warm pulse-glow text-on-primary-container" : "bg-primary text-on-primary"}`}>
+            {p.badge}
+          </span>
         </div>
       )}
+
       <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
         {p.video ? (
-          <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <video
+            src={p.video}
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+          />
+        ) : p.image ? (
+          <img
+            src={p.image}
+            alt={p.name}
+            loading="lazy"
+            className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${!isSupp ? "grayscale" : ""}`}
+          />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
             <div className="absolute inset-0 grain-overlay opacity-40" />
-            <p className="font-headline text-[28px] text-primary/30 uppercase tracking-widest text-center px-4">{p.name}</p>
+            <p className="font-headline text-[28px] text-primary/30 uppercase tracking-widest text-center px-4">
+              {p.name}
+            </p>
           </div>
         )}
-        <button onClick={handleQuickAdd} className="absolute bottom-4 right-4 bg-primary text-on-primary w-12 h-12 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110" aria-label="Add to cart">
-          <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
+
+        <button
+          onClick={handleQuickAdd}
+          className={`absolute bottom-4 right-4 w-11 h-11 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110 cursor-pointer ${
+            isSupp ? "bg-accent-warm text-on-primary-container" : "bg-primary text-on-primary"
+          }`}
+          aria-label={`${p.name} in den Warenkorb`}
+        >
+          <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
+            add_shopping_cart
+          </span>
         </button>
       </div>
-      <div className="p-gutter space-y-2">
-        <p className="text-[12px] text-outline uppercase tracking-widest">{p.categoryLabel}</p>
-        <h3 className="font-headline text-[24px] text-primary uppercase">{p.name}</h3>
-        <p className="text-[16px] text-secondary-fixed-dim">{p.price.toFixed(2)} €</p>
+
+      <div className="p-5 space-y-1.5">
+        <div className="flex items-center justify-between">
+          <p className={`text-[11px] uppercase tracking-widest ${isSupp ? "text-accent-warm-soft" : "text-outline"}`}>
+            {p.categoryLabel}
+          </p>
+          {isSupp && p.servings && (
+            <p className="text-[10px] text-outline uppercase">{p.servings} srv.</p>
+          )}
+        </div>
+        <h3 className="font-headline text-[22px] text-primary uppercase leading-tight">{p.name}</h3>
+        <p className="text-[13px] text-secondary">{p.subtitle}</p>
+        <p className={`text-[15px] font-semibold pt-1 ${isSupp ? "text-accent-warm" : "text-primary"}`}>
+          {p.price.toFixed(2)} €
+        </p>
       </div>
     </Link>
   );
