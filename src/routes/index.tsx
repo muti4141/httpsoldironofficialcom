@@ -318,7 +318,17 @@ function Home() {
                   <p className="text-[11px] text-accent-warm-soft uppercase tracking-widest">{p.categoryLabel}</p>
                   <h3 className="font-headline text-[20px] text-primary uppercase leading-tight">{p.name}</h3>
                   <p className="text-[13px] text-secondary">{p.subtitle}</p>
-                  <p className="text-[15px] text-accent-warm font-semibold pt-1">{p.price.toFixed(2)} €</p>
+                  <div className="flex items-center gap-2 pt-1">
+                    <p className="text-[15px] text-accent-warm font-semibold">{p.price.toFixed(2)} €</p>
+                    {p.originalPrice && (
+                      <>
+                        <p className="text-[12px] text-outline line-through">{p.originalPrice.toFixed(2)} €</p>
+                        <span className="bg-accent-warm/20 text-accent-warm text-[10px] font-semibold px-1.5 py-0.5">
+                          -{Math.round((1 - p.price / p.originalPrice) * 100)}%
+                        </span>
+                      </>
+                    )}
+                  </div>
                 </div>
               </Link>
             ))}
