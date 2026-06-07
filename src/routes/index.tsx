@@ -118,33 +118,34 @@ function Home() {
         <div className="absolute inset-0 vignette z-[3]" />
 
         {/* Content */}
-        <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full pt-28 pb-24">
+        <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full pt-28 pb-24 text-center flex flex-col items-center">
 
-          {/* Eyebrow */}
-          <p className="animate-fade-up-1 text-eyebrow mb-6 flex items-center gap-3">
-            <span className="inline-block w-8 h-px bg-accent-warm" />
+          {/* Eyebrow with flanking lines */}
+          <p className="animate-fade-up-1 text-eyebrow mb-7 flex items-center justify-center gap-4">
+            <span className="inline-block w-10 h-px bg-accent-warm" />
             Almanya'da Üretildi · Premium Kalite
+            <span className="inline-block w-10 h-px bg-accent-warm" />
           </p>
 
-          {/* Main headline */}
-          <h1 className="animate-fade-up-2 font-display uppercase leading-none mb-8 max-w-5xl">
-            <span className="block text-display-fluid text-white text-glow">
+          {/* Main headline — viewport-dominating */}
+          <h1 className="animate-fade-up-2 font-display uppercase leading-[0.85] tracking-tighter mb-10">
+            <span className="block text-[clamp(4.5rem,13vw,11rem)] text-white text-glow">
               Disiplinden
             </span>
-            <span className="block text-display-fluid text-accent-warm text-glow-orange"
+            <span className="block text-[clamp(4.5rem,13vw,11rem)] text-accent-warm text-glow-orange"
               style={{ marginTop: "-0.05em" }}>
               Dövülmüş
             </span>
           </h1>
 
           {/* Sub */}
-          <p className="animate-fade-up-3 text-[16px] md:text-[18px] text-secondary mb-12 max-w-lg leading-relaxed font-light">
-            Premium Spor Giyim & Supplement. Old School zihniyeti, modern güç.
+          <p className="animate-fade-up-3 text-[16px] md:text-[19px] text-secondary mb-12 max-w-xl leading-relaxed font-light">
+            Premium Spor Giyim & Supplement. <span className="text-white italic">Old School</span> zihniyeti, modern güç.
             <span className="text-primary font-medium"> Hiçbir mazeret yok.</span>
           </p>
 
           {/* CTAs */}
-          <div className="animate-fade-up-4 flex flex-col sm:flex-row gap-4">
+          <div className="animate-fade-up-4 flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/shop" className="btn-primary text-[18px]">
               <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
               Hemen Alışveriş
@@ -494,6 +495,42 @@ function Home() {
                 <span className="material-symbols-outlined text-[18px] group-hover:translate-x-2 transition-transform">arrow_forward</span>
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* ════════════════════════════════════════════
+          MANIFESTO — Inverted high-contrast band
+      ════════════════════════════════════════════ */}
+      <section className="relative py-stack-xl bg-white text-black overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')" }} />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-accent-warm" />
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent-warm" />
+
+        <div className="relative max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop flex flex-col items-center text-center">
+          <p className="reveal font-headline text-[13px] tracking-[0.45em] mb-10 text-accent-warm uppercase">
+            — Manifesto —
+          </p>
+          <h2 className="reveal font-display uppercase leading-[0.95] tracking-tight text-[clamp(2.5rem,6.5vw,5.5rem)] mb-12 max-w-5xl">
+            Başarı tesadüf değildir.<br />
+            Başarı, <span className="text-accent-warm relative inline-block">
+              hiç bitmeyen
+              <span className="absolute left-0 right-0 -bottom-1 h-[6px] bg-accent-warm/25" />
+            </span> bir disiplinin sonucudur.
+          </h2>
+          <p className="reveal max-w-2xl text-[17px] md:text-[19px] leading-loose text-black/60 font-light">
+            OLD IRON sadece bir marka değil, bir yaşam felsefesidir. Almanya'nın mühendislik
+            disipliniyle salonların tozunu birleştiriyoruz. En iyi ekipman, en saf içerik,
+            en sert antrenman.
+          </p>
+
+          {/* Signature line */}
+          <div className="reveal flex items-center gap-4 mt-12">
+            <span className="h-px w-12 bg-black/20" />
+            <span className="font-headline text-[12px] tracking-[0.4em] uppercase text-black/50">Old Iron · Est. 2024 · Germany</span>
+            <span className="h-px w-12 bg-black/20" />
           </div>
         </div>
       </section>
