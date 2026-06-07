@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { products, type Product } from "@/data/products";
+import { products, type Product, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
 import { useCart } from "@/stores/cart";
 import { useState } from "react";
 
@@ -205,7 +205,9 @@ function ProductCard({ product: p }: { product: Product }) {
         {p.video ? (
           <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : p.image ? (
-          <img src={p.image} alt={p.name} loading="lazy" className={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ${!isSupp ? "grayscale" : ""}`} />
+          <img src={p.image} alt={p.name} loading="lazy"
+            onError={(e) => { e.currentTarget.src = isSupp ? SUPPLEMENT_PLACEHOLDER : APPAREL_PLACEHOLDER; }}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
             <div className="absolute inset-0 grain-overlay opacity-40" />
