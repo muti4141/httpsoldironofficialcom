@@ -246,10 +246,19 @@ function ProductPage() {
                 Sepete Ekle
               </button>
 
+              {/* Shipping info banner */}
+              <div className="flex items-center gap-3 bg-accent-warm/10 border border-accent-warm/30 px-4 py-3">
+                <span className="material-symbols-outlined text-accent-warm text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>local_shipping</span>
+                <p className="text-[12px] text-secondary leading-tight">
+                  <span className="text-primary font-semibold">1500₺ üzeri kargo ücretsiz.</span>{" "}
+                  Altındaki siparişlerde kargo ücreti <span className="text-accent-warm font-semibold">140₺</span>.
+                </p>
+              </div>
+
               {/* Trust badges */}
               <div className="grid grid-cols-2 gap-2">
                 {[
-                  ["local_shipping",    "500₺ üzeri ücretsiz kargo"],
+                  ["local_shipping",    "1500₺ üzeri ücretsiz kargo"],
                   ["keyboard_return",   "14 gün iade hakkı"],
                   ["verified_user",     "Güvenli ödeme"],
                   ["workspace_premium", "Almanya'da Üretildi"],
