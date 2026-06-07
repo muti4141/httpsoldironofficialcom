@@ -118,33 +118,34 @@ function Home() {
         <div className="absolute inset-0 vignette z-[3]" />
 
         {/* Content */}
-        <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full pt-28 pb-24">
+        <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full pt-28 pb-24 text-center flex flex-col items-center">
 
-          {/* Eyebrow */}
-          <p className="animate-fade-up-1 text-eyebrow mb-6 flex items-center gap-3">
-            <span className="inline-block w-8 h-px bg-accent-warm" />
+          {/* Eyebrow with flanking lines */}
+          <p className="animate-fade-up-1 text-eyebrow mb-7 flex items-center justify-center gap-4">
+            <span className="inline-block w-10 h-px bg-accent-warm" />
             Almanya'da Üretildi · Premium Kalite
+            <span className="inline-block w-10 h-px bg-accent-warm" />
           </p>
 
-          {/* Main headline */}
-          <h1 className="animate-fade-up-2 font-display uppercase leading-none mb-8 max-w-5xl">
-            <span className="block text-display-fluid text-white text-glow">
+          {/* Main headline — viewport-dominating */}
+          <h1 className="animate-fade-up-2 font-display uppercase leading-[0.85] tracking-tighter mb-10">
+            <span className="block text-[clamp(4.5rem,13vw,11rem)] text-white text-glow">
               Disiplinden
             </span>
-            <span className="block text-display-fluid text-accent-warm text-glow-orange"
+            <span className="block text-[clamp(4.5rem,13vw,11rem)] text-accent-warm text-glow-orange"
               style={{ marginTop: "-0.05em" }}>
               Dövülmüş
             </span>
           </h1>
 
           {/* Sub */}
-          <p className="animate-fade-up-3 text-[16px] md:text-[18px] text-secondary mb-12 max-w-lg leading-relaxed font-light">
-            Premium Spor Giyim & Supplement. Old School zihniyeti, modern güç.
+          <p className="animate-fade-up-3 text-[16px] md:text-[19px] text-secondary mb-12 max-w-xl leading-relaxed font-light">
+            Premium Spor Giyim & Supplement. <span className="text-white italic">Old School</span> zihniyeti, modern güç.
             <span className="text-primary font-medium"> Hiçbir mazeret yok.</span>
           </p>
 
           {/* CTAs */}
-          <div className="animate-fade-up-4 flex flex-col sm:flex-row gap-4">
+          <div className="animate-fade-up-4 flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/shop" className="btn-primary text-[18px]">
               <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>bolt</span>
               Hemen Alışveriş
