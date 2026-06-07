@@ -201,7 +201,7 @@ function ProductPage() {
                   <div>
                     <p className="text-[12px] font-semibold uppercase text-primary tracking-widest mb-3">Gramaj</p>
                     <div className="flex flex-wrap gap-2">
-                      {WEIGHTS.map((w) => (
+                      {WEIGHTS.map((w: string) => (
                         <button key={w} onClick={() => setWeight(w)}
                           className={`px-5 py-2.5 border text-[13px] font-semibold transition-all cursor-pointer ${
                             weight === w ? "border-accent-warm bg-accent-warm text-on-primary-container" : "border-outline-variant text-secondary hover:border-accent-warm hover:text-primary"
