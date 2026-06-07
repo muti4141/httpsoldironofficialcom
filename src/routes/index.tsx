@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { products } from "@/data/products";
+import { products, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
 import { useRef, useState, useEffect } from "react";
 import { useCart } from "@/stores/cart";
 import { toast } from "sonner";
+import { ParticleField } from "@/components/ParticleField";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,10 +18,10 @@ export const Route = createFileRoute("/")({
 });
 
 const stats = [
-  { value: "300gsm", label: "Pamuk Ağırlığı" },
-  { value: "24g",    label: "Protein / Porsiyon" },
-  { value: "100%",   label: "Saf & Doğal" },
-  { value: "Türkiye", label: "Üretim" },
+  { value: "300gsm",     label: "Pamuk Ağırlığı" },
+  { value: "24g",        label: "Protein / Porsiyon" },
+  { value: "100%",       label: "Saf & Doğal" },
+  { value: "Almanya",    label: "Menşei" },
 ];
 
 const testimonials = [
@@ -33,7 +34,7 @@ const marqueeItems = [
   "DİSİPLİNDEN DÖVÜLMÜŞ",
   "PREMİUM SPOR GİYİM",
   "IRON SUPPLEMENT",
-  "TÜRKİYE'DE ÜRETİLDİ",
+  "ALMANYA MENŞEİ",
   "UZLAŞMA YOK",
   "AĞIR PAMUK",
   "SAF PROTEİN",
@@ -48,7 +49,7 @@ function useReveal() {
           if (e.isIntersecting) { e.target.classList.add("visible"); observer.unobserve(e.target); }
         });
       },
-      { threshold: 0.12 }
+      { threshold: 0.10 }
     );
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
     return () => observer.disconnect();
@@ -61,28 +62,38 @@ function Home() {
   const [heroEnded, setHeroEnded] = useState(false);
   const add = useCart((s) => s.add);
 
-  const apparelFeatured   = products.filter((p) => p.type === "apparel").slice(0, 3);
+  const apparelFeatured    = products.filter((p) => p.type === "apparel").slice(0, 3);
   const supplementFeatured = products.filter((p) => p.type === "supplement").slice(0, 4);
 
   return (
     <div className="bg-background text-foreground min-h-screen overflow-x-hidden">
       <Nav />
 
-      {/* ── HERO ─────────────────────────────────────────── */}
+      {/* ── HERO ──────────────────────────────────────────────── */}
       <section className="relative min-h-screen -mt-[72px] pt-[72px] flex items-center overflow-hidden">
+        {/* Three.js particle background */}
+        <div className="absolute inset-0 z-0">
+          <ParticleField className="w-full h-full" />
+        </div>
+
+        {/* Video / Fallback */}
         <video ref={heroVideoRef} src="/videos/hero.mp4" autoPlay muted playsInline
           onEnded={() => { heroVideoRef.current?.pause(); setHeroEnded(true); }}
-          className={`absolute inset-0 w-full h-full object-cover object-center md:object-top grayscale opacity-55 ${heroEnded ? "hidden" : "block"}`}
+          className={`absolute inset-0 w-full h-full object-cover object-center md:object-top opacity-40 ${heroEnded ? "hidden" : "block"}`}
         />
         {heroEnded && (
-          <img src="/images/hero-end.jpg" alt="Old Iron" className="absolute inset-0 w-full h-full object-cover object-center grayscale opacity-55" />
+          <img src="/images/hero-end.jpg" alt="Old Iron"
+            className="absolute inset-0 w-full h-full object-cover object-center opacity-40" />
         )}
-        <div className="absolute inset-0 hero-gradient z-[1]" />
-        <div className="absolute inset-0 grain-overlay z-[2] opacity-30" />
 
+        {/* gradients */}
+        <div className="absolute inset-0 hero-gradient z-[1]" />
+        <div className="absolute inset-0 grain-overlay z-[2] opacity-25" />
+
+        {/* Hero copy */}
         <div className="relative z-10 px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto w-full">
           <p className="animate-fade-up-1 text-[12px] font-semibold text-accent-warm uppercase tracking-[0.4em] mb-5">
-            Çeliğin Mirası
+            Çeliğin Mirası · Almanya Menşei
           </p>
           <h1 className="animate-fade-up-2 font-display text-display-fluid text-white uppercase text-glow max-w-4xl mb-6">
             Disiplinden<br />
@@ -104,14 +115,15 @@ function Home() {
           </div>
         </div>
 
+        {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 text-outline animate-fade-up-4">
           <span className="text-[10px] uppercase tracking-[0.3em]">Kaydır</span>
           <div className="w-px h-10 bg-gradient-to-b from-outline to-transparent" />
         </div>
       </section>
 
-      {/* ── MARQUEE ──────────────────────────────────────── */}
-      <div className="bg-accent-warm py-3 overflow-hidden">
+      {/* ── MARQUEE ─────────────────────────────────────────────── */}
+      <div className="bg-accent-warm py-3 overflow-hidden relative z-10">
         <div className="flex whitespace-nowrap marquee-track">
           {[...marqueeItems, ...marqueeItems].map((item, i) => (
             <span key={i} className="inline-flex items-center gap-6 px-6">
@@ -122,21 +134,21 @@ function Home() {
         </div>
       </div>
 
-      {/* ── STATS ────────────────────────────────────────── */}
-      <section className="bg-surface-container-low border-b border-outline-variant/20">
-        <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-12 grid grid-cols-2 md:grid-cols-4 gap-8">
+      {/* ── STATS ───────────────────────────────────────────────── */}
+      <section className="bg-surface-container-low border-b border-outline-variant/20 relative z-10">
+        <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-14 grid grid-cols-2 md:grid-cols-4 gap-8">
           {stats.map((s, i) => (
             <div key={s.label} className="reveal text-center" style={{ transitionDelay: `${i * 80}ms` }}>
-              <p className="font-display text-[40px] md:text-[52px] text-accent-warm leading-none mb-1">{s.value}</p>
+              <p className="font-display text-[42px] md:text-[56px] text-accent-warm leading-none mb-1">{s.value}</p>
               <p className="text-[11px] uppercase tracking-[0.2em] text-secondary">{s.label}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* ── GİYİM ────────────────────────────────────────── */}
+      {/* ── GİYİM ───────────────────────────────────────────────── */}
       <section className="py-stack-xl px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
-        <div className="reveal flex items-end justify-between mb-10 flex-wrap gap-4">
+        <div className="reveal flex items-end justify-between mb-12 flex-wrap gap-4">
           <div>
             <p className="text-[11px] uppercase tracking-[0.3em] text-accent-warm mb-2">Koleksiyon</p>
             <h2 className="font-headline text-[clamp(2rem,5vw,3.5rem)] uppercase text-primary leading-none">Spor Giyim</h2>
@@ -156,12 +168,14 @@ function Home() {
                 {p.video ? (
                   <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 ) : (
-                  <img src={p.image} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 grayscale" />
+                  <img src={p.image || APPAREL_PLACEHOLDER} alt={p.name} loading="lazy"
+                    onError={(e) => { e.currentTarget.src = APPAREL_PLACEHOLDER; }}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 )}
                 {p.badge && (
-                  <span className="absolute top-4 left-4 bg-accent-warm text-on-primary-container text-[11px] font-semibold uppercase tracking-widest px-3 py-1">{p.badge}</span>
+                  <span className="absolute top-4 left-4 bg-accent-warm text-on-primary-container text-[11px] font-semibold uppercase tracking-widest px-3 py-1 z-10">{p.badge}</span>
                 )}
-                <div className="absolute bottom-0 left-0 right-0 bg-accent-warm translate-y-full group-hover:translate-y-0 transition-transform duration-300 py-3 text-center cursor-pointer">
+                <div className="absolute bottom-0 left-0 right-0 bg-accent-warm translate-y-full group-hover:translate-y-0 transition-transform duration-300 py-3 text-center z-10">
                   <span className="text-[13px] font-semibold text-on-primary-container uppercase tracking-widest">Sepete Ekle</span>
                 </div>
               </div>
@@ -175,14 +189,15 @@ function Home() {
         </div>
       </section>
 
-      {/* ── SUPPLEMENT ───────────────────────────────────── */}
+      {/* ── SUPPLEMENT ──────────────────────────────────────────── */}
       <section className="supplement-gradient clip-diagonal py-stack-xl relative overflow-hidden">
         <div className="absolute inset-0 grain-overlay opacity-20 pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full opacity-10 pointer-events-none"
+        {/* ambient glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full opacity-10 pointer-events-none"
           style={{ background: "radial-gradient(circle, #f07b2e 0%, transparent 70%)" }} />
 
         <div className="relative z-10 max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop">
-          <div className="reveal flex items-end justify-between mb-10 flex-wrap gap-4">
+          <div className="reveal flex items-end justify-between mb-12 flex-wrap gap-4">
             <div>
               <p className="text-[11px] uppercase tracking-[0.3em] text-accent-warm mb-2">Gücünü Artır</p>
               <h2 className="font-headline text-[clamp(2rem,5vw,3.5rem)] uppercase text-primary leading-none">Supplement</h2>
@@ -199,16 +214,18 @@ function Home() {
                 className="reveal group relative overflow-hidden supplement-card-glow orange-bevel bg-surface-container cursor-pointer"
                 style={{ transitionDelay: `${i * 90}ms` }}>
                 <div className="aspect-[4/5] overflow-hidden bg-surface-container-high relative">
-                  <img src={p.image} alt={p.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <img src={p.image || SUPPLEMENT_PLACEHOLDER} alt={p.name} loading="lazy"
+                    onError={(e) => { e.currentTarget.src = SUPPLEMENT_PLACEHOLDER; }}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   {p.badge && (
-                    <span className="absolute top-4 left-4 bg-accent-warm pulse-glow text-on-primary-container text-[11px] font-semibold uppercase tracking-widest px-3 py-1">{p.badge}</span>
+                    <span className="absolute top-4 left-4 bg-accent-warm pulse-glow text-on-primary-container text-[11px] font-semibold uppercase tracking-widest px-3 py-1 z-10">{p.badge}</span>
                   )}
                   {p.servings && (
-                    <span className="absolute bottom-4 right-4 bg-surface-container/90 text-primary text-[11px] uppercase tracking-widest px-2 py-1 border border-outline-variant/40">
+                    <span className="absolute bottom-4 right-4 bg-surface-container/90 text-primary text-[11px] uppercase tracking-widest px-2 py-1 border border-outline-variant/40 z-10">
                       {p.servings} Porsiyon
                     </span>
                   )}
-                  <div className="absolute bottom-0 left-0 right-0 bg-accent-warm translate-y-full group-hover:translate-y-0 transition-transform duration-300 py-3 text-center">
+                  <div className="absolute bottom-0 left-0 right-0 bg-accent-warm translate-y-full group-hover:translate-y-0 transition-transform duration-300 py-3 text-center z-10">
                     <span className="text-[13px] font-semibold text-on-primary-container uppercase tracking-widest">Sepete Ekle</span>
                   </div>
                 </div>
@@ -232,13 +249,14 @@ function Home() {
             ))}
           </div>
 
+          {/* Supplement highlights */}
           <div className="reveal grid grid-cols-1 md:grid-cols-3 gap-6 mt-14">
             {[
-              { icon: "science",         title: "Lab Onaylı",            desc: "Her ürün bağımsız ISO 17025 akreditasyonlu laboratuvarda test edilmektedir." },
-              { icon: "no_food",         title: "Dolgu Yok",             desc: "Dolgu maddesi yok, gereksiz şeker yok — sadece saf etken maddeler." },
-              { icon: "local_shipping",  title: "Hızlı Kargo",           desc: "500₺ ve üzeri siparişlerde ücretsiz kargo. 1–3 iş günü teslimat." },
+              { icon: "science",        title: "Lab Onaylı",   desc: "Her ürün bağımsız ISO 17025 akreditasyonlu laboratuvarda test edilmektedir." },
+              { icon: "no_food",        title: "Dolgu Yok",    desc: "Dolgu maddesi yok, gereksiz şeker yok — sadece saf etken maddeler." },
+              { icon: "local_shipping", title: "Hızlı Kargo",  desc: "500₺ ve üzeri siparişlerde ücretsiz kargo. 1–3 iş günü teslimat." },
             ].map((item) => (
-              <div key={item.title} className="flex items-start gap-4 p-6 bg-surface-container/60 border border-accent-warm/10 hover:border-accent-warm/25 transition-colors">
+              <div key={item.title} className="flex items-start gap-4 p-6 bg-surface-container/60 border border-accent-warm/10 hover:border-accent-warm/30 transition-colors">
                 <span className="material-symbols-outlined text-accent-warm text-[28px] flex-shrink-0" style={{ fontVariationSettings: "'FILL' 1" }}>{item.icon}</span>
                 <div>
                   <p className="font-headline text-[18px] text-primary uppercase mb-1">{item.title}</p>
@@ -250,7 +268,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ── HİKAYEMİZ ────────────────────────────────────── */}
+      {/* ── HİKAYEMİZ ───────────────────────────────────────────── */}
       <section className="clip-diagonal-reverse bg-surface-container-low py-stack-xl">
         <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="reveal order-2 lg:order-1">
@@ -272,18 +290,22 @@ function Home() {
               OLD IRON'da sadece kıyafet ya da supplement satmıyoruz. Eğilip şekillendirdiğimiz metalden,
               dövüp güçlendirdiğimiz iradeden bahsediyoruz. Her ürün, bodybuildingin altın çağına bir saygı duruşudur.
             </p>
+            <p className="text-[17px] text-secondary mb-5 leading-relaxed">
+              Almanya menşeimizle Avrupa kalite standartlarında üretilen her ürün; uzlaşma tanımayan,
+              kısa yol aramayan sporcular için tasarlandı.
+            </p>
             <p className="text-[17px] text-secondary mb-10 leading-relaxed">
-              Uzlaşma yok. Kısa yol yok. Sadece disiplinin saf çeliği — antrenmanında ve hayatında.
+              Sadece disiplinin saf çeliği — antrenmanında ve hayatında.
             </p>
             <Link to="/shop" className="inline-flex items-center gap-3 text-accent-warm font-semibold text-[13px] uppercase tracking-widest group cursor-pointer">
-              Hikayemizi Oku
+              Koleksiyonu Keşfet
               <span className="material-symbols-outlined transform group-hover:translate-x-2 transition-transform">trending_flat</span>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ── YORUMLAR ─────────────────────────────────────── */}
+      {/* ── YORUMLAR ────────────────────────────────────────────── */}
       <section className="py-stack-xl relative overflow-hidden">
         <div className="absolute inset-0 grain-overlay opacity-25" />
         <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
@@ -309,7 +331,7 @@ function Home() {
         </div>
       </section>
 
-      {/* ── BÜLTEN ───────────────────────────────────────── */}
+      {/* ── BÜLTEN ──────────────────────────────────────────────── */}
       <section className="py-stack-lg px-margin-mobile md:px-margin-desktop bg-surface-container-low border-t border-outline-variant/20">
         <div className="reveal max-w-2xl mx-auto text-center">
           <p className="text-[11px] uppercase tracking-[0.3em] text-accent-warm mb-3">Özel</p>
