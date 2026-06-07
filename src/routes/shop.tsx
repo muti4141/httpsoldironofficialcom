@@ -182,6 +182,9 @@ function Shop() {
 function ProductCard({ product: p }: { product: Product }) {
   const add = useCart((s) => s.add);
   const isSupp = p.type === "supplement";
+  const imageSrc = p.id === "bcaa-4001"
+    ? "/__l5e/assets-v1/d9b7bf9b-7d6f-4330-9794-16a9b21f03f8/bcaa-411.png"
+    : p.image;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -204,8 +207,8 @@ function ProductCard({ product: p }: { product: Product }) {
       <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
         {p.video ? (
           <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-        ) : p.image ? (
-          <img src={p.image} alt={p.name} loading="lazy"
+        ) : imageSrc ? (
+          <img src={imageSrc} alt={p.name} loading={p.id === "bcaa-4001" ? "eager" : "lazy"}
             onError={(e) => { e.currentTarget.src = isSupp ? SUPPLEMENT_PLACEHOLDER : APPAREL_PLACEHOLDER; }}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
