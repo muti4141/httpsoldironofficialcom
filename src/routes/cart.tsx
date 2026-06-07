@@ -11,7 +11,7 @@ export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
       { title: "Sepetim — OLD IRON" },
-      { name: "description", content: "OLD IRON sepetiniz. Güvenli ödeme, 500₺ ve üzeri ücretsiz kargo." },
+      { name: "description", content: "OLD IRON sepetiniz. Güvenli ödeme, 1500₺ ve üzeri ücretsiz kargo." },
     ],
   }),
   component: CartPage,
@@ -34,7 +34,7 @@ function CartPage() {
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const kdv      = subtotal * 0.20;
-  const shipping = subtotal >= 500 ? 0 : 49.9;
+  const shipping = subtotal >= 1500 ? 0 : 140;
   const total    = subtotal + shipping;
 
   const checkout = async () => {
@@ -171,8 +171,8 @@ function CartPage() {
                 <div className="space-y-3 text-[15px] text-secondary border-b border-outline-variant/30 pb-6">
                   <div className="flex justify-between"><span>Ara Toplam</span><span>₺{subtotal.toFixed(2)}</span></div>
                   <div className="flex justify-between"><span>Kargo</span><span>{shipping === 0 ? "Ücretsiz" : `₺${shipping.toFixed(2)}`}</span></div>
-                  {subtotal < 500 && (
-                    <p className="text-[12px] text-accent-warm">₺{(500 - subtotal).toFixed(2)} daha ekle, ücretsiz kargo kazan!</p>
+                  {subtotal < 1500 && (
+                    <p className="text-[12px] text-accent-warm">₺{(1500 - subtotal).toFixed(2)} daha ekle, ücretsiz kargo kazan!</p>
                   )}
                   <div className="flex justify-between pt-4 text-primary font-bold">
                     <span className="uppercase tracking-widest">Toplam</span>

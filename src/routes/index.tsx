@@ -203,96 +203,6 @@ function Home() {
 
 
       {/* ════════════════════════════════════════════
-          GİYİM KOLEKSİYONU
-      ════════════════════════════════════════════ */}
-      <section className="py-stack-xl px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
-
-        {/* Section header */}
-        <div className="reveal flex items-end justify-between mb-14 flex-wrap gap-6">
-          <div>
-            <p className="text-eyebrow mb-3">Koleksiyon 01</p>
-            <h2 className="font-display text-[clamp(2.5rem,6vw,4.5rem)] uppercase text-primary leading-none">
-              Spor Giyim
-            </h2>
-            <div className="flex items-center gap-3 mt-4">
-              <span className="accent-line" />
-              <span className="text-[11px] text-secondary uppercase tracking-widest">300gsm Premium Pamuk · Almanya'da Üretildi</span>
-            </div>
-          </div>
-          <Link to="/shop"
-            className="link-underline text-[12px] uppercase tracking-[0.2em] text-accent-warm hover:text-primary transition-colors flex items-center gap-2 cursor-pointer">
-            Tüm Ürünler
-            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-          </Link>
-        </div>
-
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {apparelFeatured.map((p, i) => (
-            <Link key={p.id} to="/product/$id" params={{ id: p.id }}
-              className="reveal group relative steel-bevel card-shimmer bg-surface-container cursor-pointer overflow-hidden"
-              style={{ transitionDelay: `${i * 90}ms` }}>
-
-              {/* Image */}
-              <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
-                {p.video ? (
-                  <video src={p.video} autoPlay muted loop playsInline
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
-                ) : (
-                  <img src={p.image || APPAREL_PLACEHOLDER} alt={p.name} loading="lazy"
-                    onError={(e) => { e.currentTarget.src = APPAREL_PLACEHOLDER; }}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
-                )}
-
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
-
-                {p.badge && (
-                  <span className="absolute top-4 left-4 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-3 py-1 z-10">
-                    {p.badge}
-                  </span>
-                )}
-
-                {/* Quick add */}
-                <button
-                  onClick={(e) => { e.preventDefault(); add(p, "M"); toast.success(`${p.name} sepete eklendi`); }}
-                  className="absolute bottom-4 left-4 right-4 bg-accent-warm text-on-primary-container
-                    font-headline text-[15px] uppercase tracking-widest py-3
-                    translate-y-14 opacity-0 group-hover:translate-y-0 group-hover:opacity-100
-                    transition-all duration-300 flex items-center justify-center gap-2 z-10">
-                  <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
-                  Sepete Ekle
-                </button>
-              </div>
-
-              {/* Info */}
-              <div className="p-5">
-                <p className="text-[10px] text-outline uppercase tracking-[0.2em] mb-1">{p.categoryLabel}</p>
-                <h3 className="font-headline text-[22px] text-primary uppercase leading-tight mb-1">{p.name}</h3>
-                <p className="text-[13px] text-secondary mb-3">{p.subtitle}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-[16px] text-accent-warm font-semibold">₺{p.price.toFixed(2)}</span>
-                  <span className="material-symbols-outlined text-[16px] text-outline/50 group-hover:text-accent-warm group-hover:translate-x-1 transition-all duration-300">arrow_forward</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {/* CTA bar */}
-        <div className="reveal mt-12 border border-outline-variant/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-container-low">
-          <div>
-            <p className="text-[13px] text-primary font-semibold uppercase tracking-widest">Tüm Giyim Koleksiyonu</p>
-            <p className="text-[12px] text-secondary mt-0.5">Oversize tee, stringer, şort, hoodie ve aksesuar</p>
-          </div>
-          <Link to="/shop" className="btn-ghost text-[14px] px-8 py-3 whitespace-nowrap">
-            Tümünü Gör
-          </Link>
-        </div>
-      </section>
-
-
-      {/* ════════════════════════════════════════════
           SUPPLEMENT — Diagonal section
       ════════════════════════════════════════════ */}
       <section className="supplement-gradient clip-diagonal py-stack-xl relative overflow-hidden">
@@ -308,7 +218,7 @@ function Home() {
           {/* Section header */}
           <div className="reveal flex items-end justify-between mb-14 flex-wrap gap-6">
             <div>
-              <p className="text-eyebrow mb-3">Koleksiyon 02</p>
+              <p className="text-eyebrow mb-3">Koleksiyon 01</p>
               <h2 className="font-display text-[clamp(2.5rem,6vw,4.5rem)] uppercase text-primary leading-none">
                 Supplement
               </h2>
@@ -388,7 +298,7 @@ function Home() {
             {[
               { icon: "science",        title: "ISO 17025 Lab Onaylı",   desc: "Her üretim partisi bağımsız akreditasyonlu laboratuvarda analiz edilir. Sonuçlar etiket değerini karşılar." },
               { icon: "block",          title: "Sıfır Dolgu Maddesi",    desc: "Gereksiz şeker, maltodekstrin veya dolgu yok. Sadece saf, etkin ham madde." },
-              { icon: "local_shipping", title: "500₺ Üzeri Ücretsiz",   desc: "Tüm Türkiye'ye hızlı kargo. 1–3 iş günü içinde kapında." },
+              { icon: "local_shipping", title: "1500₺ Üzeri Ücretsiz",   desc: "1500₺ üzeri siparişlerde kargo bizden. Altında 140₺ kargo ücreti uygulanır. 1–3 iş günü içinde kapında." },
             ].map((item, i) => (
               <div key={item.title}
                 className="reveal flex items-start gap-5 p-6 bg-surface-container/50 border border-accent-warm/8 hover:border-accent-warm/25 transition-colors group"
@@ -403,6 +313,96 @@ function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+
+      {/* ════════════════════════════════════════════
+          GİYİM KOLEKSİYONU
+      ════════════════════════════════════════════ */}
+      <section className="py-stack-xl px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto">
+
+        {/* Section header */}
+        <div className="reveal flex items-end justify-between mb-14 flex-wrap gap-6">
+          <div>
+            <p className="text-eyebrow mb-3">Koleksiyon 02</p>
+            <h2 className="font-display text-[clamp(2.5rem,6vw,4.5rem)] uppercase text-primary leading-none">
+              Spor Giyim
+            </h2>
+            <div className="flex items-center gap-3 mt-4">
+              <span className="accent-line" />
+              <span className="text-[11px] text-secondary uppercase tracking-widest">300gsm Premium Pamuk · Almanya'da Üretildi</span>
+            </div>
+          </div>
+          <Link to="/shop"
+            className="link-underline text-[12px] uppercase tracking-[0.2em] text-accent-warm hover:text-primary transition-colors flex items-center gap-2 cursor-pointer">
+            Tüm Ürünler
+            <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </Link>
+        </div>
+
+        {/* Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {apparelFeatured.map((p, i) => (
+            <Link key={p.id} to="/product/$id" params={{ id: p.id }}
+              className="reveal group relative steel-bevel card-shimmer bg-surface-container cursor-pointer overflow-hidden"
+              style={{ transitionDelay: `${i * 90}ms` }}>
+
+              {/* Image */}
+              <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
+                {p.video ? (
+                  <video src={p.video} autoPlay muted loop playsInline
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
+                ) : (
+                  <img src={p.image || APPAREL_PLACEHOLDER} alt={p.name} loading="lazy"
+                    onError={(e) => { e.currentTarget.src = APPAREL_PLACEHOLDER; }}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
+                )}
+
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400" />
+
+                {p.badge && (
+                  <span className="absolute top-4 left-4 bg-primary text-on-primary text-[10px] font-bold uppercase tracking-widest px-3 py-1 z-10">
+                    {p.badge}
+                  </span>
+                )}
+
+                {/* Quick add */}
+                <button
+                  onClick={(e) => { e.preventDefault(); add(p, "M"); toast.success(`${p.name} sepete eklendi`); }}
+                  className="absolute bottom-4 left-4 right-4 bg-accent-warm text-on-primary-container
+                    font-headline text-[15px] uppercase tracking-widest py-3
+                    translate-y-14 opacity-0 group-hover:translate-y-0 group-hover:opacity-100
+                    transition-all duration-300 flex items-center justify-center gap-2 z-10">
+                  <span className="material-symbols-outlined text-[16px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
+                  Sepete Ekle
+                </button>
+              </div>
+
+              {/* Info */}
+              <div className="p-5">
+                <p className="text-[10px] text-outline uppercase tracking-[0.2em] mb-1">{p.categoryLabel}</p>
+                <h3 className="font-headline text-[22px] text-primary uppercase leading-tight mb-1">{p.name}</h3>
+                <p className="text-[13px] text-secondary mb-3">{p.subtitle}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-[16px] text-accent-warm font-semibold">₺{p.price.toFixed(2)}</span>
+                  <span className="material-symbols-outlined text-[16px] text-outline/50 group-hover:text-accent-warm group-hover:translate-x-1 transition-all duration-300">arrow_forward</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* CTA bar */}
+        <div className="reveal mt-12 border border-outline-variant/20 p-6 flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-container-low">
+          <div>
+            <p className="text-[13px] text-primary font-semibold uppercase tracking-widest">Tüm Giyim Koleksiyonu</p>
+            <p className="text-[12px] text-secondary mt-0.5">Oversize tee, stringer, şort, hoodie ve aksesuar</p>
+          </div>
+          <Link to="/shop" className="btn-ghost text-[14px] px-8 py-3 whitespace-nowrap">
+            Tümünü Gör
+          </Link>
         </div>
       </section>
 
