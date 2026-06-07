@@ -20,15 +20,10 @@ export function Nav() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, []);
-
   const handleLogout = async () => {
     await signOut();
     setAccountOpen(false);
-    toast.success("Abgemeldet.");
+    toast.success("Çıkış yapıldı.");
   };
 
   return (
@@ -47,22 +42,22 @@ export function Nav() {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex gap-8 items-center">
-            <NavLink to="/shop">Shop</NavLink>
+            <NavLink to="/shop">Mağaza</NavLink>
             <div className="group relative">
               <button className="text-[13px] font-semibold uppercase tracking-[0.16em] text-secondary hover:text-primary transition-colors flex items-center gap-1 cursor-pointer">
-                Kategorien
+                Kategoriler
                 <span className="material-symbols-outlined text-[16px] group-hover:rotate-180 transition-transform duration-200">expand_more</span>
               </button>
               {/* Mega dropdown */}
               <div className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[480px] bg-surface-container border border-outline-variant/40 shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 grid grid-cols-2">
                 <div className="p-5 border-r border-outline-variant/30">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-accent-warm mb-3">Gym Wear</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-accent-warm mb-3">Spor Giyim</p>
                   {[
-                    { label: "Oversized Tees",   icon: "checkroom" },
-                    { label: "Stringer Tanks",   icon: "checkroom" },
-                    { label: "Training Shorts",  icon: "checkroom" },
-                    { label: "Hoodies",          icon: "checkroom" },
-                    { label: "Accessoires",      icon: "shopping_bag" },
+                    { label: "Oversize T-Shirt",  icon: "checkroom" },
+                    { label: "Atlet & Stringer",  icon: "checkroom" },
+                    { label: "Şort",              icon: "checkroom" },
+                    { label: "Hoodie",            icon: "checkroom" },
+                    { label: "Aksesuar",          icon: "shopping_bag" },
                   ].map((item) => (
                     <Link
                       key={item.label}
@@ -75,13 +70,13 @@ export function Nav() {
                   ))}
                 </div>
                 <div className="p-5">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-accent-warm mb-3">Supplements</p>
+                  <p className="text-[10px] uppercase tracking-[0.3em] text-accent-warm mb-3">Supplement</p>
                   {[
                     { label: "Protein",       icon: "fitness_center" },
                     { label: "Kreatin",       icon: "fitness_center" },
                     { label: "Pre-Workout",   icon: "bolt" },
-                    { label: "Aminosäuren",   icon: "science" },
-                    { label: "Vitamine",      icon: "spa" },
+                    { label: "Amino Asit",    icon: "science" },
+                    { label: "Thermo & Enerji", icon: "local_fire_department" },
                   ].map((item) => (
                     <Link
                       key={item.label}
@@ -95,15 +90,15 @@ export function Nav() {
                 </div>
               </div>
             </div>
-            <NavLink to="/">Story</NavLink>
-            <NavLink to="/">Kontakt</NavLink>
+            <NavLink to="/">Hikayemiz</NavLink>
+            <NavLink to="/">İletişim</NavLink>
           </div>
 
           {/* Actions */}
           <div className="flex items-center gap-5">
             <button
               className="hidden md:block material-symbols-outlined text-secondary hover:text-primary transition-colors cursor-pointer"
-              aria-label="Suche"
+              aria-label="Ara"
             >
               search
             </button>
@@ -113,7 +108,7 @@ export function Nav() {
               <button
                 onClick={() => setAccountOpen((v) => !v)}
                 className="material-symbols-outlined text-secondary hover:text-primary transition-colors cursor-pointer"
-                aria-label="Mein Konto"
+                aria-label="Hesabım"
                 aria-expanded={accountOpen}
               >
                 account_circle
@@ -123,24 +118,24 @@ export function Nav() {
                   {user ? (
                     <>
                       <div className="px-4 py-3 border-b border-outline-variant/30">
-                        <p className="text-[10px] uppercase tracking-widest text-outline">Angemeldet als</p>
+                        <p className="text-[10px] uppercase tracking-widest text-outline">Giriş yapıldı</p>
                         <p className="text-[13px] text-primary truncate">{user.email}</p>
                       </div>
-                      <MenuLink to="/account" onClick={() => setAccountOpen(false)}>Mein Konto</MenuLink>
+                      <MenuLink to="/account" onClick={() => setAccountOpen(false)}>Hesabım</MenuLink>
                       <button
                         onClick={handleLogout}
                         className="w-full text-left px-4 py-3 text-[13px] uppercase tracking-widest text-secondary hover:text-primary hover:bg-surface-container-high transition-colors cursor-pointer"
                       >
-                        Abmelden
+                        Çıkış Yap
                       </button>
                     </>
                   ) : (
                     <>
                       <MenuLink to="/auth" search={{ mode: "login", redirect: "/" }} onClick={() => setAccountOpen(false)}>
-                        Anmelden
+                        Giriş Yap
                       </MenuLink>
                       <MenuLink to="/auth" search={{ mode: "signup", redirect: "/" }} onClick={() => setAccountOpen(false)}>
-                        Konto Erstellen
+                        Hesap Oluştur
                       </MenuLink>
                     </>
                   )}
@@ -149,7 +144,7 @@ export function Nav() {
             </div>
 
             {/* Cart */}
-            <Link to="/cart" className="relative text-secondary hover:text-primary transition-colors" aria-label={`Warenkorb (${cartCount})`}>
+            <Link to="/cart" className="relative text-secondary hover:text-primary transition-colors" aria-label={`Sepet (${cartCount} ürün)`}>
               <span className="material-symbols-outlined">shopping_cart</span>
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-accent-warm text-on-primary-container text-[10px] min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full font-bold">
@@ -162,7 +157,7 @@ export function Nav() {
             <button
               className="md:hidden text-secondary hover:text-primary transition-colors cursor-pointer"
               onClick={() => setMobileOpen((v) => !v)}
-              aria-label="Menü öffnen"
+              aria-label="Menüyü aç"
               aria-expanded={mobileOpen}
             >
               <span className="material-symbols-outlined">{mobileOpen ? "close" : "menu"}</span>
@@ -184,37 +179,29 @@ export function Nav() {
               <button
                 onClick={() => setMobileOpen(false)}
                 className="material-symbols-outlined text-secondary hover:text-primary transition-colors cursor-pointer"
-                aria-label="Menü schließen"
+                aria-label="Menüyü kapat"
               >
                 close
               </button>
             </div>
             <div className="flex flex-col py-4 flex-1">
-              <MobileNavLink to="/" onClick={() => setMobileOpen(false)}>Home</MobileNavLink>
-              <MobileNavLink to="/shop" onClick={() => setMobileOpen(false)}>Shop</MobileNavLink>
+              <MobileNavLink to="/" onClick={() => setMobileOpen(false)}>Ana Sayfa</MobileNavLink>
+              <MobileNavLink to="/shop" onClick={() => setMobileOpen(false)}>Mağaza</MobileNavLink>
 
               <div className="px-6 py-3 border-t border-outline-variant/20 mt-2">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-accent-warm mb-3">Gym Wear</p>
-                {["Tees", "Stringers", "Shorts", "Hoodies", "Accessoires"].map((c) => (
-                  <Link
-                    key={c}
-                    to="/shop"
-                    onClick={() => setMobileOpen(false)}
-                    className="block py-2 text-[14px] text-secondary hover:text-primary transition-colors uppercase tracking-widest cursor-pointer"
-                  >
+                <p className="text-[10px] uppercase tracking-[0.3em] text-accent-warm mb-3">Spor Giyim</p>
+                {["Oversize T-Shirt", "Atlet & Stringer", "Şort", "Hoodie", "Aksesuar"].map((c) => (
+                  <Link key={c} to="/shop" onClick={() => setMobileOpen(false)}
+                    className="block py-2 text-[14px] text-secondary hover:text-primary transition-colors uppercase tracking-widest cursor-pointer">
                     {c}
                   </Link>
                 ))}
               </div>
               <div className="px-6 py-3 border-t border-outline-variant/20 mt-1">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-accent-warm mb-3">Supplements</p>
-                {["Protein", "Kreatin", "Pre-Workout", "Aminosäuren", "Vitamine"].map((c) => (
-                  <Link
-                    key={c}
-                    to="/shop"
-                    onClick={() => setMobileOpen(false)}
-                    className="block py-2 text-[14px] text-secondary hover:text-primary transition-colors uppercase tracking-widest cursor-pointer"
-                  >
+                <p className="text-[10px] uppercase tracking-[0.3em] text-accent-warm mb-3">Supplement</p>
+                {["Protein", "Kreatin", "Pre-Workout", "Amino Asit", "Thermo & Enerji"].map((c) => (
+                  <Link key={c} to="/shop" onClick={() => setMobileOpen(false)}
+                    className="block py-2 text-[14px] text-secondary hover:text-primary transition-colors uppercase tracking-widest cursor-pointer">
                     {c}
                   </Link>
                 ))}
@@ -223,13 +210,13 @@ export function Nav() {
               <div className="border-t border-outline-variant/20 mt-4 px-6 py-4 space-y-3">
                 {user ? (
                   <>
-                    <Link to="/account" onClick={() => setMobileOpen(false)} className="block text-[14px] uppercase tracking-widest text-secondary hover:text-primary cursor-pointer">Mein Konto</Link>
-                    <button onClick={handleLogout} className="block text-[14px] uppercase tracking-widest text-secondary hover:text-primary cursor-pointer">Abmelden</button>
+                    <Link to="/account" onClick={() => setMobileOpen(false)} className="block text-[14px] uppercase tracking-widest text-secondary hover:text-primary cursor-pointer">Hesabım</Link>
+                    <button onClick={handleLogout} className="block text-[14px] uppercase tracking-widest text-secondary hover:text-primary cursor-pointer">Çıkış Yap</button>
                   </>
                 ) : (
                   <>
-                    <Link to="/auth" search={{ mode: "login", redirect: "/" } as never} onClick={() => setMobileOpen(false)} className="block text-[14px] uppercase tracking-widest text-secondary hover:text-primary cursor-pointer">Anmelden</Link>
-                    <Link to="/auth" search={{ mode: "signup", redirect: "/" } as never} onClick={() => setMobileOpen(false)} className="block text-[14px] uppercase tracking-widest text-secondary hover:text-primary cursor-pointer">Konto Erstellen</Link>
+                    <Link to="/auth" search={{ mode: "login", redirect: "/" } as never} onClick={() => setMobileOpen(false)} className="block text-[14px] uppercase tracking-widest text-secondary hover:text-primary cursor-pointer">Giriş Yap</Link>
+                    <Link to="/auth" search={{ mode: "signup", redirect: "/" } as never} onClick={() => setMobileOpen(false)} className="block text-[14px] uppercase tracking-widest text-secondary hover:text-primary cursor-pointer">Hesap Oluştur</Link>
                   </>
                 )}
               </div>
@@ -243,11 +230,9 @@ export function Nav() {
 
 function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
   return (
-    <Link
-      to={to}
+    <Link to={to}
       className="text-[13px] font-semibold uppercase tracking-[0.16em] text-secondary hover:text-primary transition-colors cursor-pointer"
-      activeProps={{ className: "text-accent-warm border-b border-accent-warm pb-0.5" }}
-    >
+      activeProps={{ className: "text-accent-warm border-b border-accent-warm pb-0.5" }}>
       {children}
     </Link>
   );
@@ -255,34 +240,17 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
 
 function MobileNavLink({ to, onClick, children }: { to: string; onClick?: () => void; children: React.ReactNode }) {
   return (
-    <Link
-      to={to}
-      onClick={onClick}
-      className="block px-6 py-3 text-[15px] font-semibold uppercase tracking-widest text-secondary hover:text-primary hover:bg-surface-container transition-colors cursor-pointer"
-    >
+    <Link to={to} onClick={onClick}
+      className="block px-6 py-3 text-[15px] font-semibold uppercase tracking-widest text-secondary hover:text-primary hover:bg-surface-container transition-colors cursor-pointer">
       {children}
     </Link>
   );
 }
 
-function MenuLink({
-  to,
-  search,
-  onClick,
-  children,
-}: {
-  to: string;
-  search?: Record<string, string>;
-  onClick?: () => void;
-  children: React.ReactNode;
-}) {
+function MenuLink({ to, search, onClick, children }: { to: string; search?: Record<string, string>; onClick?: () => void; children: React.ReactNode }) {
   return (
-    <Link
-      to={to}
-      search={search as never}
-      onClick={onClick}
-      className="block px-4 py-3 text-[13px] uppercase tracking-widest text-secondary hover:text-primary hover:bg-surface-container-high transition-colors cursor-pointer"
-    >
+    <Link to={to} search={search as never} onClick={onClick}
+      className="block px-4 py-3 text-[13px] uppercase tracking-widest text-secondary hover:text-primary hover:bg-surface-container-high transition-colors cursor-pointer">
       {children}
     </Link>
   );
