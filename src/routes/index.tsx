@@ -501,6 +501,42 @@ function Home() {
 
 
       {/* ════════════════════════════════════════════
+          MANIFESTO — Inverted high-contrast band
+      ════════════════════════════════════════════ */}
+      <section className="relative py-stack-xl bg-white text-black overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
+          style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/carbon-fibre.png')" }} />
+        <div className="absolute top-0 left-0 right-0 h-1 bg-accent-warm" />
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-accent-warm" />
+
+        <div className="relative max-w-[1280px] mx-auto px-margin-mobile md:px-margin-desktop flex flex-col items-center text-center">
+          <p className="reveal font-headline text-[13px] tracking-[0.45em] mb-10 text-accent-warm uppercase">
+            — Manifesto —
+          </p>
+          <h2 className="reveal font-display uppercase leading-[0.95] tracking-tight text-[clamp(2.5rem,6.5vw,5.5rem)] mb-12 max-w-5xl">
+            Başarı tesadüf değildir.<br />
+            Başarı, <span className="text-accent-warm relative inline-block">
+              hiç bitmeyen
+              <span className="absolute left-0 right-0 -bottom-1 h-[6px] bg-accent-warm/25" />
+            </span> bir disiplinin sonucudur.
+          </h2>
+          <p className="reveal max-w-2xl text-[17px] md:text-[19px] leading-loose text-black/60 font-light">
+            OLD IRON sadece bir marka değil, bir yaşam felsefesidir. Almanya'nın mühendislik
+            disipliniyle salonların tozunu birleştiriyoruz. En iyi ekipman, en saf içerik,
+            en sert antrenman.
+          </p>
+
+          {/* Signature line */}
+          <div className="reveal flex items-center gap-4 mt-12">
+            <span className="h-px w-12 bg-black/20" />
+            <span className="font-headline text-[12px] tracking-[0.4em] uppercase text-black/50">Old Iron · Est. 2024 · Germany</span>
+            <span className="h-px w-12 bg-black/20" />
+          </div>
+        </div>
+      </section>
+
+
+      {/* ════════════════════════════════════════════
           TESTIMONIALS
       ════════════════════════════════════════════ */}
       <section className="py-stack-xl bg-surface-container-low relative overflow-hidden">
