@@ -1,3 +1,5 @@
+import bcaaImage from "@/assets/bcaa-411.png.asset.json";
+
 export type Product = {
   id: string;
   name: string;
@@ -149,7 +151,7 @@ export const products: Product[] = [
     type: "supplement",
     price: 625,
     originalPrice: 750,
-    image: "https://oldironsupplement.com/assets/products/bcaa.webp",
+    image: bcaaImage.url,
     subtitle: "300g · 30 Porsiyon",
     servings: 30,
     weights: ["300g"],
