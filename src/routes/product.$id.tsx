@@ -216,7 +216,7 @@ function ProductPage() {
                   <div>
                     <p className="text-[12px] font-semibold uppercase text-primary tracking-widest mb-3">Aroma</p>
                     <div className="flex flex-wrap gap-2">
-                      {FLAVORS.map((f) => (
+                      {FLAVORS.map((f: string) => (
                         <button key={f} onClick={() => setFlavor(f)}
                           className={`px-5 py-2.5 border text-[13px] font-semibold transition-all cursor-pointer ${
                             flavor === f ? "border-accent-warm bg-accent-warm text-on-primary-container" : "border-outline-variant text-secondary hover:border-accent-warm hover:text-primary"
