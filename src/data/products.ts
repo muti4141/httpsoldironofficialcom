@@ -1,4 +1,4 @@
-import bcaaImage from "@/assets/bcaa-411.png.asset.json";
+const BCAA_IMAGE_URL = "/__l5e/assets-v1/d9b7bf9b-7d6f-4330-9794-16a9b21f03f8/bcaa-411.png";
 
 export type Product = {
   id: string;
@@ -151,7 +151,7 @@ export const products: Product[] = [
     type: "supplement",
     price: 625,
     originalPrice: 750,
-    image: bcaaImage.url,
+    image: BCAA_IMAGE_URL,
     subtitle: "300g · 30 Porsiyon",
     servings: 30,
     weights: ["300g"],
