@@ -41,7 +41,7 @@ export function Footer() {
             {/* Logo */}
             <div className="mb-5">
               <img src="/images/logo.png" alt="OLD IRON"
-                className="h-[60px] w-auto object-contain invert brightness-75 opacity-80" />
+                className="h-[60px] w-auto object-contain brightness-75 opacity-80" />
             </div>
 
             <p className="text-[13px] text-secondary leading-relaxed mb-6 max-w-xs">

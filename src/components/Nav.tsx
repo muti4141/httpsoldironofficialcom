@@ -52,10 +52,9 @@ export function Nav() {
             <img
               src="/images/logo.png"
               alt="OLD IRON"
-              className="h-[52px] w-auto object-contain
-                invert brightness-90
-                group-hover:brightness-[1.15] group-hover:[filter:invert(1)_sepia(1)_saturate(3)_hue-rotate(345deg)_brightness(1.1)]
-                transition-all duration-300"
+              className="h-[52px] w-auto object-contain brightness-90
+                hover:brightness-110 transition-all duration-300
+                group-hover:[filter:brightness(1)_sepia(0.6)_saturate(4)_hue-rotate(340deg)]"
             />
           </Link>
 
@@ -229,7 +228,7 @@ export function Nav() {
           {/* Header */}
           <div className="flex items-center justify-between px-6 h-[68px] border-b border-outline-variant/20 flex-shrink-0">
             <img src="/images/logo.png" alt="OLD IRON"
-              className="h-[44px] w-auto object-contain invert brightness-90" />
+              className="h-[44px] w-auto object-contain brightness-90" />
             <button onClick={() => setMobileOpen(false)}
               className="w-8 h-8 flex items-center justify-center text-secondary hover:text-primary cursor-pointer">
               <span className="material-symbols-outlined">close</span>
