@@ -1,5 +1,5 @@
 const BCAA_IMAGE_URL = "/__l5e/assets-v1/d9b7bf9b-7d6f-4330-9794-16a9b21f03f8/bcaa-411.png";
-const BCAA_VIDEO_POSTER_URL = "/__l5e/assets-v1/63fe972e-97d3-47d1-a45a-16356b5e3b0b/bcaa-video-start.jpg";
+const BCAA_VIDEO_POSTER_URL = "/__l5e/assets-v1/dc356a34-f697-42b3-903d-e34278b77bf3/bcaa-end.png";
 
 export type Product = {
   id: string;
