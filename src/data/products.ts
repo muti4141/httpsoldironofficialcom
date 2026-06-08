@@ -1,5 +1,7 @@
 const BCAA_IMAGE_URL = "/__l5e/assets-v1/d9b7bf9b-7d6f-4330-9794-16a9b21f03f8/bcaa-411.png";
 const BCAA_VIDEO_POSTER_URL = "/__l5e/assets-v1/dc356a34-f697-42b3-903d-e34278b77bf3/bcaa-end.png";
+const WHEY_IMAGE_URL = "/__l5e/assets-v1/f6a99693-2d04-4361-8e10-1b73b8be9135/whey-end.webp";
+const WHEY_VIDEO_URL = "/__l5e/assets-v1/f1f4f8a4-db61-4f8f-b33b-81ac33dff932/whey-video.mp4";
 
 export type Product = {
   id: string;
@@ -107,7 +109,9 @@ export const products: Product[] = [
     badge: "Bestseller",
     price: 580,
     originalPrice: 1000,
-    image: "https://oldironsupplement.com/assets/products/whey-choco.webp",
+    image: WHEY_IMAGE_URL,
+    video: WHEY_VIDEO_URL,
+    videoPoster: WHEY_IMAGE_URL,
     subtitle: "420g · 14 Porsiyon",
     servings: 14,
     weights: ["420g"],
