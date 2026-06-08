@@ -65,7 +65,7 @@ function ProductPage() {
       <div className="relative w-full h-[55vh] md:h-[70vh] overflow-hidden mt-0">
         {product.video ? (
           <video src={product.video} autoPlay muted playsInline
-            onEnded={(e) => { const v = e.currentTarget; v.currentTime = 0; v.pause(); }}
+            onEnded={(e) => { const v = e.currentTarget; v.pause(); try { v.currentTime = 0.05; } catch {} }}
             className="w-full h-full object-cover" />
 
         ) : (

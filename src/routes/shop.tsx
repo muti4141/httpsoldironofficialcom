@@ -207,7 +207,7 @@ function ProductCard({ product: p }: { product: Product }) {
       <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
         {p.video ? (
           <video src={p.video} autoPlay muted playsInline
-            onEnded={(e) => { const v = e.currentTarget; v.currentTime = 0; v.pause(); }}
+            onEnded={(e) => { const v = e.currentTarget; v.pause(); try { v.currentTime = 0.05; } catch {} }}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : imageSrc ? (
           <img src={imageSrc} alt={p.name} loading={p.id === "bcaa-4001" ? "eager" : "lazy"}
