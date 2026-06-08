@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type ProductVideoProps = {
   src: string;
@@ -11,6 +11,45 @@ type ProductVideoProps = {
 export function ProductVideo({ src, poster, alt, loop = false, className = "" }: ProductVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ended, setEnded] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    let isVisible = false;
+    const playIfVisible = () => {
+      if (!isVisible || document.hidden || ended) return;
+      video.play().catch(() => {
+        // Autoplay can be blocked while the browser is busy; poster remains visible.
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isVisible = entry.isIntersecting;
+        if (isVisible) {
+          playIfVisible();
+        } else {
+          video.pause();
+        }
+      },
+      { threshold: 0.35, rootMargin: "120px" },
+    );
+
+    const handleVisibility = () => {
+      if (document.hidden) video.pause();
+      else playIfVisible();
+    };
+
+    observer.observe(video);
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
+      video.pause();
+    };
+  }, [ended, src]);
 
   const holdOnStartScene = () => {
     const video = videoRef.current;
@@ -31,12 +70,13 @@ export function ProductVideo({ src, poster, alt, loop = false, className = "" }:
         ref={videoRef}
         src={src}
         poster={poster}
-        autoPlay
         muted
         playsInline
         loop={loop}
-        preload="auto"
-        onPlay={() => setEnded(false)}
+        preload="metadata"
+        onPlay={() => {
+          if (!videoRef.current?.ended) setEnded(false);
+        }}
         onEnded={holdOnStartScene}
         className={`${className} ${poster && ended ? "opacity-0" : "opacity-100"}`}
       />
