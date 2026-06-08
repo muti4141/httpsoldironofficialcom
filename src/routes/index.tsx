@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import { ProductVideo } from "@/components/ProductVideo";
 import { products, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
 import { useRef, useState, useEffect } from "react";
 import { useCart } from "@/stores/cart";
@@ -244,8 +245,7 @@ function Home() {
 
                 <div className="aspect-[4/5] overflow-hidden bg-surface-container-high relative">
                   {p.video ? (
-                    <video src={p.video} autoPlay muted playsInline
-                      onEnded={(e) => { const v = e.currentTarget; v.pause(); try { v.currentTime = 0.05; } catch {} }}
+                    <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
                   ) : (
                     <img src={p.image || SUPPLEMENT_PLACEHOLDER} alt={p.name} loading="lazy"
@@ -358,7 +358,7 @@ function Home() {
               {/* Image */}
               <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
                 {p.video ? (
-                  <video src={p.video} autoPlay muted loop playsInline
+                  <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
                 ) : (
                   <img src={p.image || APPAREL_PLACEHOLDER} alt={p.name} loading="lazy"
