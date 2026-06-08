@@ -2,6 +2,8 @@ const BCAA_IMAGE_URL = "/__l5e/assets-v1/d9b7bf9b-7d6f-4330-9794-16a9b21f03f8/bc
 const BCAA_VIDEO_POSTER_URL = "/__l5e/assets-v1/dc356a34-f697-42b3-903d-e34278b77bf3/bcaa-end.png";
 const WHEY_IMAGE_URL = "/__l5e/assets-v1/f6a99693-2d04-4361-8e10-1b73b8be9135/whey-end.webp";
 const WHEY_VIDEO_URL = "/__l5e/assets-v1/f1f4f8a4-db61-4f8f-b33b-81ac33dff932/whey-video.mp4";
+const CREATINE_IMAGE_URL = "/__l5e/assets-v1/a8606e6f-b439-4814-b4a4-81d72b8087ff/creatine-end.webp";
+const CREATINE_VIDEO_URL = "/__l5e/assets-v1/69dc1567-5d43-4d9e-bee5-2a6657dc17e0/creatine-video.mp4";
 
 export type Product = {
   id: string;
