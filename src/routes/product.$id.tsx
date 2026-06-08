@@ -64,8 +64,10 @@ function ProductPage() {
       {/* Full-bleed hero image strip */}
       <div className="relative w-full h-[55vh] md:h-[70vh] overflow-hidden mt-0">
         {product.video ? (
-          <video src={product.video} autoPlay muted loop playsInline
+          <video src={product.video} autoPlay muted playsInline
+            onEnded={(e) => { const v = e.currentTarget; v.currentTime = 0; v.pause(); }}
             className="w-full h-full object-cover" />
+
         ) : (
           <img
             src={imgSrc}
