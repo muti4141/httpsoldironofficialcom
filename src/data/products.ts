@@ -1,4 +1,5 @@
 const BCAA_IMAGE_URL = "/__l5e/assets-v1/d9b7bf9b-7d6f-4330-9794-16a9b21f03f8/bcaa-411.png";
+const BCAA_VIDEO_POSTER_URL = "/__l5e/assets-v1/63fe972e-97d3-47d1-a45a-16356b5e3b0b/bcaa-video-start.jpg";
 
 export type Product = {
   id: string;
@@ -9,6 +10,7 @@ export type Product = {
   price: number;
   image: string;
   video?: string;
+  videoPoster?: string;
   badge?: string;
   description: string;
   subtitle: string;
@@ -153,6 +155,7 @@ export const products: Product[] = [
     originalPrice: 750,
     image: BCAA_IMAGE_URL,
     video: "/__l5e/assets-v1/82cc687e-8a6b-4241-a163-be2be209ab5e/bcaa-video.mp4",
+    videoPoster: BCAA_VIDEO_POSTER_URL,
     subtitle: "300g · 30 Porsiyon",
     servings: 30,
     weights: ["300g"],
