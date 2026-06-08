@@ -131,6 +131,7 @@ export const products: Product[] = [
     image: CREATINE_IMAGE_URL,
     video: CREATINE_VIDEO_URL,
     videoPoster: CREATINE_IMAGE_URL,
+    subtitle: "200g · 44 Porsiyon",
     servings: 44,
     weights: ["200g"],
     flavors: ["Aromasız"],
