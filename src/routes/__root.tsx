@@ -13,6 +13,7 @@ import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { CookieBanner } from "@/components/CookieBanner";
+import { PerfMonitor } from "@/components/PerfMonitor";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -126,6 +127,7 @@ function RootComponent() {
       <Outlet />
       <CookieBanner />
       <Toaster theme="dark" position="bottom-right" />
+      <PerfMonitor />
     </QueryClientProvider>
   );
 }
