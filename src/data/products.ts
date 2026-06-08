@@ -4,6 +4,8 @@ const WHEY_IMAGE_URL = "/__l5e/assets-v1/f6a99693-2d04-4361-8e10-1b73b8be9135/wh
 const WHEY_VIDEO_URL = "/__l5e/assets-v1/f1f4f8a4-db61-4f8f-b33b-81ac33dff932/whey-video.mp4";
 const CREATINE_IMAGE_URL = "/__l5e/assets-v1/a8606e6f-b439-4814-b4a4-81d72b8087ff/creatine-end.webp";
 const CREATINE_VIDEO_URL = "/__l5e/assets-v1/69dc1567-5d43-4d9e-bee5-2a6657dc17e0/creatine-video.mp4";
+const PREWORKOUT_IMAGE_URL = "/__l5e/assets-v1/6b16ce07-1744-402a-8297-491e7c678294/preworkout-end.webp";
+const PREWORKOUT_VIDEO_URL = "/__l5e/assets-v1/01afe5ed-6c0a-428e-80c0-cf56e933a3f1/preworkout-video.mp4";
 
 export type Product = {
   id: string;
@@ -146,7 +148,9 @@ export const products: Product[] = [
     badge: "Yeni",
     price: 950,
     originalPrice: 1005,
-    image: "https://oldironsupplement.com/assets/products/pre-workout.webp",
+    image: PREWORKOUT_IMAGE_URL,
+    video: PREWORKOUT_VIDEO_URL,
+    videoPoster: PREWORKOUT_IMAGE_URL,
     subtitle: "300g · 30 Porsiyon",
     servings: 30,
     weights: ["300g"],
