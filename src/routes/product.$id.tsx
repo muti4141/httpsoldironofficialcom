@@ -106,7 +106,7 @@ function ProductPage() {
             {/* Main image card */}
             <div className={`rounded-none aspect-[4/5] overflow-hidden border ${isSupp ? "border-accent-warm/30" : "border-outline-variant/30"} bg-surface-container relative`}>
               {product.video ? (
-                <ProductVideo src={product.video} poster={product.videoPoster} alt={product.name} className="w-full h-full object-cover" />
+                <ProductVideo src={product.video} poster={product.videoPoster} alt={product.name} loop={!isSupp} className="w-full h-full object-cover" />
               ) : (
                 <img
                   src={imgSrc}
@@ -324,7 +324,7 @@ function ProductPage() {
                 <Link to="/product/$id" params={{ id: p.id }} key={p.id} className="group cursor-pointer">
                   <div className={`aspect-[3/4] overflow-hidden mb-3 border ${rIsSupp ? "border-accent-warm/20 group-hover:border-accent-warm/60" : "border-outline-variant/20 group-hover:border-outline-variant/60"} transition-all bg-surface-container`}>
                     {p.video ? (
-                      <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                      <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name} loop={!rIsSupp} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
                       <img
                         src={p.image || (rIsSupp ? SUPPLEMENT_PLACEHOLDER : APPAREL_PLACEHOLDER)}

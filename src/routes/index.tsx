@@ -358,7 +358,7 @@ function Home() {
               {/* Image */}
               <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
                 {p.video ? (
-                  <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name}
+                  <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name} loop={p.type === "apparel"}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
                 ) : (
                   <img src={p.image || APPAREL_PLACEHOLDER} alt={p.name} loading="lazy"
