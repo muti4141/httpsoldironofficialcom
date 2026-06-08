@@ -21,7 +21,7 @@ export function ProductVideo({ src, poster, alt, className = "" }: ProductVideoP
     } catch {
       // Some browsers can reject seeking immediately after ended.
     }
-    setEnded(true);
+    if (poster) setEnded(true);
   };
 
   return (
@@ -36,7 +36,7 @@ export function ProductVideo({ src, poster, alt, className = "" }: ProductVideoP
         preload="auto"
         onPlay={() => setEnded(false)}
         onEnded={holdOnStartScene}
-        className={`${className} ${ended ? "opacity-0" : "opacity-100"}`}
+        className={`${className} ${poster && ended ? "opacity-0" : "opacity-100"}`}
       />
       {poster && ended && (
         <img
