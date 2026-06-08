@@ -4,10 +4,11 @@ type ProductVideoProps = {
   src: string;
   poster?: string;
   alt: string;
+  loop?: boolean;
   className?: string;
 };
 
-export function ProductVideo({ src, poster, alt, className = "" }: ProductVideoProps) {
+export function ProductVideo({ src, poster, alt, loop = false, className = "" }: ProductVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ended, setEnded] = useState(false);
 
@@ -33,6 +34,7 @@ export function ProductVideo({ src, poster, alt, className = "" }: ProductVideoP
         autoPlay
         muted
         playsInline
+        loop={loop}
         preload="auto"
         onPlay={() => setEnded(false)}
         onEnded={holdOnStartScene}
