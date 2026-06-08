@@ -11,6 +11,7 @@ type ProductVideoProps = {
 export function ProductVideo({ src, poster, alt, loop = false, className = "" }: ProductVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [ended, setEnded] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -19,6 +20,10 @@ export function ProductVideo({ src, poster, alt, loop = false, className = "" }:
     let isVisible = false;
     const playIfVisible = () => {
       if (!isVisible || document.hidden || ended) return;
+      if (!shouldLoad) {
+        setShouldLoad(true);
+        return;
+      }
       video.play().catch(() => {
         // Autoplay can be blocked while the browser is busy; poster remains visible.
       });
@@ -49,7 +54,7 @@ export function ProductVideo({ src, poster, alt, loop = false, className = "" }:
       document.removeEventListener("visibilitychange", handleVisibility);
       video.pause();
     };
-  }, [ended, src]);
+  }, [ended, shouldLoad, src]);
 
   const holdOnStartScene = () => {
     const video = videoRef.current;
@@ -68,7 +73,7 @@ export function ProductVideo({ src, poster, alt, loop = false, className = "" }:
     <div className="relative w-full h-full">
       <video
         ref={videoRef}
-        src={src}
+        src={shouldLoad ? src : undefined}
         poster={poster}
         muted
         playsInline
