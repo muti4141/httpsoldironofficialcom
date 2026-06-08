@@ -152,6 +152,7 @@ export const products: Product[] = [
     price: 625,
     originalPrice: 750,
     image: BCAA_IMAGE_URL,
+    video: "/__l5e/assets-v1/82cc687e-8a6b-4241-a163-be2be209ab5e/bcaa-video.mp4",
     subtitle: "300g · 30 Porsiyon",
     servings: 30,
     weights: ["300g"],

@@ -206,7 +206,9 @@ function ProductCard({ product: p }: { product: Product }) {
 
       <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
         {p.video ? (
-          <video src={p.video} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+          <video src={p.video} autoPlay muted playsInline
+            onEnded={(e) => { const v = e.currentTarget; v.currentTime = 0; v.pause(); }}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : imageSrc ? (
           <img src={imageSrc} alt={p.name} loading={p.id === "bcaa-4001" ? "eager" : "lazy"}
             onError={(e) => { e.currentTarget.src = isSupp ? SUPPLEMENT_PLACEHOLDER : APPAREL_PLACEHOLDER; }}
