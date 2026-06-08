@@ -6,7 +6,11 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-const PARTICLE_COUNT  = 1800;
+const getParticleCount = () => {
+  if (typeof window === "undefined") return 900;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return 0;
+  return window.innerWidth < 768 ? 420 : 1100;
+};
 const SPREAD          = 18;
 const BASE_COLOR      = new THREE.Color(0x3a2010); // koyu kahve
 const ACCENT_COLOR    = new THREE.Color(0xe8843a); // turuncu aksan
@@ -19,10 +23,12 @@ export function ParticleField({ className = "" }: { className?: string }) {
   useEffect(() => {
     const mount = mountRef.current;
     if (!mount) return;
+    const particleCount = getParticleCount();
+    if (particleCount === 0) return;
 
     // ── Renderer ────────────────────────────────────────────
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
     renderer.setSize(mount.clientWidth, mount.clientHeight);
     renderer.setClearColor(0x000000, 0);
     mount.appendChild(renderer.domElement);
@@ -33,13 +39,13 @@ export function ParticleField({ className = "" }: { className?: string }) {
     camera.position.z = 12;
 
     // ── Particles ───────────────────────────────────────────
-    const positions = new Float32Array(PARTICLE_COUNT * 3);
-    const colors    = new Float32Array(PARTICLE_COUNT * 3);
-    const sizes     = new Float32Array(PARTICLE_COUNT);
-    const origPos   = new Float32Array(PARTICLE_COUNT * 3);
-    const velocity  = new Float32Array(PARTICLE_COUNT * 3);
+    const positions = new Float32Array(particleCount * 3);
+    const colors    = new Float32Array(particleCount * 3);
+    const sizes     = new Float32Array(particleCount);
+    const origPos   = new Float32Array(particleCount * 3);
+    const velocity  = new Float32Array(particleCount * 3);
 
-    for (let i = 0; i < PARTICLE_COUNT; i++) {
+    for (let i = 0; i < particleCount; i++) {
       const i3 = i * 3;
       // sphere distribution
       const r     = Math.cbrt(Math.random()) * SPREAD;
@@ -143,7 +149,7 @@ export function ParticleField({ className = "" }: { className?: string }) {
       points.rotation.x = Math.sin(t * 0.02) * 0.08;
 
       // particle physics
-      for (let i = 0; i < PARTICLE_COUNT; i++) {
+      for (let i = 0; i < particleCount; i++) {
         const i3 = i * 3;
         const px = pos.getX(i);
         const py = pos.getY(i);
@@ -178,10 +184,17 @@ export function ParticleField({ className = "" }: { className?: string }) {
     };
     animate();
 
+    const onVisibilityChange = () => {
+      if (document.hidden) cancelAnimationFrame(raf);
+      else animate();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
     return () => {
       cancelAnimationFrame(raf);
       mount.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("resize", onResize);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
       renderer.dispose();
       geometry.dispose();
       material.dispose();

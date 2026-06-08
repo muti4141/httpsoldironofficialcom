@@ -6,7 +6,6 @@ import { products, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/pr
 import { useRef, useState, useEffect } from "react";
 import { useCart } from "@/stores/cart";
 import { toast } from "sonner";
-import { ParticleField } from "@/components/ParticleField";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -98,11 +97,6 @@ function Home() {
           HERO
       ════════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
-        {/* Three.js particle field */}
-        <div className="absolute inset-0 z-0 opacity-70">
-          <ParticleField className="w-full h-full" />
-        </div>
-
         {/* Video background */}
         <video ref={heroVideoRef} src="/videos/hero.mp4" autoPlay muted playsInline
           onEnded={() => { heroVideoRef.current?.pause(); setHeroEnded(true); }}
