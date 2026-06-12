@@ -90,12 +90,12 @@ export const createCartCheckout = createServerFn({ method: "POST" })
       });
     }
 
-    // tax_behavior: "inclusive" → existing EUR prices already include VAT (typical DE B2C).
+    // TRY prices already include 20% KDV.
     // tax_code txcd_30011000 = General Apparel.
     const line_items = data.items.map((i) => ({
       quantity: i.quantity,
       price_data: {
-        currency: "eur",
+        currency: "try",
         product_data: { name: i.name, tax_code: "txcd_30011000" },
         unit_amount: i.unitAmountCents,
         tax_behavior: "inclusive" as const,
@@ -106,9 +106,9 @@ export const createCartCheckout = createServerFn({ method: "POST" })
       line_items.push({
         quantity: 1,
         price_data: {
-          currency: "eur",
+          currency: "try",
           // txcd_92010001 = Shipping
-          product_data: { name: "Versand", tax_code: "txcd_92010001" },
+          product_data: { name: "Kargo", tax_code: "txcd_92010001" },
           unit_amount: data.shippingCents,
           tax_behavior: "inclusive" as const,
         },
