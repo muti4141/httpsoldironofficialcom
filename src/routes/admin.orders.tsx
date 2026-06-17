@@ -29,7 +29,7 @@ type Order = {
 export const Route = createFileRoute("/admin/orders")({
   head: () => ({
     meta: [
-      { title: "Admin — Bestellungen" },
+      { title: "Admin — Siparişler" },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
@@ -42,8 +42,8 @@ export const Route = createFileRoute("/admin/orders")({
   component: AdminOrdersPage,
 });
 
-function fmt(cents: number, currency = "EUR") {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency }).format(cents / 100);
+function fmt(cents: number, currency = "TRY") {
+  return new Intl.NumberFormat("tr-TR", { style: "currency", currency }).format(cents / 100);
 }
 
 function AdminOrdersPage() {
@@ -68,7 +68,7 @@ function AdminOrdersPage() {
         const { orders } = await list();
         setOrders(orders as Order[]);
       } catch (e: any) {
-        toast.error(e?.message ?? "Fehler beim Laden");
+        toast.error(e?.message ?? "Yüklenirken hata oluştu");
         setAuthorized(false);
       } finally {
         setLoading(false);
@@ -80,9 +80,9 @@ function AdminOrdersPage() {
     try {
       await update({ data: { orderId, status: status as any } });
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status } : o)));
-      toast.success("Status aktualisiert");
+      toast.success("Durum güncellendi");
     } catch (e: any) {
-      toast.error(e?.message ?? "Update fehlgeschlagen");
+      toast.error(e?.message ?? "Güncelleme başarısız");
     }
   };
 
@@ -91,23 +91,23 @@ function AdminOrdersPage() {
       <Nav />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Bestellungen</h1>
+          <h1 className="text-3xl font-bold">Siparişler</h1>
           <Link to="/account">
-            <Button variant="outline" size="sm">Mein Konto</Button>
+            <Button variant="outline" size="sm">Hesabım</Button>
           </Link>
         </div>
 
-        {loading && <p className="text-muted-foreground">Lade…</p>}
+        {loading && <p className="text-muted-foreground">Yükleniyor…</p>}
 
         {!loading && authorized === false && (
           <div className="border border-border rounded-lg p-8 text-center">
-            <p className="text-lg font-medium mb-2">Kein Zugriff</p>
-            <p className="text-muted-foreground">Du hast keine Admin-Berechtigung.</p>
+            <p className="text-lg font-medium mb-2">Erişim Yok</p>
+            <p className="text-muted-foreground">Yönetici yetkiniz bulunmuyor.</p>
           </div>
         )}
 
         {!loading && authorized && orders.length === 0 && (
-          <p className="text-muted-foreground">Noch keine Bestellungen.</p>
+          <p className="text-muted-foreground">Henüz sipariş yok.</p>
         )}
 
         {!loading && authorized && orders.length > 0 && (
@@ -115,19 +115,19 @@ function AdminOrdersPage() {
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-left">
                 <tr>
-                  <th className="px-4 py-3">Datum</th>
-                  <th className="px-4 py-3">Nr.</th>
-                  <th className="px-4 py-3">Kunde</th>
-                  <th className="px-4 py-3">Ort</th>
-                  <th className="px-4 py-3 text-right">Summe</th>
-                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3">Tarih</th>
+                  <th className="px-4 py-3">No</th>
+                  <th className="px-4 py-3">Müşteri</th>
+                  <th className="px-4 py-3">Şehir</th>
+                  <th className="px-4 py-3 text-right">Tutar</th>
+                  <th className="px-4 py-3">Durum</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((o) => (
                   <tr key={o.id} className="border-t border-border hover:bg-muted/20">
                     <td className="px-4 py-3 whitespace-nowrap">
-                      {new Date(o.created_at).toLocaleString("de-DE")}
+                      {new Date(o.created_at).toLocaleString("tr-TR")}
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">
                       <Link to="/order/$id" params={{ id: o.id }} className="hover:underline">

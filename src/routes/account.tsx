@@ -17,7 +17,7 @@ type OrderRow = {
 
 export const Route = createFileRoute("/account")({
   head: () => ({
-    meta: [{ title: "Mein Konto — OLD IRON" }],
+    meta: [{ title: "Hesabım — OLD IRON" }],
   }),
   beforeLoad: async ({ location }) => {
     const { data } = await supabase.auth.getSession();
@@ -48,7 +48,7 @@ function AccountPage() {
     shipping_address: "",
     shipping_city: "",
     shipping_zip: "",
-    shipping_country: "DE",
+    shipping_country: "TR",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -87,7 +87,7 @@ function AccountPage() {
       .upsert({ id: userData.user.id, ...profile });
     setSaving(false);
     if (error) toast.error(error.message);
-    else toast.success("Profil gespeichert.");
+    else toast.success("Profil kaydedildi.");
   };
 
   const set = <K extends keyof Profile>(k: K, v: Profile[K]) =>
@@ -100,27 +100,27 @@ function AccountPage() {
         <header className="mb-stack-md flex justify-between items-end">
           <div>
             <h1 className="font-display text-[48px] md:text-[56px] uppercase tracking-tight text-primary leading-none">
-              Mein Konto
+              Hesabım
             </h1>
             <p className="text-[14px] text-outline mt-2">{email}</p>
           </div>
           <button
             onClick={async () => {
               await signOut();
-              toast.success("Abgemeldet.");
+              toast.success("Çıkış yapıldı.");
             }}
             className="text-[12px] uppercase tracking-widest text-secondary hover:text-error border border-outline-variant px-4 py-2"
           >
-            Abmelden
+            Çıkış Yap
           </button>
         </header>
 
         {loading ? (
-          <p className="text-secondary">Lade...</p>
+          <p className="text-secondary">Yükleniyor...</p>
         ) : (
           <form onSubmit={save} className="space-y-stack-sm">
-            <Section title="Persönliche Daten">
-              <Field label="Anzeigename">
+            <Section title="Kişisel Bilgiler">
+              <Field label="Görünen Ad">
                 <Input value={profile.display_name ?? ""} onChange={(v) => set("display_name", v)} />
               </Field>
               <Field label="Telefon">
@@ -128,22 +128,22 @@ function AccountPage() {
               </Field>
             </Section>
 
-            <Section title="Versandadresse">
-              <Field label="Straße & Hausnummer">
+            <Section title="Teslimat Adresi">
+              <Field label="Sokak ve Bina No">
                 <Input value={profile.shipping_address ?? ""} onChange={(v) => set("shipping_address", v)} />
               </Field>
               <div className="grid grid-cols-3 gap-4">
-                <Field label="PLZ">
+                <Field label="Posta Kodu">
                   <Input value={profile.shipping_zip ?? ""} onChange={(v) => set("shipping_zip", v)} />
                 </Field>
                 <div className="col-span-2">
-                  <Field label="Stadt">
+                  <Field label="Şehir">
                     <Input value={profile.shipping_city ?? ""} onChange={(v) => set("shipping_city", v)} />
                   </Field>
                 </div>
               </div>
-              <Field label="Land">
-                <Input value={profile.shipping_country ?? "DE"} onChange={(v) => set("shipping_country", v)} />
+              <Field label="Ülke">
+                <Input value={profile.shipping_country ?? "TR"} onChange={(v) => set("shipping_country", v)} />
               </Field>
             </Section>
 
@@ -152,16 +152,16 @@ function AccountPage() {
               disabled={saving}
               className="w-full bg-primary-container text-on-secondary-fixed font-headline text-[20px] py-4 uppercase tracking-widest hover:brightness-110 disabled:opacity-50"
             >
-              {saving ? "Speichern..." : "Speichern"}
+              {saving ? "Kaydediliyor..." : "Kaydet"}
             </button>
           </form>
         )}
 
         {!loading && (
           <section className="mt-stack-md bg-surface-container-low border border-outline-variant/30 p-gutter">
-            <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Bestellungen</h2>
+            <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Siparişler</h2>
             {orders.length === 0 ? (
-              <p className="text-secondary text-[14px]">Noch keine Bestellungen.</p>
+              <p className="text-secondary text-[14px]">Henüz sipariş yok.</p>
             ) : (
               <ul className="divide-y divide-outline-variant/20">
                 {orders.map((o) => (
@@ -174,10 +174,10 @@ function AccountPage() {
                       <div>
                         <p className="font-mono text-primary text-[14px]">#{o.id.slice(0, 8).toUpperCase()}</p>
                         <p className="text-[12px] text-outline uppercase tracking-widest mt-1">
-                          {new Date(o.created_at).toLocaleDateString("de-DE")} · {o.status}
+                          {new Date(o.created_at).toLocaleDateString("tr-TR")} · {o.status}
                         </p>
                       </div>
-                      <span className="text-primary font-headline">{(o.total_cents / 100).toFixed(2)} €</span>
+                      <span className="text-primary font-headline">₺{(o.total_cents / 100).toFixed(2)}</span>
                     </Link>
                   </li>
                 ))}
