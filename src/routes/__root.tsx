@@ -103,10 +103,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const OLD_DOMAIN_REDIRECT_SCRIPT = `(function(){try{var h=location.hostname.toLowerCase();if(h==="oldironsupplement.com"||h==="www.oldironsupplement.com"){location.replace("https://www.oldironofficial.com"+location.pathname+location.search+location.hash);}}catch(e){}})();`;
+
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: OLD_DOMAIN_REDIRECT_SCRIPT }} />
         <HeadContent />
       </head>
       <body>
