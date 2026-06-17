@@ -2,17 +2,24 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { initCheckoutForm, type IyzicoBasketItem } from "@/lib/iyzico.server";
 import { getRequestIP } from "@tanstack/react-start/server";
+import { products as staticProducts } from "@/data/products";
 
 type CartLineInput = {
   productId: string;
   name: string;
-  unitPrice: number; // TL decimal
+  unitPrice: number; // TL decimal — IGNORED server-side, kept for backwards compat
   quantity: number;
 };
 
 function toDecimal(n: number): string {
   return (Math.round(n * 100) / 100).toFixed(2);
 }
+
+const ALLOWED_ORIGINS = [
+  "https://oldironofficial.com",
+  "https://www.oldironofficial.com",
+  "https://httpsoldironofficialcom.lovable.app",
+];
 
 export const createIyzicoCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -24,17 +31,16 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
   }) => {
     if (!data.items.length) throw new Error("Sepet boş");
     for (const i of data.items) {
-      if (!i.name || i.unitPrice < 0.01 || i.quantity < 1) throw new Error("Geçersiz sepet satırı");
+      if (!i.productId || i.quantity < 1 || i.quantity > 99) {
+        throw new Error("Geçersiz sepet satırı");
+      }
     }
-    // Restrict callbackUrl to known application origins to prevent
-    // attacker-controlled payment callbacks (token / PII exfiltration).
-    const ALLOWED_ORIGINS = [
-      "https://oldironofficial.com",
-      "https://www.oldironofficial.com",
-      "https://httpsoldironofficialcom.lovable.app",
-    ];
     let cbOrigin = "";
-    try { cbOrigin = new URL(data.callbackUrl).origin; } catch { throw new Error("Geçersiz callbackUrl"); }
+    try {
+      cbOrigin = new URL(data.callbackUrl).origin;
+    } catch {
+      throw new Error("Geçersiz callbackUrl");
+    }
     const isPreview = /^https:\/\/[a-z0-9-]+\.lovable\.app$/i.test(cbOrigin);
     if (!ALLOWED_ORIGINS.includes(cbOrigin) && !isPreview) {
       throw new Error("Geçersiz callbackUrl");
@@ -46,6 +52,7 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     const { data: userResp } = await supabase.auth.getUser();
     const email = userResp.user?.email ?? "no-reply@oldironofficial.com";
 
+    // Verify the order belongs to the caller.
     const { data: orderRow, error: orderErr } = await supabase
       .from("orders")
       .select("full_name, shipping_address, shipping_city, shipping_zip, shipping_country, phone, user_id")
@@ -56,23 +63,56 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     if (!orderRow) throw new Error("Sipariş bulunamadı");
     const order = orderRow as any;
 
-    const subtotal = data.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
-    const total = subtotal + data.shippingPrice;
+    // ── Build authoritative price map from DB + static catalog (server-trusted)
+    const ids = Array.from(new Set(data.items.map((i) => i.productId)));
+    const { data: dbProducts } = await supabase
+      .from("admin_products")
+      .select("id, name, price, free_shipping")
+      .in("id", ids);
 
-    const basketItems: IyzicoBasketItem[] = data.items.map((i, idx) => ({
-      id: `${i.productId}-${idx}`,
-      name: i.name.slice(0, 100),
+    type TrustedProduct = { id: string; name: string; price: number; freeShipping: boolean };
+    const trusted = new Map<string, TrustedProduct>();
+    for (const p of staticProducts) {
+      trusted.set(p.id, { id: p.id, name: p.name, price: p.price, freeShipping: !!p.freeShipping });
+    }
+    for (const p of (dbProducts ?? []) as Array<{ id: string; name: string; price: number; free_shipping: boolean }>) {
+      trusted.set(p.id, { id: p.id, name: p.name, price: Number(p.price), freeShipping: !!p.free_shipping });
+    }
+
+    // Server-recomputed line items (ignore any client-supplied prices).
+    const lines = data.items.map((i, idx) => {
+      const t = trusted.get(i.productId);
+      if (!t) throw new Error("Geçersiz ürün");
+      if (t.price < 0.01) throw new Error("Geçersiz fiyat");
+      return {
+        idx,
+        productId: i.productId,
+        displayName: (i.name || t.name).slice(0, 100),
+        unitPrice: t.price,
+        quantity: i.quantity,
+        freeShipping: t.freeShipping,
+      };
+    });
+
+    const subtotal = lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0);
+    const allFreeShipping = lines.every((l) => l.freeShipping);
+    const shippingPrice = allFreeShipping || subtotal >= 1500 ? 0 : 140;
+    const total = subtotal + shippingPrice;
+
+    const basketItems: IyzicoBasketItem[] = lines.map((l) => ({
+      id: `${l.productId}-${l.idx}`,
+      name: l.displayName,
       category1: "Apparel",
       itemType: "PHYSICAL",
-      price: toDecimal(i.unitPrice * i.quantity),
+      price: toDecimal(l.unitPrice * l.quantity),
     }));
-    if (data.shippingPrice > 0) {
+    if (shippingPrice > 0) {
       basketItems.push({
         id: "shipping",
         name: "Kargo",
         category1: "Shipping",
         itemType: "VIRTUAL",
-        price: toDecimal(data.shippingPrice),
+        price: toDecimal(shippingPrice),
       });
     }
 
@@ -83,8 +123,7 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
 
     const [firstName, ...rest] = (order.full_name || email.split("@")[0]).trim().split(/\s+/);
     const surname = rest.join(" ") || firstName;
-    const ip =
-      getRequestIP({ xForwardedFor: true }) || "85.34.78.112";
+    const ip = getRequestIP({ xForwardedFor: true }) || "85.34.78.112";
 
     const address = order.shipping_address || "Adres";
     const city = order.shipping_city || "Istanbul";
@@ -135,10 +174,36 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
       throw new Error(result.errorMessage || "İyzico ödeme formu başlatılamadı");
     }
 
-    // Persist the token onto the order so the callback can match it.
+    // Persist server-trusted totals + iyzico token onto the order so client-
+    // controlled values can never affect the recorded amount.
+    const kdv = subtotal * 0.20;
+    const cents = (n: number) => Math.round(n * 100);
     await (supabase.from("orders") as any)
-      .update({ payment_provider: "iyzico", payment_token: result.token })
+      .update({
+        payment_provider: "iyzico",
+        payment_token: result.token,
+        subtotal_cents: cents(subtotal),
+        tax_cents: cents(kdv),
+        shipping_cents: cents(shippingPrice),
+        total_cents: cents(total),
+      })
       .eq("id", data.orderId);
+
+    // Replace order_items with server-trusted lines so admin / invoices show
+    // the authoritative prices, not whatever the client posted.
+    await supabase.from("order_items").delete().eq("order_id", data.orderId);
+    await (supabase.from("order_items") as any).insert(
+      lines.map((l) => ({
+        order_id: data.orderId,
+        product_id: l.productId,
+        product_name: l.displayName,
+        product_image: null,
+        size: null,
+        quantity: l.quantity,
+        unit_price_cents: cents(l.unitPrice),
+        line_total_cents: cents(l.unitPrice * l.quantity),
+      })),
+    );
 
     return {
       checkoutFormContent: result.checkoutFormContent,
