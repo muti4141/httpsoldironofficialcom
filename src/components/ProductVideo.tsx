@@ -85,11 +85,12 @@ export function ProductVideo({ src, poster, alt, loop = false, className = "" }:
         onEnded={holdOnStartScene}
         className={`${className} ${poster && ended ? "opacity-0" : "opacity-100"}`}
       />
-      {poster && ended && (
+      {poster && (ended || !shouldLoad) && (
         <img
           src={poster}
           alt={alt}
-          loading="eager"
+          loading="lazy"
+          decoding="async"
           className={`absolute inset-0 ${className}`}
         />
       )}
