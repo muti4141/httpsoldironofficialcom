@@ -164,7 +164,7 @@ function AdminProductsPage() {
     if (!form.name.trim()) return toast.error("Ürün adı gerekli");
     if (!form.image) return toast.error("Görsel yükleyin");
     const id = form.id?.trim() || slugify(form.name);
-    const payload: Row = {
+    const payload = {
       ...form,
       id,
       flavors: (form.flavors ?? []).filter(Boolean),
@@ -172,7 +172,7 @@ function AdminProductsPage() {
     };
     const { error } = await supabase
       .from("admin_products")
-      .upsert(payload, { onConflict: "id" });
+      .upsert(payload as any, { onConflict: "id" });
     if (error) return toast.error(error.message);
     toast.success(editing ? "Güncellendi" : "Eklendi");
     resetForm();
