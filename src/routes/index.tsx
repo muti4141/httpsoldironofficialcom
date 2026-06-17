@@ -85,6 +85,15 @@ function Home() {
   useReveal();
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [heroEnded, setHeroEnded] = useState(false);
+  const [heroVideoSrc, setHeroVideoSrc] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const idle = (window as any).requestIdleCallback || ((cb: () => void) => setTimeout(cb, 600));
+    const handle = idle(() => setHeroVideoSrc("/videos/hero.mp4"));
+    return () => {
+      const cancel = (window as any).cancelIdleCallback;
+      if (cancel && typeof handle === "number") cancel(handle);
+    };
+  }, []);
   const add = useCart((s) => s.add);
 
   const products = useAllProducts();
