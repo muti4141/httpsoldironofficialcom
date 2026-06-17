@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductVideo } from "@/components/ProductVideo";
-import { products as staticProducts, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
 import { useAllProducts } from "@/hooks/useAllProducts";
 import { useRef, useState, useEffect } from "react";
 import { useCart } from "@/stores/cart";
