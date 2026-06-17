@@ -6,6 +6,8 @@ const CREATINE_IMAGE_URL = "/__l5e/assets-v1/a8606e6f-b439-4814-b4a4-81d72b8087f
 const CREATINE_VIDEO_URL = "/__l5e/assets-v1/69dc1567-5d43-4d9e-bee5-2a6657dc17e0/creatine-video.mp4";
 const PREWORKOUT_IMAGE_URL = "/__l5e/assets-v1/6b16ce07-1744-402a-8297-491e7c678294/preworkout-end.webp";
 const PREWORKOUT_VIDEO_URL = "/__l5e/assets-v1/01afe5ed-6c0a-428e-80c0-cf56e933a3f1/preworkout-video.mp4";
+const CREAM_OF_RICE_IMAGE_URL = "/__l5e/assets-v1/563bacd5-9b03-4136-9f83-86f926951ad9/cream-of-rice.jpg";
+const CREAM_OF_RICE_VIDEO_URL = "/__l5e/assets-v1/00b82bcc-36c9-4061-89fb-aaa1bf12399d/cream-of-rice.mp4";
 
 export type Product = {
   id: string;
