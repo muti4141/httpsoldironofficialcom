@@ -4,7 +4,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
 export const Route = createFileRoute("/checkout/return")({
-  head: () => ({ meta: [{ title: "Bestellung bestätigt — OLD IRON" }] }),
+  head: () => ({ meta: [{ title: "Sipariş Onaylandı — OLD IRON" }] }),
   validateSearch: (search: Record<string, unknown>) => ({
     session_id: typeof search.session_id === "string" ? search.session_id : undefined,
     order_id: typeof search.order_id === "string" ? search.order_id : undefined,
@@ -27,13 +27,13 @@ function CheckoutReturn() {
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
       <main className="pt-stack-lg pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-[800px] mx-auto text-center">
-        <h1 className="font-display text-[56px] uppercase tracking-tight text-primary mt-12">Zahlung erhalten</h1>
-        <p className="text-secondary mt-4">Deine Bestellung wird verarbeitet.</p>
+        <h1 className="font-display text-[56px] uppercase tracking-tight text-primary mt-12">Ödeme Alındı</h1>
+        <p className="text-secondary mt-4">Siparişiniz işleniyor.</p>
         {order_id ? (
-          <p className="text-outline mt-2 text-sm">Weiterleitung zu deiner Bestellung…</p>
+          <p className="text-outline mt-2 text-sm">Siparişinize yönlendiriliyorsunuz…</p>
         ) : (
           <Link to="/account" className="mt-8 inline-block bg-primary-container text-on-secondary-fixed font-headline text-[20px] px-8 py-3 uppercase tracking-widest">
-            Zum Konto
+            Hesabıma Git
           </Link>
         )}
       </main>

@@ -60,33 +60,33 @@ function OrderPage() {
     })();
   }, [id]);
 
-  const fmt = (c: number) => `${(c / 100).toFixed(2)} €`;
+  const fmt = (c: number) => `₺${(c / 100).toFixed(2)}`;
 
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
       <main className="pt-[120px] pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-3xl mx-auto">
         {loading ? (
-          <p className="text-secondary">Lade...</p>
+          <p className="text-secondary">Yükleniyor...</p>
         ) : !order ? (
           <div className="bg-surface-container-low p-12 text-center steel-bevel">
-            <p className="text-secondary mb-6">Bestellung nicht gefunden.</p>
-            <Link to="/account" className="underline text-primary">Zum Konto</Link>
+            <p className="text-secondary mb-6">Sipariş bulunamadı.</p>
+            <Link to="/account" className="underline text-primary">Hesabıma Git</Link>
           </div>
         ) : (
           <>
             <header className="mb-stack-md">
-              <p className="text-[14px] uppercase tracking-widest text-outline">Bestellung bestätigt</p>
+              <p className="text-[14px] uppercase tracking-widest text-outline">Sipariş Onaylandı</p>
               <h1 className="font-display text-[48px] md:text-[56px] uppercase tracking-tight text-primary leading-none mt-2">
-                Danke, {order.full_name.split(" ")[0]}.
+                Teşekkürler, {order.full_name.split(" ")[0]}.
               </h1>
               <p className="text-secondary mt-2">
-                Bestellnummer: <span className="text-primary font-mono">#{order.id.slice(0, 8).toUpperCase()}</span>
+                Sipariş No: <span className="text-primary font-mono">#{order.id.slice(0, 8).toUpperCase()}</span>
               </p>
             </header>
 
             <section className="bg-surface-container-low border border-outline-variant/30 p-gutter mb-stack-sm">
-              <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Artikel</h2>
+              <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Ürünler</h2>
               <div className="space-y-4">
                 {items.map((it) => (
                   <div key={it.id} className="flex gap-4 items-center border-b border-outline-variant/20 pb-4 last:border-0">
@@ -96,7 +96,7 @@ function OrderPage() {
                     <div className="flex-grow">
                       <p className="text-primary font-headline uppercase">{it.product_name}</p>
                       <p className="text-[12px] text-outline uppercase tracking-widest">
-                        Größe {it.size} · {it.quantity}×
+                        Beden {it.size} · {it.quantity}×
                       </p>
                     </div>
                     <span className="text-primary font-headline">{fmt(it.line_total_cents)}</span>
@@ -106,17 +106,17 @@ function OrderPage() {
             </section>
 
             <section className="bg-surface-container-low border border-outline-variant/30 p-gutter mb-stack-sm space-y-2 text-[14px] text-secondary">
-              <div className="flex justify-between"><span>Zwischensumme</span><span>{fmt(order.subtotal_cents)}</span></div>
-              <div className="flex justify-between"><span>Versand</span><span>{order.shipping_cents === 0 ? "Kostenlos" : fmt(order.shipping_cents)}</span></div>
+              <div className="flex justify-between"><span>Ara Toplam</span><span>{fmt(order.subtotal_cents)}</span></div>
+              <div className="flex justify-between"><span>Kargo</span><span>{order.shipping_cents === 0 ? "Ücretsiz" : fmt(order.shipping_cents)}</span></div>
               <div className="flex justify-between pt-3 border-t border-outline-variant/30 text-primary font-bold">
-                <span className="uppercase tracking-widest">Gesamt</span>
+                <span className="uppercase tracking-widest">Toplam</span>
                 <span className="text-xl">{fmt(order.total_cents)}</span>
               </div>
-              <p className="text-[10px] text-outline italic">Inkl. 19% MwSt. ({fmt(order.tax_cents)})</p>
+              <p className="text-[10px] text-outline italic">KDV dahil ({fmt(order.tax_cents)})</p>
             </section>
 
             <section className="bg-surface-container-low border border-outline-variant/30 p-gutter mb-stack-sm">
-              <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Lieferadresse</h2>
+              <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Teslimat Adresi</h2>
               <p className="text-secondary leading-relaxed">
                 {order.full_name}<br />
                 {order.shipping_address}<br />
@@ -127,10 +127,10 @@ function OrderPage() {
 
             <div className="flex gap-4">
               <Link to="/account" className="flex-1 text-center bg-surface-container-highest text-primary font-headline text-[18px] py-4 uppercase tracking-widest hover:brightness-110">
-                Mein Konto
+                Hesabım
               </Link>
               <Link to="/shop" className="flex-1 text-center bg-primary-container text-on-secondary-fixed font-headline text-[18px] py-4 uppercase tracking-widest hover:brightness-110">
-                Weiter Shoppen
+                Alışverişe Devam Et
               </Link>
             </div>
           </>
@@ -140,3 +140,4 @@ function OrderPage() {
     </div>
   );
 }
+
