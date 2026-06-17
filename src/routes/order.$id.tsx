@@ -50,8 +50,10 @@ function OrderPage() {
 
   useEffect(() => {
     (async () => {
+      const { data: userData } = await supabase.auth.getUser();
+      if (!userData.user) { setLoading(false); return; }
       const [{ data: o }, { data: it }] = await Promise.all([
-        supabase.from("orders").select("*").eq("id", id).maybeSingle(),
+        supabase.from("orders").select("*").eq("id", id).eq("user_id", userData.user.id).maybeSingle(),
         supabase.from("order_items").select("*").eq("order_id", id),
       ]);
       setOrder(o as Order | null);
