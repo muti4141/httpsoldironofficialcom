@@ -184,6 +184,7 @@ function Shop() {
 function ProductCard({ product: p }: { product: Product }) {
   const add = useCart((s) => s.add);
   const isSupp = p.type === "supplement";
+  const isCompact = p.id === "cream-of-rice";
   const imageSrc = p.id === "bcaa-4001"
     ? "/__l5e/assets-v1/d9b7bf9b-7d6f-4330-9794-16a9b21f03f8/bcaa-411.png"
     : p.image;
@@ -197,16 +198,16 @@ function ProductCard({ product: p }: { product: Product }) {
 
   return (
     <Link to="/product/$id" params={{ id: p.id }}
-      className={`group flex flex-col relative overflow-hidden cursor-pointer ${isSupp ? "supplement-card-glow orange-bevel" : "steel-bevel"} bg-surface-container`}>
+      className={`group flex flex-col relative overflow-hidden cursor-pointer ${isSupp ? "supplement-card-glow orange-bevel" : "steel-bevel"} ${isCompact ? "scale-[0.92] origin-top" : ""} bg-surface-container`}>
       {p.badge && (
-        <div className="absolute top-4 left-4 z-10">
-          <span className={`text-[11px] font-semibold uppercase tracking-widest px-3 py-1 ${isSupp ? "bg-accent-warm pulse-glow text-on-primary-container" : "bg-primary text-on-primary"}`}>
+        <div className={`absolute top-3 left-3 z-10 ${isCompact ? "top-2 left-2" : ""}`}>
+          <span className={`text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 ${isSupp ? "bg-accent-warm pulse-glow text-on-primary-container" : "bg-primary text-on-primary"} ${isCompact ? "text-[9px] px-2 py-0.5" : ""}`}>
             {p.badge}
           </span>
         </div>
       )}
 
-      <div className="aspect-[4/5] overflow-hidden bg-surface-container-highest relative">
+      <div className={`overflow-hidden bg-surface-container-highest relative ${isCompact ? "aspect-[3/4]" : "aspect-[4/5]"}`}>
         {p.video ? (
           <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -221,25 +222,25 @@ function ProductCard({ product: p }: { product: Product }) {
           </div>
         )}
         <button onClick={handleQuickAdd}
-          className={`absolute bottom-4 right-4 w-11 h-11 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110 cursor-pointer ${isSupp ? "bg-accent-warm text-on-primary-container" : "bg-primary text-on-primary"}`}
+          className={`absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110 cursor-pointer ${isSupp ? "bg-accent-warm text-on-primary-container" : "bg-primary text-on-primary"} ${isCompact ? "bottom-2 right-2 w-9 h-9" : ""}`}
           aria-label={`${p.name} sepete ekle`}>
-          <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
+          <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
         </button>
       </div>
 
-      <div className="p-5 space-y-1.5">
+      <div className={`space-y-1 ${isCompact ? "p-3.5" : "p-5"}`}>
         <div className="flex items-center justify-between">
-          <p className={`text-[11px] uppercase tracking-widest ${isSupp ? "text-accent-warm-soft" : "text-outline"}`}>{p.categoryLabel}</p>
-          {isSupp && p.servings && <p className="text-[10px] text-outline uppercase">{p.servings} porsiyon</p>}
+          <p className={`uppercase tracking-widest ${isSupp ? "text-accent-warm-soft" : "text-outline"} ${isCompact ? "text-[10px]" : "text-[11px]"}`}>{p.categoryLabel}</p>
+          {isSupp && p.servings && <p className={`text-outline uppercase ${isCompact ? "text-[9px]" : "text-[10px]"}`}>{p.servings} porsiyon</p>}
         </div>
-        <h3 className="font-headline text-[22px] text-primary uppercase leading-tight">{p.name}</h3>
-        <p className="text-[13px] text-secondary">{p.subtitle}</p>
-        <div className="flex items-center gap-3 pt-1">
-          <p className={`text-[15px] font-semibold ${isSupp ? "text-accent-warm" : "text-primary"}`}>₺{p.price.toFixed(2)}</p>
+        <h3 className={`font-headline text-primary uppercase leading-tight ${isCompact ? "text-[18px]" : "text-[22px]"}`}>{p.name}</h3>
+        <p className={`text-secondary ${isCompact ? "text-[12px]" : "text-[13px]"}`}>{p.subtitle}</p>
+        <div className="flex items-center gap-2 pt-1">
+          <p className={`font-semibold ${isSupp ? "text-accent-warm" : "text-primary"} ${isCompact ? "text-[14px]" : "text-[15px]"}`}>₺{p.price.toFixed(2)}</p>
           {p.originalPrice && (
             <>
-              <p className="text-[13px] text-outline line-through">₺{p.originalPrice.toFixed(2)}</p>
-              <span className="bg-accent-warm/20 text-accent-warm text-[10px] font-semibold uppercase px-1.5 py-0.5">
+              <p className={`text-outline line-through ${isCompact ? "text-[12px]" : "text-[13px]"}`}>₺{p.originalPrice.toFixed(2)}</p>
+              <span className={`bg-accent-warm/20 text-accent-warm font-semibold uppercase px-1.5 py-0.5 ${isCompact ? "text-[9px]" : "text-[10px]"}`}>
                 -%{Math.round((1 - p.price / p.originalPrice) * 100)}
               </span>
             </>
