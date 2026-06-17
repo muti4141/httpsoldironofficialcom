@@ -74,11 +74,11 @@ export function ProductVideo({ src, poster, alt, loop = false, className = "" }:
       <video
         ref={videoRef}
         src={shouldLoad ? src : undefined}
-        poster={poster}
+        poster={shouldLoad ? poster : undefined}
         muted
         playsInline
         loop={loop}
-        preload="metadata"
+        preload="none"
         onPlay={() => {
           if (!videoRef.current?.ended) setEnded(false);
         }}
