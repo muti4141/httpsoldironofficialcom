@@ -26,7 +26,19 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     for (const i of data.items) {
       if (!i.name || i.unitPrice < 0.01 || i.quantity < 1) throw new Error("Geçersiz sepet satırı");
     }
-    if (!data.callbackUrl.startsWith("http")) throw new Error("Geçersiz callbackUrl");
+    // Restrict callbackUrl to known application origins to prevent
+    // attacker-controlled payment callbacks (token / PII exfiltration).
+    const ALLOWED_ORIGINS = [
+      "https://oldironofficial.com",
+      "https://www.oldironofficial.com",
+      "https://httpsoldironofficialcom.lovable.app",
+    ];
+    let cbOrigin = "";
+    try { cbOrigin = new URL(data.callbackUrl).origin; } catch { throw new Error("Geçersiz callbackUrl"); }
+    const isPreview = /^https:\/\/[a-z0-9-]+\.lovable\.app$/i.test(cbOrigin);
+    if (!ALLOWED_ORIGINS.includes(cbOrigin) && !isPreview) {
+      throw new Error("Geçersiz callbackUrl");
+    }
     return data;
   })
   .handler(async ({ data, context }) => {
@@ -36,8 +48,9 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
 
     const { data: orderRow, error: orderErr } = await supabase
       .from("orders")
-      .select("full_name, shipping_address, shipping_city, shipping_zip, shipping_country, phone")
+      .select("full_name, shipping_address, shipping_city, shipping_zip, shipping_country, phone, user_id")
       .eq("id", data.orderId)
+      .eq("user_id", userId)
       .maybeSingle();
     if (orderErr) throw new Error(orderErr.message);
     if (!orderRow) throw new Error("Sipariş bulunamadı");
