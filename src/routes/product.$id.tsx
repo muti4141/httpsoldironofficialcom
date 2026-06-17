@@ -1,20 +1,20 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductVideo } from "@/components/ProductVideo";
-import { findProduct, products, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { findProduct, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { useAllProducts } from "@/hooks/useAllProducts";
 import { useCart } from "@/stores/cart";
 
 export const Route = createFileRoute("/product/$id")({
   loader: ({ params }) => {
     const product = findProduct(params.id);
-    if (!product) throw notFound();
-    return { product };
+    return { product: product ?? null };
   },
   head: ({ loaderData }) => ({
-    meta: loaderData
+    meta: loaderData?.product
       ? [
           { title: `${loaderData.product.name} — OLD IRON` },
           { name: "description", content: loaderData.product.description },
@@ -22,13 +22,30 @@ export const Route = createFileRoute("/product/$id")({
           { property: "og:description", content: loaderData.product.description },
           { property: "og:image", content: loaderData.product.image },
         ]
-      : [],
+      : [{ title: "Ürün — OLD IRON" }],
   }),
   component: ProductPage,
 });
 
 function ProductPage() {
-  const { product } = Route.useLoaderData();
+  const { id } = Route.useParams();
+  const allProducts = useAllProducts();
+  const product = allProducts.find((p) => p.id === id);
+
+  if (!product) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background">
+        <Nav />
+        <main className="flex-1 container mx-auto px-4 py-20 text-center">
+          <h1 className="text-2xl font-bold mb-4">Ürün bulunamadı</h1>
+          <Link to="/shop" className="text-accent-warm underline">Mağazaya dön</Link>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  const products = allProducts;
   const isSupp = product.type === "supplement";
 
   const SIZES   = ["S", "M", "L", "XL", "XXL"];

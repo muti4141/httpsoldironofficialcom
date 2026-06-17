@@ -92,9 +92,10 @@ function AdminOrdersPage() {
       <main className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">Siparişler</h1>
-          <Link to="/account">
-            <Button variant="outline" size="sm">Hesabım</Button>
-          </Link>
+          <div className="flex gap-2">
+            <Link to="/admin/products"><Button variant="outline" size="sm">Ürünler</Button></Link>
+            <Link to="/account"><Button variant="outline" size="sm">Hesabım</Button></Link>
+          </div>
         </div>
 
         {loading && <p className="text-muted-foreground">Yükleniyor…</p>}

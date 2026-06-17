@@ -24,6 +24,7 @@ import { Route as LegalImpressumRouteImport } from './routes/legal.impressum'
 import { Route as LegalDatenschutzRouteImport } from './routes/legal.datenschutz'
 import { Route as LegalAgbRouteImport } from './routes/legal.agb'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as ApiPublicPaymentsIyzicoCallbackRouteImport } from './routes/api/public/payments/iyzico-callback'
@@ -103,6 +104,11 @@ const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   path: '/checkout/return',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/admin/products',
+  path: '/admin/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/admin/orders',
   path: '/admin/orders',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/legal/agb': typeof LegalAgbRoute
   '/legal/datenschutz': typeof LegalDatenschutzRoute
@@ -150,6 +157,7 @@ export interface FileRoutesByTo {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/legal/agb': typeof LegalAgbRoute
   '/legal/datenschutz': typeof LegalDatenschutzRoute
@@ -171,6 +179,7 @@ export interface FileRoutesById {
   '/shop': typeof ShopRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/admin/orders': typeof AdminOrdersRoute
+  '/admin/products': typeof AdminProductsRoute
   '/checkout/return': typeof CheckoutReturnRoute
   '/legal/agb': typeof LegalAgbRoute
   '/legal/datenschutz': typeof LegalDatenschutzRoute
@@ -193,6 +202,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/admin/orders'
+    | '/admin/products'
     | '/checkout/return'
     | '/legal/agb'
     | '/legal/datenschutz'
@@ -213,6 +223,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/admin/orders'
+    | '/admin/products'
     | '/checkout/return'
     | '/legal/agb'
     | '/legal/datenschutz'
@@ -233,6 +244,7 @@ export interface FileRouteTypes {
     | '/shop'
     | '/sitemap.xml'
     | '/admin/orders'
+    | '/admin/products'
     | '/checkout/return'
     | '/legal/agb'
     | '/legal/datenschutz'
@@ -254,6 +266,7 @@ export interface RootRouteChildren {
   ShopRoute: typeof ShopRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   AdminOrdersRoute: typeof AdminOrdersRoute
+  AdminProductsRoute: typeof AdminProductsRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   OrderIdRoute: typeof OrderIdRoute
   ProductIdRoute: typeof ProductIdRoute
@@ -368,6 +381,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CheckoutReturnRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/admin/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/admin/orders'
@@ -419,6 +439,7 @@ const rootRouteChildren: RootRouteChildren = {
   ShopRoute: ShopRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   AdminOrdersRoute: AdminOrdersRoute,
+  AdminProductsRoute: AdminProductsRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   OrderIdRoute: OrderIdRoute,
   ProductIdRoute: ProductIdRoute,

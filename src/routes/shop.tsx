@@ -3,7 +3,8 @@ import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductVideo } from "@/components/ProductVideo";
-import { products, type Product, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { type Product, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { useAllProducts } from "@/hooks/useAllProducts";
 import { useCart } from "@/stores/cart";
 import { useState } from "react";
 
@@ -39,6 +40,7 @@ function Shop() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState(2000);
   const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">("default");
+  const products = useAllProducts();
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories((prev) =>
