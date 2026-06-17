@@ -13,10 +13,16 @@ export const Route = createFileRoute("/auth")({
       { name: "description", content: "OLD IRON hesabına giriş yap veya yeni hesap oluştur." },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({
-    mode: (s.mode === "signup" ? "signup" : "login") as "login" | "signup",
-    redirect: typeof s.redirect === "string" ? s.redirect : "/",
-  }),
+  validateSearch: (s: Record<string, unknown>) => {
+    const raw = typeof s.redirect === "string" ? s.redirect : "/";
+    // Only allow same-origin relative paths to prevent open-redirect.
+    const safeRedirect =
+      raw.startsWith("/") && !raw.startsWith("//") && !raw.includes("://") ? raw : "/";
+    return {
+      mode: (s.mode === "signup" ? "signup" : "login") as "login" | "signup",
+      redirect: safeRedirect,
+    };
+  },
   beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
     if (data.session) throw redirect({ to: search.redirect });
