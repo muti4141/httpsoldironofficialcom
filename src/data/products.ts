@@ -25,7 +25,6 @@ export type Product = {
   servings?: number;
   originalPrice?: number;
   freeShipping?: boolean;
-  sizes?: string[];
 };
 
 // Güvenilir fallback görseller (görsel yüklenemeyince gösterilir)
