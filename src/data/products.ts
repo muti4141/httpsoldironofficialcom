@@ -6,6 +6,8 @@ const CREATINE_IMAGE_URL = "/__l5e/assets-v1/a8606e6f-b439-4814-b4a4-81d72b8087f
 const CREATINE_VIDEO_URL = "/__l5e/assets-v1/69dc1567-5d43-4d9e-bee5-2a6657dc17e0/creatine-video.mp4";
 const PREWORKOUT_IMAGE_URL = "/__l5e/assets-v1/6b16ce07-1744-402a-8297-491e7c678294/preworkout-end.webp";
 const PREWORKOUT_VIDEO_URL = "/__l5e/assets-v1/01afe5ed-6c0a-428e-80c0-cf56e933a3f1/preworkout-video.mp4";
+const CREAM_OF_RICE_IMAGE_URL = "/__l5e/assets-v1/563bacd5-9b03-4136-9f83-86f926951ad9/cream-of-rice.jpg";
+const CREAM_OF_RICE_VIDEO_URL = "/__l5e/assets-v1/00b82bcc-36c9-4061-89fb-aaa1bf12399d/cream-of-rice.mp4";
 
 export type Product = {
   id: string;
@@ -204,6 +206,24 @@ export const products: Product[] = [
     weights: ["225g"],
     flavors: ["Yaban Mersini"],
     description: "L-Karnitin tabanlı Thermo Enerji Sistemi. Yağ yakımını ve dayanıklılığı destekler. Cutting dönemleri ve kardiyo seansları için ideal.",
+  },
+  {
+    id: "cream-of-rice",
+    name: "Cream of Rice",
+    category: "carbs",
+    categoryLabel: "Pirinç Unu",
+    type: "supplement",
+    badge: "Yeni",
+    price: 650,
+    originalPrice: 800,
+    image: CREAM_OF_RICE_IMAGE_URL,
+    video: CREAM_OF_RICE_VIDEO_URL,
+    videoPoster: CREAM_OF_RICE_IMAGE_URL,
+    subtitle: "1000g · Bitter Çikolata",
+    servings: 20,
+    weights: ["1000g"],
+    flavors: ["Bitter Çikolata"],
+    description: "Bitter Aromalı Pirinç Unu\n\nLezzet ve kaliteyi bir araya getiren OLD IRON Bitter Aromalı Pirinç Unu, sporcular ve sağlıklı beslenmeyi tercih edenler için özel olarak geliştirilmiştir. İnce öğütülmüş pirinç unu ile yoğun bitter çikolata aromasının mükemmel uyumunu sunar.\n\nKahvaltılarınızda, ara öğünlerinizde ve tariflerinizde kolayca kullanabileceğiniz bu ürün; pankek, kek, kurabiye, muhallebi ve protein tariflerine eşsiz bir tat kazandırır. Kolay karışan yapısı sayesinde pürüzsüz bir kıvam elde etmenize yardımcı olur.\n\nÖne Çıkan Özellikler:\n- Gluten içermez\n- Yoğun ve lezzetli bitter çikolata aroması\n- İnce öğütülmüş kaliteli pirinç unu\n- Pankek, kek ve fit tarifler için ideal\n- Kolay karışım ve yumuşak doku\n- Günün her saatinde pratik kullanım\n\nBitter çikolatanın eşsiz aromasıyla hazırlanan tariflerinize lezzet katın, enerjinizi destekleyen enfes öğünler hazırlayın.",
   },
   {
     id: "test-1tl",
