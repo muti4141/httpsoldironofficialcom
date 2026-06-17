@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductVideo } from "@/components/ProductVideo";
-import { products, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { products as staticProducts, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { useAllProducts } from "@/hooks/useAllProducts";
 import { useRef, useState, useEffect } from "react";
 import { useCart } from "@/stores/cart";
 import { toast } from "sonner";
@@ -86,6 +87,7 @@ function Home() {
   const [heroEnded, setHeroEnded] = useState(false);
   const add = useCart((s) => s.add);
 
+  const products = useAllProducts();
   const apparelFeatured    = products.filter((p) => p.type === "apparel").slice(0, 3);
   const supplementFeatured = products.filter((p) => p.type === "supplement" && p.category !== "carbs" && p.category !== "test").slice(0, 4);
   const carbsFeatured      = products.filter((p) => p.category === "carbs");
