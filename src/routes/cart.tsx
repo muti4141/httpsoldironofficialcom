@@ -5,7 +5,8 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/stores/cart";
 import { supabase } from "@/integrations/supabase/client";
-import { StripeCartCheckout } from "@/components/StripeCartCheckout";
+import { IyzicoCheckout } from "@/components/IyzicoCheckout";
+import { createIyzicoCheckout } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -25,12 +26,7 @@ function CartPage() {
   const navigate   = useNavigate();
   const [terms, setTerms]     = useState(false);
   const [placing, setPlacing] = useState(false);
-  const [checkoutData, setCheckoutData] = useState<null | {
-    orderId: string;
-    items: { productId: string; name: string; unitAmountCents: number; quantity: number }[];
-    shippingCents: number;
-    returnUrl: string;
-  }>(null);
+  const [checkoutHtml, setCheckoutHtml] = useState<string | null>(null);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const kdv      = subtotal * 0.20;
