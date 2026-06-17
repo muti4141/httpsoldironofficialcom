@@ -29,6 +29,7 @@ const SUPPLEMENT_CATEGORIES = [
   { value: "preworkout",  label: "Pre-Workout" },
   { value: "aminoacids",  label: "Amino Asit" },
   { value: "thermo",      label: "Thermo & Enerji" },
+  { value: "carbs",       label: "Pirinç Unu" },
 ];
 
 type Tab = "all" | "apparel" | "supplement";
