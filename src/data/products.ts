@@ -24,6 +24,8 @@ export type Product = {
   weights?: string[];
   servings?: number;
   originalPrice?: number;
+  freeShipping?: boolean;
+  sizes?: string[];
 };
 
 // Güvenilir fallback görseller (görsel yüklenemeyince gösterilir)
