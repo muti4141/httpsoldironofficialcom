@@ -205,6 +205,20 @@ export const products: Product[] = [
     flavors: ["Yaban Mersini"],
     description: "L-Karnitin tabanlı Thermo Enerji Sistemi. Yağ yakımını ve dayanıklılığı destekler. Cutting dönemleri ve kardiyo seansları için ideal.",
   },
+  {
+    id: "test-1tl",
+    name: "Test Ürünü (1₺)",
+    category: "test",
+    categoryLabel: "Test",
+    type: "supplement",
+    price: 1,
+    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80",
+    subtitle: "Ödeme testi için — kargo ücretsiz",
+    weights: ["Test"],
+    flavors: ["Test"],
+    description: "Iyzico ödeme akışı testi için 1₺'lik ürün. Sadece bu ürün sepetteyse kargo ücretsizdir.",
+    freeShipping: true,
+  },
 ];
 
 export const findProduct = (id: string) => products.find((p) => p.id === id);
