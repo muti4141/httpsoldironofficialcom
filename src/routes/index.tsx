@@ -87,7 +87,8 @@ function Home() {
   const add = useCart((s) => s.add);
 
   const apparelFeatured    = products.filter((p) => p.type === "apparel").slice(0, 3);
-  const supplementFeatured = products.filter((p) => p.type === "supplement").slice(0, 4);
+  const supplementFeatured = products.filter((p) => p.type === "supplement" && p.category !== "carbs" && p.category !== "test").slice(0, 4);
+  const carbsFeatured      = products.filter((p) => p.category === "carbs");
 
   return (
     <div className="bg-background text-foreground min-h-screen overflow-x-hidden">
