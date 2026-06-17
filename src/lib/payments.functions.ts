@@ -189,21 +189,19 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
       })
       .eq("id", data.orderId);
 
-    // Replace order_items with server-trusted lines so admin / invoices show
-    // the authoritative prices, not whatever the client posted.
-    await supabase.from("order_items").delete().eq("order_id", data.orderId);
-    await (supabase.from("order_items") as any).insert(
-      lines.map((l) => ({
-        order_id: data.orderId,
-        product_id: l.productId,
-        product_name: l.displayName,
-        product_image: null,
-        size: null,
-        quantity: l.quantity,
-        unit_price_cents: cents(l.unitPrice),
-        line_total_cents: cents(l.unitPrice * l.quantity),
-      })),
-    );
+    // Overwrite price-sensitive fields on the existing order_items rows with
+    // server-trusted values (keeps client-supplied image / size for display).
+    for (const l of lines) {
+      await (supabase.from("order_items") as any)
+        .update({
+          unit_price_cents: cents(l.unitPrice),
+          line_total_cents: cents(l.unitPrice * l.quantity),
+          product_name: l.displayName,
+          quantity: l.quantity,
+        })
+        .eq("order_id", data.orderId)
+        .eq("product_id", l.productId);
+    }
 
     return {
       checkoutFormContent: result.checkoutFormContent,
