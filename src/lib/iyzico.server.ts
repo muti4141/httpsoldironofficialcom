@@ -10,8 +10,24 @@ function env(name: string): string {
 }
 
 function baseUrl(): string {
-  const url = (process.env.IYZICO_BASE_URL || "https://api.iyzipay.com").trim();
-  return url.replace(/\/+$/, "");
+  let url = (process.env.IYZICO_BASE_URL || "https://api.iyzipay.com").trim();
+  // Auto-prepend scheme if user entered host only (e.g. "api.iyzipay.com").
+  if (!/^https?:\/\//i.test(url)) url = `https://${url}`;
+  url = url.replace(/\/+$/, "");
+  // Guard against the wrong host (merchant/www returns
+  // {"error":"Only HTML requests are supported here"} for JSON requests).
+  let host: string;
+  try {
+    host = new URL(url).host.toLowerCase();
+  } catch {
+    throw new Error(`IYZICO_BASE_URL geçerli bir URL değil: "${url}"`);
+  }
+  if (host !== "api.iyzipay.com" && host !== "sandbox-api.iyzipay.com") {
+    throw new Error(
+      `IYZICO_BASE_URL geçersiz host: "${host}". Canlı için "https://api.iyzipay.com", test için "https://sandbox-api.iyzipay.com" olmalı.`,
+    );
+  }
+  return url;
 }
 
 function buildAuthHeader(uri: string, body: unknown): string {
@@ -40,7 +56,8 @@ export async function iyzicoPost<T = any>(uri: string, body: Record<string, unkn
   let json: any;
   try { json = JSON.parse(text); } catch { json = { raw: text }; }
   if (!res.ok) {
-    throw new Error(`Iyzico ${uri} HTTP ${res.status}: ${text.slice(0, 500)}`);
+    const host = (() => { try { return new URL(url).host; } catch { return url; } })();
+    throw new Error(`Iyzico ${uri} HTTP ${res.status} @ ${host}: ${text.slice(0, 500)}`);
   }
   return json as T;
 }
