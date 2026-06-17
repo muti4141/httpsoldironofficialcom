@@ -30,7 +30,8 @@ function CartPage() {
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const kdv      = subtotal * 0.20;
-  const shipping = subtotal >= 1500 ? 0 : 140;
+  const allFreeShipping = items.length > 0 && items.every((i) => i.freeShipping);
+  const shipping = allFreeShipping || subtotal >= 1500 ? 0 : 140;
   const total    = subtotal + shipping;
 
   const checkout = async () => {

@@ -11,6 +11,7 @@ export type CartItem = {
   image: string;
   categoryLabel: string;
   qty: number;
+  freeShipping?: boolean;
 };
 
 type CartState = {
@@ -48,6 +49,7 @@ export const useCart = create<CartState>()(
                 image: product.image,
                 categoryLabel: product.categoryLabel,
                 qty,
+                freeShipping: product.freeShipping,
               },
             ],
           };
