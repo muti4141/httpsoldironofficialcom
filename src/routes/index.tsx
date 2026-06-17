@@ -110,12 +110,12 @@ function Home() {
       ════════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Video background */}
-        <video ref={heroVideoRef} src="/videos/hero.mp4" autoPlay muted playsInline
+        <video ref={heroVideoRef} src={heroVideoSrc} poster="/images/hero-end.jpg" autoPlay muted playsInline preload="none"
           onEnded={() => { heroVideoRef.current?.pause(); setHeroEnded(true); }}
           className={`absolute inset-0 w-full h-full object-cover opacity-35 ${heroEnded ? "hidden" : "block"}`}
         />
         {heroEnded && (
-          <img src="/images/hero-end.jpg" alt="OLD IRON"
+          <img src="/images/hero-end.jpg" alt="OLD IRON" decoding="async"
             className="absolute inset-0 w-full h-full object-cover opacity-35" />
         )}
 
