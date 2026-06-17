@@ -68,6 +68,7 @@ function AccountPage() {
         supabase
           .from("orders")
           .select("id, created_at, total_cents, currency, status")
+          .eq("user_id", userData.user.id)
           .order("created_at", { ascending: false }),
       ]);
       if (prof) setProfile(prof);
