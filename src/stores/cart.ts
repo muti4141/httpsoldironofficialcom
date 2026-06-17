@@ -49,6 +49,7 @@ export const useCart = create<CartState>()(
                 image: product.image,
                 categoryLabel: product.categoryLabel,
                 qty,
+                freeShipping: product.freeShipping,
               },
             ],
           };
