@@ -11,6 +11,7 @@ export type CartItem = {
   image: string;
   categoryLabel: string;
   qty: number;
+  freeShipping?: boolean;
 };
 
 type CartState = {
