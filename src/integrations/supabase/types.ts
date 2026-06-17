@@ -156,6 +156,9 @@ export type Database = {
           full_name: string
           id: string
           notes: string | null
+          payment_id: string | null
+          payment_provider: string | null
+          payment_token: string | null
           phone: string | null
           shipping_address: string
           shipping_cents: number
@@ -176,6 +179,9 @@ export type Database = {
           full_name: string
           id?: string
           notes?: string | null
+          payment_id?: string | null
+          payment_provider?: string | null
+          payment_token?: string | null
           phone?: string | null
           shipping_address: string
           shipping_cents?: number
@@ -196,6 +202,9 @@ export type Database = {
           full_name?: string
           id?: string
           notes?: string | null
+          payment_id?: string | null
+          payment_provider?: string | null
+          payment_token?: string | null
           phone?: string | null
           shipping_address?: string
           shipping_cents?: number

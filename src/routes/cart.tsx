@@ -5,7 +5,8 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { useCart } from "@/stores/cart";
 import { supabase } from "@/integrations/supabase/client";
-import { StripeCartCheckout } from "@/components/StripeCartCheckout";
+import { IyzicoCheckout } from "@/components/IyzicoCheckout";
+import { createIyzicoCheckout } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -25,12 +26,7 @@ function CartPage() {
   const navigate   = useNavigate();
   const [terms, setTerms]     = useState(false);
   const [placing, setPlacing] = useState(false);
-  const [checkoutData, setCheckoutData] = useState<null | {
-    orderId: string;
-    items: { productId: string; name: string; unitAmountCents: number; quantity: number }[];
-    shippingCents: number;
-    returnUrl: string;
-  }>(null);
+  const [checkoutHtml, setCheckoutHtml] = useState<string | null>(null);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const kdv      = subtotal * 0.20;
@@ -91,17 +87,20 @@ function CartPage() {
       );
       if (itemsErr) throw itemsErr;
       const orderId = order.id as string;
-      setCheckoutData({
-        orderId,
-        items: items.map((i) => ({
-          productId: i.productId,
-          name: `${i.name} — ${i.size}`,
-          unitAmountCents: cents(i.price),
-          quantity: i.qty,
-        })),
-        shippingCents: cents(shipping),
-        returnUrl: `${window.location.origin}/checkout/return?order_id=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
+      const result = await createIyzicoCheckout({
+        data: {
+          orderId,
+          items: items.map((i) => ({
+            productId: i.productId,
+            name: `${i.name} — ${i.size}`,
+            unitPrice: i.price,
+            quantity: i.qty,
+          })),
+          shippingPrice: shipping,
+          callbackUrl: `${window.location.origin}/api/public/payments/iyzico-callback`,
+        },
       });
+      setCheckoutHtml(result.checkoutFormContent);
       clear();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Sipariş oluşturulamadı.";
@@ -120,10 +119,11 @@ function CartPage() {
           <p className="text-[13px] font-semibold uppercase tracking-widest text-outline mt-2">Her dikişte hassasiyet.</p>
         </header>
 
-        {checkoutData ? (
+        {checkoutHtml ? (
           <div className="bg-surface-container-low steel-bevel p-6">
-            <StripeCartCheckout {...checkoutData} />
+            <IyzicoCheckout checkoutFormContent={checkoutHtml} />
           </div>
+
         ) : items.length === 0 ? (
           <div className="bg-surface-container-low p-12 text-center steel-bevel">
             <span className="material-symbols-outlined text-[48px] text-outline/40 mb-4 block">shopping_cart</span>

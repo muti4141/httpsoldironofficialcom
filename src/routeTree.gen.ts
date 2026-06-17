@@ -26,7 +26,7 @@ import { Route as LegalAgbRouteImport } from './routes/legal.agb'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
-import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicPaymentsIyzicoCallbackRouteImport } from './routes/api/public/payments/iyzico-callback'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -114,10 +114,10 @@ const LovableEmailQueueProcessRoute =
     path: '/lovable/email/queue/process',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicPaymentsWebhookRoute =
-  ApiPublicPaymentsWebhookRouteImport.update({
-    id: '/api/public/payments/webhook',
-    path: '/api/public/payments/webhook',
+const ApiPublicPaymentsIyzicoCallbackRoute =
+  ApiPublicPaymentsIyzicoCallbackRouteImport.update({
+    id: '/api/public/payments/iyzico-callback',
+    path: '/api/public/payments/iyzico-callback',
     getParentRoute: () => rootRouteImport,
   } as any)
 
@@ -138,7 +138,7 @@ export interface FileRoutesByFullPath {
   '/legal/widerruf': typeof LegalWiderrufRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$id': typeof ProductIdRoute
-  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/payments/iyzico-callback': typeof ApiPublicPaymentsIyzicoCallbackRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesByTo {
@@ -158,7 +158,7 @@ export interface FileRoutesByTo {
   '/legal/widerruf': typeof LegalWiderrufRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$id': typeof ProductIdRoute
-  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/payments/iyzico-callback': typeof ApiPublicPaymentsIyzicoCallbackRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRoutesById {
@@ -179,7 +179,7 @@ export interface FileRoutesById {
   '/legal/widerruf': typeof LegalWiderrufRoute
   '/order/$id': typeof OrderIdRoute
   '/product/$id': typeof ProductIdRoute
-  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
+  '/api/public/payments/iyzico-callback': typeof ApiPublicPaymentsIyzicoCallbackRoute
   '/lovable/email/queue/process': typeof LovableEmailQueueProcessRoute
 }
 export interface FileRouteTypes {
@@ -201,7 +201,7 @@ export interface FileRouteTypes {
     | '/legal/widerruf'
     | '/order/$id'
     | '/product/$id'
-    | '/api/public/payments/webhook'
+    | '/api/public/payments/iyzico-callback'
     | '/lovable/email/queue/process'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -221,7 +221,7 @@ export interface FileRouteTypes {
     | '/legal/widerruf'
     | '/order/$id'
     | '/product/$id'
-    | '/api/public/payments/webhook'
+    | '/api/public/payments/iyzico-callback'
     | '/lovable/email/queue/process'
   id:
     | '__root__'
@@ -241,7 +241,7 @@ export interface FileRouteTypes {
     | '/legal/widerruf'
     | '/order/$id'
     | '/product/$id'
-    | '/api/public/payments/webhook'
+    | '/api/public/payments/iyzico-callback'
     | '/lovable/email/queue/process'
   fileRoutesById: FileRoutesById
 }
@@ -257,7 +257,7 @@ export interface RootRouteChildren {
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   OrderIdRoute: typeof OrderIdRoute
   ProductIdRoute: typeof ProductIdRoute
-  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
+  ApiPublicPaymentsIyzicoCallbackRoute: typeof ApiPublicPaymentsIyzicoCallbackRoute
   LovableEmailQueueProcessRoute: typeof LovableEmailQueueProcessRoute
 }
 
@@ -382,11 +382,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailQueueProcessRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/payments/webhook': {
-      id: '/api/public/payments/webhook'
-      path: '/api/public/payments/webhook'
-      fullPath: '/api/public/payments/webhook'
-      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+    '/api/public/payments/iyzico-callback': {
+      id: '/api/public/payments/iyzico-callback'
+      path: '/api/public/payments/iyzico-callback'
+      fullPath: '/api/public/payments/iyzico-callback'
+      preLoaderRoute: typeof ApiPublicPaymentsIyzicoCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -422,19 +422,9 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutReturnRoute: CheckoutReturnRoute,
   OrderIdRoute: OrderIdRoute,
   ProductIdRoute: ProductIdRoute,
-  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
+  ApiPublicPaymentsIyzicoCallbackRoute: ApiPublicPaymentsIyzicoCallbackRoute,
   LovableEmailQueueProcessRoute: LovableEmailQueueProcessRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

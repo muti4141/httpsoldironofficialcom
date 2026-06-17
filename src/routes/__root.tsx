@@ -11,7 +11,7 @@ import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
-import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+
 import { CookieBanner } from "@/components/CookieBanner";
 import { PerfMonitor } from "@/components/PerfMonitor";
 import { supabase } from "@/integrations/supabase/client";
@@ -123,7 +123,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthSync />
-      <PaymentTestModeBanner />
+      
       <Outlet />
       <CookieBanner />
       <Toaster theme="dark" position="bottom-right" />

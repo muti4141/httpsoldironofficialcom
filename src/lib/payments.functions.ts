@@ -1,132 +1,134 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { createStripeClient, type StripeEnv } from "@/lib/stripe.server";
+import { initCheckoutForm, type IyzicoBasketItem } from "@/lib/iyzico.server";
+import { getRequestIP } from "@tanstack/react-start/server";
 
 type CartLineInput = {
   productId: string;
   name: string;
-  unitAmountCents: number;
+  unitPrice: number; // TL decimal
   quantity: number;
 };
 
-export const createCartCheckout = createServerFn({ method: "POST" })
+function toDecimal(n: number): string {
+  return (Math.round(n * 100) / 100).toFixed(2);
+}
+
+export const createIyzicoCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: {
     orderId: string;
     items: CartLineInput[];
-    shippingCents: number;
-    returnUrl: string;
-    environment: StripeEnv;
+    shippingPrice: number;
+    callbackUrl: string;
   }) => {
-    if (!data.items.length) throw new Error("Cart is empty");
+    if (!data.items.length) throw new Error("Sepet boş");
     for (const i of data.items) {
-      if (!i.name || i.unitAmountCents < 1 || i.quantity < 1) {
-        throw new Error("Invalid cart item");
-      }
+      if (!i.name || i.unitPrice < 0.01 || i.quantity < 1) throw new Error("Geçersiz sepet satırı");
     }
+    if (!data.callbackUrl.startsWith("http")) throw new Error("Geçersiz callbackUrl");
     return data;
   })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const { data: userResp } = await supabase.auth.getUser();
-    const email = userResp.user?.email;
+    const email = userResp.user?.email ?? "no-reply@oldironofficial.com";
 
-    // Load order shipping for tax location.
-    const { data: orderRow } = await supabase
+    const { data: orderRow, error: orderErr } = await supabase
       .from("orders")
       .select("full_name, shipping_address, shipping_city, shipping_zip, shipping_country, phone")
       .eq("id", data.orderId)
       .maybeSingle();
+    if (orderErr) throw new Error(orderErr.message);
+    if (!orderRow) throw new Error("Sipariş bulunamadı");
     const order = orderRow as any;
 
-    const stripe = createStripeClient(data.environment);
+    const subtotal = data.items.reduce((s, i) => s + i.unitPrice * i.quantity, 0);
+    const total = subtotal + data.shippingPrice;
 
-    // Resolve or create a Customer with metadata.userId for searchability.
-    let customerId: string | undefined;
-    const found = await stripe.customers.search({
-      query: `metadata['userId']:'${userId}'`,
-      limit: 1,
-    });
-    if (found.data.length) {
-      customerId = found.data[0].id;
-    } else if (email) {
-      const existing = await stripe.customers.list({ email, limit: 1 });
-      if (existing.data.length) {
-        customerId = existing.data[0].id;
-        await stripe.customers.update(customerId, {
-          metadata: { ...existing.data[0].metadata, userId },
-        });
-      }
-    }
-    if (!customerId) {
-      const created = await stripe.customers.create({
-        ...(email && { email }),
-        metadata: { userId },
-      });
-      customerId = created.id;
-    }
-
-    // Set customer name + address (required by Stripe Tax for location-based calc).
-    if (order) {
-      await stripe.customers.update(customerId, {
-        name: order.full_name,
-        ...(order.phone && { phone: order.phone }),
-        address: {
-          line1: order.shipping_address,
-          city: order.shipping_city,
-          postal_code: order.shipping_zip,
-          country: order.shipping_country || "DE",
-        },
-        shipping: {
-          name: order.full_name,
-          ...(order.phone && { phone: order.phone }),
-          address: {
-            line1: order.shipping_address,
-            city: order.shipping_city,
-            postal_code: order.shipping_zip,
-            country: order.shipping_country || "DE",
-          },
-        },
-      });
-    }
-
-    // tax_behavior: "inclusive" → existing EUR prices already include VAT (typical DE B2C).
-    // tax_code txcd_30011000 = General Apparel.
-    const line_items = data.items.map((i) => ({
-      quantity: i.quantity,
-      price_data: {
-        currency: "eur",
-        product_data: { name: i.name, tax_code: "txcd_30011000" },
-        unit_amount: i.unitAmountCents,
-        tax_behavior: "inclusive" as const,
-      },
+    const basketItems: IyzicoBasketItem[] = data.items.map((i, idx) => ({
+      id: `${i.productId}-${idx}`,
+      name: i.name.slice(0, 100),
+      category1: "Apparel",
+      itemType: "PHYSICAL",
+      price: toDecimal(i.unitPrice * i.quantity),
     }));
-
-    if (data.shippingCents > 0) {
-      line_items.push({
-        quantity: 1,
-        price_data: {
-          currency: "eur",
-          // txcd_92010001 = Shipping
-          product_data: { name: "Versand", tax_code: "txcd_92010001" },
-          unit_amount: data.shippingCents,
-          tax_behavior: "inclusive" as const,
-        },
+    if (data.shippingPrice > 0) {
+      basketItems.push({
+        id: "shipping",
+        name: "Kargo",
+        category1: "Shipping",
+        itemType: "VIRTUAL",
+        price: toDecimal(data.shippingPrice),
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
-      line_items,
-      mode: "payment",
-      ui_mode: "embedded_page",
-      return_url: data.returnUrl,
-      customer: customerId,
-      customer_update: { address: "auto", shipping: "auto", name: "auto" },
-      automatic_tax: { enabled: true },
-      payment_intent_data: { description: `OLD IRON Bestellung #${data.orderId.slice(0, 8)}` },
-      metadata: { userId, orderId: data.orderId },
+    // Iyzico expects: sum(basketItems.price) === price
+    const itemsTotal = basketItems.reduce((s, i) => s + Number(i.price), 0);
+    const price = toDecimal(itemsTotal);
+    const paidPrice = toDecimal(total);
+
+    const [firstName, ...rest] = (order.full_name || email.split("@")[0]).trim().split(/\s+/);
+    const surname = rest.join(" ") || firstName;
+    const ip =
+      getRequestIP({ xForwardedFor: true }) || "85.34.78.112";
+
+    const address = order.shipping_address || "Adres";
+    const city = order.shipping_city || "Istanbul";
+    const country = order.shipping_country === "TR" ? "Turkey" : (order.shipping_country || "Turkey");
+    const zip = order.shipping_zip || "34000";
+
+    const result = await initCheckoutForm({
+      locale: "tr",
+      conversationId: data.orderId,
+      price,
+      paidPrice,
+      currency: "TRY",
+      basketId: data.orderId,
+      paymentGroup: "PRODUCT",
+      callbackUrl: data.callbackUrl,
+      enabledInstallments: [1, 2, 3, 6, 9],
+      buyer: {
+        id: userId,
+        name: firstName,
+        surname,
+        gsmNumber: order.phone || "+905350000000",
+        email,
+        identityNumber: "11111111111",
+        registrationAddress: address,
+        ip,
+        city,
+        country,
+        zipCode: zip,
+      },
+      shippingAddress: {
+        contactName: order.full_name || firstName,
+        city,
+        country,
+        address,
+        zipCode: zip,
+      },
+      billingAddress: {
+        contactName: order.full_name || firstName,
+        city,
+        country,
+        address,
+        zipCode: zip,
+      },
+      basketItems,
     });
 
-    return session.client_secret;
-  });
+    if (result.status !== "success" || !result.checkoutFormContent) {
+      throw new Error(result.errorMessage || "İyzico ödeme formu başlatılamadı");
+    }
 
+    // Persist the token onto the order so the callback can match it.
+    await (supabase.from("orders") as any)
+      .update({ payment_provider: "iyzico", payment_token: result.token })
+      .eq("id", data.orderId);
+
+    return {
+      checkoutFormContent: result.checkoutFormContent,
+      token: result.token!,
+    };
+  });
