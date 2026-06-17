@@ -14,6 +14,9 @@ export const Route = createFileRoute("/")({
       { title: "OLD IRON — Disiplinden Dövülmüş" },
       { name: "description", content: "Almanya'da üretilen premium spor giyim & supplement. Old School zihniyeti, modern güç. Hiçbir mazeret yok." },
     ],
+    links: [
+      { rel: "preload", as: "image", href: "/images/hero-end.jpg", fetchpriority: "high" },
+    ],
   }),
   component: Home,
 });
