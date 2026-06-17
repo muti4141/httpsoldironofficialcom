@@ -74,22 +74,23 @@ export function ProductVideo({ src, poster, alt, loop = false, className = "" }:
       <video
         ref={videoRef}
         src={shouldLoad ? src : undefined}
-        poster={poster}
+        poster={shouldLoad ? poster : undefined}
         muted
         playsInline
         loop={loop}
-        preload="metadata"
+        preload="none"
         onPlay={() => {
           if (!videoRef.current?.ended) setEnded(false);
         }}
         onEnded={holdOnStartScene}
         className={`${className} ${poster && ended ? "opacity-0" : "opacity-100"}`}
       />
-      {poster && ended && (
+      {poster && (ended || !shouldLoad) && (
         <img
           src={poster}
           alt={alt}
-          loading="eager"
+          loading="lazy"
+          decoding="async"
           className={`absolute inset-0 ${className}`}
         />
       )}

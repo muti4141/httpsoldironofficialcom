@@ -14,6 +14,9 @@ export const Route = createFileRoute("/")({
       { title: "OLD IRON — Disiplinden Dövülmüş" },
       { name: "description", content: "Almanya'da üretilen premium spor giyim & supplement. Old School zihniyeti, modern güç. Hiçbir mazeret yok." },
     ],
+    links: [
+      { rel: "preload", as: "image", href: "/images/hero-end.jpg", fetchpriority: "high" },
+    ],
   }),
   component: Home,
 });
@@ -85,6 +88,15 @@ function Home() {
   useReveal();
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [heroEnded, setHeroEnded] = useState(false);
+  const [heroVideoSrc, setHeroVideoSrc] = useState<string | undefined>(undefined);
+  useEffect(() => {
+    const idle = (window as any).requestIdleCallback || ((cb: () => void) => setTimeout(cb, 600));
+    const handle = idle(() => setHeroVideoSrc("/videos/hero.mp4"));
+    return () => {
+      const cancel = (window as any).cancelIdleCallback;
+      if (cancel && typeof handle === "number") cancel(handle);
+    };
+  }, []);
   const add = useCart((s) => s.add);
 
   const products = useAllProducts();
@@ -101,12 +113,12 @@ function Home() {
       ════════════════════════════════════════════ */}
       <section className="relative min-h-screen flex items-center overflow-hidden">
         {/* Video background */}
-        <video ref={heroVideoRef} src="/videos/hero.mp4" autoPlay muted playsInline
+        <video ref={heroVideoRef} src={heroVideoSrc} poster="/images/hero-end.jpg" autoPlay muted playsInline preload="none"
           onEnded={() => { heroVideoRef.current?.pause(); setHeroEnded(true); }}
           className={`absolute inset-0 w-full h-full object-cover opacity-35 ${heroEnded ? "hidden" : "block"}`}
         />
         {heroEnded && (
-          <img src="/images/hero-end.jpg" alt="OLD IRON"
+          <img src="/images/hero-end.jpg" alt="OLD IRON" decoding="async"
             className="absolute inset-0 w-full h-full object-cover opacity-35" />
         )}
 
