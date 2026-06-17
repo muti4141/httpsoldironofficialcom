@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_products: {
+        Row: {
+          badge: string | null
+          category: string
+          category_label: string
+          created_at: string
+          description: string
+          flavors: string[]
+          free_shipping: boolean
+          id: string
+          image: string
+          name: string
+          original_price: number | null
+          price: number
+          servings: number | null
+          sort_order: number
+          subtitle: string
+          type: string
+          updated_at: string
+          video: string | null
+          video_poster: string | null
+          weights: string[]
+        }
+        Insert: {
+          badge?: string | null
+          category: string
+          category_label: string
+          created_at?: string
+          description?: string
+          flavors?: string[]
+          free_shipping?: boolean
+          id: string
+          image: string
+          name: string
+          original_price?: number | null
+          price: number
+          servings?: number | null
+          sort_order?: number
+          subtitle?: string
+          type: string
+          updated_at?: string
+          video?: string | null
+          video_poster?: string | null
+          weights?: string[]
+        }
+        Update: {
+          badge?: string | null
+          category?: string
+          category_label?: string
+          created_at?: string
+          description?: string
+          flavors?: string[]
+          free_shipping?: boolean
+          id?: string
+          image?: string
+          name?: string
+          original_price?: number | null
+          price?: number
+          servings?: number | null
+          sort_order?: number
+          subtitle?: string
+          type?: string
+          updated_at?: string
+          video?: string | null
+          video_poster?: string | null
+          weights?: string[]
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
