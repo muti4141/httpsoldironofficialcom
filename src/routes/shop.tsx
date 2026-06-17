@@ -40,6 +40,7 @@ function Shop() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [maxPrice, setMaxPrice] = useState(2000);
   const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">("default");
+  const products = useAllProducts();
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories((prev) =>
