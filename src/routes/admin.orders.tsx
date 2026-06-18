@@ -7,11 +7,8 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { getReadySession, getReturnPath } from "@/lib/auth-session";
-import {
-  checkIsAdmin,
-  listAllOrders,
-  updateOrderStatus,
-} from "@/lib/admin.functions";
+import { supabase } from "@/integrations/supabase/client";
+import { updateOrderStatus } from "@/lib/admin.functions";
 
 const STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled", "refunded", "expired"] as const;
 
@@ -45,6 +42,24 @@ type Order = {
   items: Item[];
 };
 
+const QUERY_TIMEOUT_MS = 12000;
+
+function withTimeout<T>(promise: PromiseLike<T>, message: string) {
+  return new Promise<T>((resolve, reject) => {
+    const timer = window.setTimeout(() => reject(new Error(message)), QUERY_TIMEOUT_MS);
+    promise.then(
+      (value) => {
+        window.clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        window.clearTimeout(timer);
+        reject(error);
+      },
+    );
+  });
+}
+
 export const Route = createFileRoute("/admin/orders")({
   ssr: false,
   head: () => ({
@@ -72,8 +87,6 @@ const STATUS_COLORS: Record<string, string> = {
 
 function AdminOrdersPage() {
   const navigate = useNavigate();
-  const check = useServerFn(checkIsAdmin);
-  const list = useServerFn(listAllOrders);
   const update = useServerFn(updateOrderStatus);
 
   const [authorized, setAuthorized] = useState<boolean | null>(null);
@@ -85,23 +98,56 @@ function AdminOrdersPage() {
   useEffect(() => {
     let active = true;
     (async () => {
+      setLoading(true);
       try {
-        const session = await getReadySession();
+        const session = await getReadySession(5000);
         if (!session) {
           navigate({ to: "/auth", search: { mode: "login", redirect: getReturnPath(window.location) }, replace: true });
           return;
         }
-        const { isAdmin } = await check();
+        const roleResult = await withTimeout(
+          supabase
+            .from("user_roles")
+            .select("role")
+            .eq("user_id", session.user.id)
+            .eq("role", "admin")
+            .maybeSingle(),
+          "Yönetici yetkisi kontrol edilemedi. Lütfen sayfayı yenileyin.",
+        );
         if (!active) return;
-        if (!isAdmin) {
+        if (roleResult.error) throw roleResult.error;
+        if (!roleResult.data) {
           setAuthorized(false);
-          setLoading(false);
           return;
         }
         setAuthorized(true);
-        const { orders } = await list();
+        const ordersResult = await withTimeout(
+          supabase
+            .from("orders")
+            .select("*")
+            .order("created_at", { ascending: false })
+            .limit(500),
+          "Siparişler yüklenemedi. Lütfen sayfayı yenileyin.",
+        );
         if (!active) return;
-        setOrders(orders as Order[]);
+        if (ordersResult.error) throw ordersResult.error;
+
+        const orderRows = (ordersResult.data ?? []) as any[];
+        const ids = orderRows.map((order) => order.id);
+        const itemsByOrder: Record<string, Item[]> = {};
+        if (ids.length > 0) {
+          const itemsResult = await withTimeout(
+            supabase.from("order_items").select("*").in("order_id", ids),
+            "Sipariş ürünleri yüklenemedi. Lütfen sayfayı yenileyin.",
+          );
+          if (!active) return;
+          if (itemsResult.error) throw itemsResult.error;
+          for (const item of (itemsResult.data ?? []) as any[]) {
+            (itemsByOrder[item.order_id] ||= []).push(item as Item);
+          }
+        }
+
+        setOrders(orderRows.map((order) => ({ ...order, items: itemsByOrder[order.id] ?? [] })) as Order[]);
       } catch (e: any) {
         if (!active) return;
         toast.error(e?.message ?? "Yüklenirken hata oluştu");
@@ -113,7 +159,7 @@ function AdminOrdersPage() {
     return () => {
       active = false;
     };
-  }, [check, list, navigate]);
+  }, [navigate]);
 
   const handleStatus = async (orderId: string, status: string) => {
     try {
