@@ -19,7 +19,10 @@ type Order = {
   created_at: string;
   email: string;
   full_name: string;
+  phone: string | null;
+  shipping_address: string;
   shipping_city: string;
+  shipping_zip: string;
   shipping_country: string;
   total_cents: number;
   currency: string;
