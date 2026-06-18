@@ -370,7 +370,7 @@ function AdminOrdersPage() {
                           <label className="text-sm text-muted-foreground">Durum:</label>
                           <select
                             value={o.status}
-                            onChange={(e) => handleStatus(o.id, e.target.value)}
+                            onChange={(e) => handleStatus(o.id, e.target.value as AdminStatus)}
                             className="bg-background border border-border rounded px-2 py-1 text-sm"
                           >
                             {STATUSES.map((s) => (
