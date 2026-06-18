@@ -214,6 +214,100 @@ function Home() {
 
 
       {/* ════════════════════════════════════════════
+          PİRİNÇ UNU
+      ════════════════════════════════════════════ */}
+      <section className="supplement-gradient py-stack-xl relative overflow-hidden">
+        <div className="absolute inset-0 grain-overlay opacity-25 pointer-events-none" />
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-warm/20 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-warm/10 to-transparent" />
+
+        <div className="relative z-10 max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop">
+
+          {/* Section header */}
+          <div className="reveal flex items-end justify-between mb-14 flex-wrap gap-6">
+            <div>
+              <p className="text-eyebrow mb-3">Koleksiyon 01</p>
+              <h2 className="font-display text-[clamp(2.5rem,6vw,4.5rem)] uppercase text-primary leading-none">
+                Pirinç Unu
+              </h2>
+              <div className="flex items-center gap-3 mt-4">
+                <span className="accent-line" />
+                <span className="text-[11px] text-secondary uppercase tracking-widest">Gluten İçermez · Kolay Karışım · Lezzetli Aroma</span>
+              </div>
+            </div>
+            <Link to="/shop"
+              className="link-underline text-[12px] uppercase tracking-[0.2em] text-accent-warm hover:text-primary transition-colors flex items-center gap-2 cursor-pointer">
+              Tüm Pirinç Unları
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </Link>
+          </div>
+
+          {/* Product grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {carbsFeatured.map((p, i) => (
+              <Link key={p.id} to="/product/$id" params={{ id: p.id }}
+                className="reveal group supplement-card-glow orange-bevel card-shimmer bg-surface-container cursor-pointer overflow-hidden"
+                style={{ transitionDelay: `${i * 80}ms` }}>
+
+                <div className="aspect-[4/5] overflow-hidden bg-surface-container-high relative">
+                  {p.video ? (
+                    <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
+                  ) : (
+                    <img src={p.image || SUPPLEMENT_PLACEHOLDER} alt={p.name} loading="lazy"
+                      onError={(e) => { e.currentTarget.src = SUPPLEMENT_PLACEHOLDER; }}
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
+                  )}
+
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
+                    style={{ background: "radial-gradient(ellipse at 50% 80%, rgba(232,132,58,0.12) 0%, transparent 60%)" }} />
+
+                  {p.badge && (
+                    <span className="absolute top-4 left-4 bg-accent-warm pulse-glow text-on-primary-container text-[10px] font-bold uppercase tracking-widest px-3 py-1 z-10">
+                      {p.badge}
+                    </span>
+                  )}
+                  {p.servings && (
+                    <span className="absolute bottom-4 right-4 bg-background/85 text-primary text-[10px] uppercase tracking-widest px-2.5 py-1 border border-outline-variant/30 z-10">
+                      {p.servings} Porsiyon
+                    </span>
+                  )}
+
+                  <button
+                    onClick={(e) => { e.preventDefault(); add(p, "Standart"); toast.success(`${p.name} sepete eklendi`); }}
+                    className="absolute bottom-4 left-4 right-4 bg-accent-warm text-on-primary-container
+                      font-headline text-[14px] uppercase tracking-widest py-2.5
+                      translate-y-14 opacity-0 group-hover:translate-y-0 group-hover:opacity-100
+                      transition-all duration-300 flex items-center justify-center gap-2 z-10">
+                    <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
+                    Ekle
+                  </button>
+                </div>
+
+                <div className="p-4">
+                  <p className="text-[10px] text-accent-warm/80 uppercase tracking-[0.2em] mb-1">{p.categoryLabel}</p>
+                  <h3 className="font-headline text-[19px] text-primary uppercase leading-tight mb-0.5">{p.name}</h3>
+                  <p className="text-[12px] text-secondary mb-3">{p.subtitle}</p>
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-[15px] text-accent-warm font-semibold">₺{p.price.toFixed(2)}</span>
+                    {p.originalPrice && (
+                      <>
+                        <span className="text-[12px] text-outline line-through">₺{p.originalPrice.toFixed(2)}</span>
+                        <span className="text-[10px] bg-accent-warm/15 text-accent-warm px-1.5 py-0.5 font-bold">
+                          -%{Math.round((1 - p.price / p.originalPrice) * 100)}
+                        </span>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* ════════════════════════════════════════════
           SUPPLEMENT — Diagonal section
       ════════════════════════════════════════════ */}
       <section className="supplement-gradient clip-diagonal py-stack-xl relative overflow-hidden">
@@ -229,7 +323,7 @@ function Home() {
           {/* Section header */}
           <div className="reveal flex items-end justify-between mb-14 flex-wrap gap-6">
             <div>
-              <p className="text-eyebrow mb-3">Koleksiyon 01</p>
+              <p className="text-eyebrow mb-3">Koleksiyon 02</p>
               <h2 className="font-display text-[clamp(2.5rem,6vw,4.5rem)] uppercase text-primary leading-none">
                 Supplement
               </h2>
@@ -278,100 +372,6 @@ function Home() {
                   )}
 
                   {/* Quick add */}
-                  <button
-                    onClick={(e) => { e.preventDefault(); add(p, "Standart"); toast.success(`${p.name} sepete eklendi`); }}
-                    className="absolute bottom-4 left-4 right-4 bg-accent-warm text-on-primary-container
-                      font-headline text-[14px] uppercase tracking-widest py-2.5
-                      translate-y-14 opacity-0 group-hover:translate-y-0 group-hover:opacity-100
-                      transition-all duration-300 flex items-center justify-center gap-2 z-10">
-                    <span className="material-symbols-outlined text-[15px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
-                    Ekle
-                  </button>
-                </div>
-
-                <div className="p-4">
-                  <p className="text-[10px] text-accent-warm/80 uppercase tracking-[0.2em] mb-1">{p.categoryLabel}</p>
-                  <h3 className="font-headline text-[19px] text-primary uppercase leading-tight mb-0.5">{p.name}</h3>
-                  <p className="text-[12px] text-secondary mb-3">{p.subtitle}</p>
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-[15px] text-accent-warm font-semibold">₺{p.price.toFixed(2)}</span>
-                    {p.originalPrice && (
-                      <>
-                        <span className="text-[12px] text-outline line-through">₺{p.originalPrice.toFixed(2)}</span>
-                        <span className="text-[10px] bg-accent-warm/15 text-accent-warm px-1.5 py-0.5 font-bold">
-                          -%{Math.round((1 - p.price / p.originalPrice) * 100)}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* ════════════════════════════════════════════
-          PİRİNÇ UNU
-      ════════════════════════════════════════════ */}
-      <section className="supplement-gradient py-stack-xl relative overflow-hidden">
-        <div className="absolute inset-0 grain-overlay opacity-25 pointer-events-none" />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-warm/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-accent-warm/10 to-transparent" />
-
-        <div className="relative z-10 max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop">
-
-          {/* Section header */}
-          <div className="reveal flex items-end justify-between mb-14 flex-wrap gap-6">
-            <div>
-              <p className="text-eyebrow mb-3">Koleksiyon 01-B</p>
-              <h2 className="font-display text-[clamp(2.5rem,6vw,4.5rem)] uppercase text-primary leading-none">
-                Pirinç Unu
-              </h2>
-              <div className="flex items-center gap-3 mt-4">
-                <span className="accent-line" />
-                <span className="text-[11px] text-secondary uppercase tracking-widest">Gluten İçermez · Kolay Karışım · Lezzetli Aroma</span>
-              </div>
-            </div>
-            <Link to="/shop"
-              className="link-underline text-[12px] uppercase tracking-[0.2em] text-accent-warm hover:text-primary transition-colors flex items-center gap-2 cursor-pointer">
-              Tüm Pirinç Unları
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
-          </div>
-
-          {/* Product grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {carbsFeatured.map((p, i) => (
-              <Link key={p.id} to="/product/$id" params={{ id: p.id }}
-                className="reveal group supplement-card-glow orange-bevel card-shimmer bg-surface-container cursor-pointer overflow-hidden"
-                style={{ transitionDelay: `${i * 80}ms` }}>
-
-                <div className="aspect-[4/5] overflow-hidden bg-surface-container-high relative">
-                  {p.video ? (
-                    <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
-                  ) : (
-                    <img src={p.image || SUPPLEMENT_PLACEHOLDER} alt={p.name} loading="lazy"
-                      onError={(e) => { e.currentTarget.src = SUPPLEMENT_PLACEHOLDER; }}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.06]" />
-                  )}
-
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-400 pointer-events-none"
-                    style={{ background: "radial-gradient(ellipse at 50% 80%, rgba(232,132,58,0.12) 0%, transparent 60%)" }} />
-
-                  {p.badge && (
-                    <span className="absolute top-4 left-4 bg-accent-warm pulse-glow text-on-primary-container text-[10px] font-bold uppercase tracking-widest px-3 py-1 z-10">
-                      {p.badge}
-                    </span>
-                  )}
-                  {p.servings && (
-                    <span className="absolute bottom-4 right-4 bg-background/85 text-primary text-[10px] uppercase tracking-widest px-2.5 py-1 border border-outline-variant/30 z-10">
-                      {p.servings} Porsiyon
-                    </span>
-                  )}
-
                   <button
                     onClick={(e) => { e.preventDefault(); add(p, "Standart"); toast.success(`${p.name} sepete eklendi`); }}
                     className="absolute bottom-4 left-4 right-4 bg-accent-warm text-on-primary-container
