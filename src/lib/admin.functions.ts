@@ -33,13 +33,23 @@ export const listAllOrders = createServerFn({ method: "GET" })
   .handler(async ({ context }) => {
     const { supabase, userId } = context;
     await assertAdmin(supabase, userId);
-    const { data, error } = await supabase
+    const { data: orders, error } = await supabase
       .from("orders")
       .select("*")
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw new Error(error.message);
-    return { orders: data ?? [] };
+    const ids = (orders ?? []).map((o: any) => o.id);
+    const itemsByOrder: Record<string, any[]> = {};
+    if (ids.length) {
+      const { data: items, error: iErr } = await supabase
+        .from("order_items")
+        .select("*")
+        .in("order_id", ids);
+      if (iErr) throw new Error(iErr.message);
+      for (const it of items ?? []) (itemsByOrder[it.order_id] ||= []).push(it);
+    }
+    return { orders: (orders ?? []).map((o: any) => ({ ...o, items: itemsByOrder[o.id] ?? [] })) };
   });
 
 export const getOrderDetails = createServerFn({ method: "GET" })
