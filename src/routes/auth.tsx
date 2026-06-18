@@ -5,8 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import { getReadySession, setPostAuthRedirect } from "@/lib/auth-session";
 
 export const Route = createFileRoute("/auth")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Giriş Yap — OLD IRON" },
@@ -24,8 +26,8 @@ export const Route = createFileRoute("/auth")({
     };
   },
   beforeLoad: async ({ search }) => {
-    const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: search.redirect });
+    const session = await getReadySession();
+    if (session) throw redirect({ to: search.redirect });
   },
   component: AuthPage,
 });
@@ -59,6 +61,7 @@ function AuthPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         toast.success("Tekrar hoş geldin.");
+        setPostAuthRedirect(redirectTo);
         navigate({ to: redirectTo });
       }
     } catch (err) {
@@ -71,7 +74,8 @@ function AuthPage() {
   const handleGoogle = async () => {
     setBusy(true);
     const target = redirectTo && redirectTo.startsWith("/") ? redirectTo : "/";
-    const redirectUri = window.location.origin + target;
+    setPostAuthRedirect(target);
+    const redirectUri = window.location.origin;
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirectUri });
     if (result.error) { toast.error(result.error.message); setBusy(false); return; }
     if (result.redirected) return;

@@ -4,6 +4,7 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useNavigate,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
@@ -15,6 +16,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { CookieBanner } from "@/components/CookieBanner";
 import { PerfMonitor } from "@/components/PerfMonitor";
 import { supabase } from "@/integrations/supabase/client";
+import { getReadySession, takePostAuthRedirect } from "@/lib/auth-session";
 
 function NotFoundComponent() {
   return (
@@ -137,15 +139,32 @@ function RootComponent() {
 
 function AuthSync() {
   const router = useRouter();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   useEffect(() => {
+    let active = true;
+    getReadySession(1500).then((session) => {
+      if (!active || !session) return;
+      const redirectTo = takePostAuthRedirect();
+      if (redirectTo) navigate({ to: redirectTo as never, replace: true });
+    });
+
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
       router.invalidate();
-      queryClient.invalidateQueries();
+      if (event === "SIGNED_OUT") queryClient.clear();
+      else {
+        queryClient.invalidateQueries();
+        const redirectTo = takePostAuthRedirect();
+        if (redirectTo) navigate({ to: redirectTo as never, replace: true });
+      }
     });
-    return () => subscription.unsubscribe();
-  }, [router, queryClient]);
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [router, queryClient, navigate]);
   return null;
 }

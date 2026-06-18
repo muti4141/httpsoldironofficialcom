@@ -6,7 +6,7 @@ import { ChevronDown, ChevronRight, Package, MapPin, User, Mail, Phone } from "l
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { getReadySession, getReturnPath } from "@/lib/auth-session";
 import {
   checkIsAdmin,
   listAllOrders,
@@ -46,6 +46,7 @@ type Order = {
 };
 
 export const Route = createFileRoute("/admin/orders")({
+  ssr: false,
   head: () => ({
     meta: [
       { title: "Admin — Siparişler" },
@@ -53,9 +54,9 @@ export const Route = createFileRoute("/admin/orders")({
     ],
   }),
   beforeLoad: async ({ location }) => {
-    const { data } = await supabase.auth.getSession();
-    if (!data.session) {
-      throw redirect({ to: "/auth", search: { mode: "login", redirect: location.href } });
+    const session = await getReadySession();
+    if (!session) {
+      throw redirect({ to: "/auth", search: { mode: "login", redirect: getReturnPath(location) } });
     }
   },
   component: AdminOrdersPage,
