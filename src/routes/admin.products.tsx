@@ -24,8 +24,18 @@ export const Route = createFileRoute("/admin/products")({
       throw redirect({ to: "/auth", search: { mode: "login", redirect: location.href } });
     }
   },
-  component: AdminProductsPage,
+  component: AdminProductsGated,
 });
+
+import { AdminGate } from "@/components/AdminGate";
+
+function AdminProductsGated() {
+  return (
+    <AdminGate>
+      <AdminProductsPage />
+    </AdminGate>
+  );
+}
 
 type Row = {
   id: string;
