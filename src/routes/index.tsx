@@ -414,7 +414,7 @@ function Home() {
         {/* Section header */}
         <div className="reveal flex items-end justify-between mb-14 flex-wrap gap-6">
           <div>
-            <p className="text-eyebrow mb-3">Koleksiyon 02</p>
+            <p className="text-eyebrow mb-3">Koleksiyon 03</p>
             <h2 className="font-display text-[clamp(2.5rem,6vw,4.5rem)] uppercase text-primary leading-none">
               Spor Giyim
             </h2>
