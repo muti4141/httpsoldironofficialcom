@@ -42,18 +42,8 @@ export const Route = createFileRoute("/admin/orders")({
       throw redirect({ to: "/auth", search: { mode: "login", redirect: location.href } });
     }
   },
-  component: AdminOrdersGated,
+  component: AdminOrdersPage,
 });
-
-import { AdminGate } from "@/components/AdminGate";
-
-function AdminOrdersGated() {
-  return (
-    <AdminGate>
-      <AdminOrdersPage />
-    </AdminGate>
-  );
-}
 
 function fmt(cents: number, currency = "TRY") {
   return new Intl.NumberFormat("tr-TR", { style: "currency", currency }).format(cents / 100);
