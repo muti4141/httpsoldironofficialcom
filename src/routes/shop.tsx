@@ -25,12 +25,12 @@ const APPAREL_CATEGORIES = [
 ];
 
 const SUPPLEMENT_CATEGORIES = [
+  { value: "carbs",       label: "Pirinç Unu" },
   { value: "protein",     label: "Protein" },
   { value: "creatine",    label: "Kreatin" },
   { value: "preworkout",  label: "Pre-Workout" },
   { value: "aminoacids",  label: "Amino Asit" },
   { value: "thermo",      label: "Thermo & Enerji" },
-  { value: "carbs",       label: "Pirinç Unu" },
 ];
 
 type Tab = "all" | "apparel" | "supplement";
