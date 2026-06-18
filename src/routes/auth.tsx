@@ -70,7 +70,9 @@ function AuthPage() {
 
   const handleGoogle = async () => {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+    const target = redirectTo && redirectTo.startsWith("/") ? redirectTo : "/";
+    const redirectUri = window.location.origin + target;
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirectUri });
     if (result.error) { toast.error(result.error.message); setBusy(false); return; }
     if (result.redirected) return;
     navigate({ to: redirectTo });
