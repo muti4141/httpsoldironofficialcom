@@ -64,8 +64,17 @@ export async function getReadySession(timeoutMs = 1200) {
   return data.session;
 }
 
-export function getReturnPath(location: { pathname: string; search?: string; searchStr?: string; hash?: string }) {
-  const hash = location.hash ? (location.hash.startsWith("#") ? location.hash : `#${location.hash}`) : "";
+export function getReturnPath(location: {
+  pathname: string;
+  search?: string;
+  searchStr?: string;
+  hash?: string;
+}) {
+  const hash = location.hash
+    ? location.hash.startsWith("#")
+      ? location.hash
+      : `#${location.hash}`
+    : "";
   return `${location.pathname}${location.search ?? location.searchStr ?? ""}${hash}`;
 }
 
