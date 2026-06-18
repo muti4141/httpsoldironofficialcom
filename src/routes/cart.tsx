@@ -31,8 +31,11 @@ function CartPage() {
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const kdv      = subtotal * 0.20;
   const allFreeShipping = items.length > 0 && items.every((i) => i.freeShipping);
-  const shipping = allFreeShipping || subtotal >= 1500 ? 0 : 140;
+  const freeShippingEligible = allFreeShipping || subtotal >= 1500;
+  // 1500₺ altı: kargo alıcı ödemeli (kapıda). Sipariş tutarına eklenmez.
+  const shipping = 0;
   const total    = subtotal + shipping;
+
 
   const checkout = async () => {
     setPlacing(true);
@@ -171,9 +174,16 @@ function CartPage() {
                 <h2 className="font-headline text-[22px] uppercase text-primary">Sipariş Özeti</h2>
                 <div className="space-y-3 text-[15px] text-secondary border-b border-outline-variant/30 pb-6">
                   <div className="flex justify-between"><span>Ara Toplam</span><span>₺{subtotal.toFixed(2)}</span></div>
-                  <div className="flex justify-between"><span>Kargo</span><span>{shipping === 0 ? "Ücretsiz" : `₺${shipping.toFixed(2)}`}</span></div>
-                  {subtotal < 1500 && (
-                    <p className="text-[12px] text-accent-warm">₺{(1500 - subtotal).toFixed(2)} daha ekle, ücretsiz kargo kazan!</p>
+                  <div className="flex justify-between">
+                    <span>Kargo</span>
+                    <span>{freeShippingEligible ? "Ücretsiz" : "Alıcı Ödemeli"}</span>
+                  </div>
+                  {!freeShippingEligible && (
+                    <div className="bg-accent-warm/10 border border-accent-warm/30 px-3 py-2 text-[12px] text-secondary leading-snug">
+                      <span className="text-accent-warm font-semibold">Dikkat:</span> 1500₺ altı siparişlerde{" "}
+                      <span className="text-accent-warm font-semibold">140₺ kargo ücreti alıcı ödemelidir</span>{" "}
+                      (kapıda kuryeye ödenir, sipariş tutarına eklenmez). ₺{(1500 - subtotal).toFixed(2)} daha ekle, ücretsiz kargo kazan!
+                    </div>
                   )}
                   <div className="flex justify-between pt-4 text-primary font-bold">
                     <span className="uppercase tracking-widest">Toplam</span>
