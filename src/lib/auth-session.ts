@@ -1,5 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
+const POST_AUTH_REDIRECT_KEY = "oldiron.postAuthRedirect";
+
 const AUTH_PARAM_KEYS = new Set([
   "access_token",
   "refresh_token",
@@ -62,4 +64,17 @@ export async function getReadySession(timeoutMs = 3000) {
 export function getReturnPath(location: { pathname: string; searchStr?: string; hash?: string }) {
   const hash = location.hash ? (location.hash.startsWith("#") ? location.hash : `#${location.hash}`) : "";
   return `${location.pathname}${location.searchStr ?? ""}${hash}`;
+}
+
+export function setPostAuthRedirect(path: string) {
+  if (typeof window === "undefined") return;
+  const safePath = path.startsWith("/") && !path.startsWith("//") && !path.includes("://") ? path : "/";
+  window.sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, safePath);
+}
+
+export function takePostAuthRedirect() {
+  if (typeof window === "undefined") return null;
+  const path = window.sessionStorage.getItem(POST_AUTH_REDIRECT_KEY);
+  window.sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
+  return path && path.startsWith("/") && !path.startsWith("//") && !path.includes("://") ? path : null;
 }
