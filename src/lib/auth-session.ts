@@ -41,7 +41,7 @@ function stripAuthParamsFromUrl() {
   window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
 }
 
-export async function getReadySession(timeoutMs = 3000) {
+export async function getReadySession(timeoutMs = 1200) {
   if (typeof window === "undefined") return null;
 
   const tokens = readAuthParams();
@@ -49,6 +49,9 @@ export async function getReadySession(timeoutMs = 3000) {
     const { error } = await supabase.auth.setSession(tokens);
     if (!error) stripAuthParamsFromUrl();
   }
+
+  const { data: initialData } = await supabase.auth.getSession();
+  if (initialData.session || !tokens) return initialData.session;
 
   const startedAt = Date.now();
   while (Date.now() - startedAt < timeoutMs) {
@@ -61,9 +64,9 @@ export async function getReadySession(timeoutMs = 3000) {
   return data.session;
 }
 
-export function getReturnPath(location: { pathname: string; searchStr?: string; hash?: string }) {
+export function getReturnPath(location: { pathname: string; search?: string; searchStr?: string; hash?: string }) {
   const hash = location.hash ? (location.hash.startsWith("#") ? location.hash : `#${location.hash}`) : "";
-  return `${location.pathname}${location.searchStr ?? ""}${hash}`;
+  return `${location.pathname}${location.search ?? location.searchStr ?? ""}${hash}`;
 }
 
 export function getSafeRedirectPath(path: string, fallback = "/") {
