@@ -122,14 +122,14 @@ function AdminOrdersPage() {
                   <th className="px-4 py-3">Tarih</th>
                   <th className="px-4 py-3">No</th>
                   <th className="px-4 py-3">Müşteri</th>
-                  <th className="px-4 py-3">Şehir</th>
+                  <th className="px-4 py-3">Adres</th>
                   <th className="px-4 py-3 text-right">Tutar</th>
                   <th className="px-4 py-3">Durum</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((o) => (
-                  <tr key={o.id} className="border-t border-border hover:bg-muted/20">
+                  <tr key={o.id} className="border-t border-border hover:bg-muted/20 align-top">
                     <td className="px-4 py-3 whitespace-nowrap">
                       {new Date(o.created_at).toLocaleString("tr-TR")}
                     </td>
@@ -141,11 +141,15 @@ function AdminOrdersPage() {
                     <td className="px-4 py-3">
                       <div className="font-medium">{o.full_name}</div>
                       <div className="text-xs text-muted-foreground">{o.email}</div>
+                      {o.phone && <div className="text-xs text-muted-foreground">{o.phone}</div>}
                     </td>
-                    <td className="px-4 py-3">
-                      {o.shipping_city}, {o.shipping_country}
+                    <td className="px-4 py-3 max-w-xs">
+                      <div className="whitespace-pre-wrap break-words">{o.shipping_address}</div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {o.shipping_zip} {o.shipping_city}, {o.shipping_country}
+                      </div>
                     </td>
-                    <td className="px-4 py-3 text-right font-medium">
+                    <td className="px-4 py-3 text-right font-medium whitespace-nowrap">
                       {fmt(o.total_cents, o.currency)}
                     </td>
                     <td className="px-4 py-3">
