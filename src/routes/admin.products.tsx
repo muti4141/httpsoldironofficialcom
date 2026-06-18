@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -20,12 +20,6 @@ export const Route = createFileRoute("/admin/products")({
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
-  beforeLoad: async ({ location }) => {
-    const session = await getReadySession();
-    if (!session) {
-      throw redirect({ to: "/auth", search: { mode: "login", redirect: getReturnPath(location) } });
-    }
-  },
   component: AdminProductsPage,
 });
 
@@ -81,6 +75,7 @@ function slugify(s: string) {
 }
 
 function AdminProductsPage() {
+  const navigate = useNavigate();
   const check = useServerFn(checkIsAdmin);
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
@@ -101,9 +96,16 @@ function AdminProductsPage() {
   };
 
   useEffect(() => {
+    let active = true;
     (async () => {
       try {
+        const session = await getReadySession();
+        if (!session) {
+          navigate({ to: "/auth", search: { mode: "login", redirect: getReturnPath(window.location) }, replace: true });
+          return;
+        }
         const { isAdmin } = await check();
+        if (!active) return;
         if (!isAdmin) {
           setAuthorized(false);
           setLoading(false);
@@ -112,13 +114,17 @@ function AdminProductsPage() {
         setAuthorized(true);
         await refresh();
       } catch (e: any) {
+        if (!active) return;
         toast.error(e?.message ?? "Hata");
         setAuthorized(false);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     })();
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [check, navigate]);
 
   const resetForm = () => {
     setForm(EMPTY);
