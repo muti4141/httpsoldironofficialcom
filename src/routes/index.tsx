@@ -15,7 +15,7 @@ export const Route = createFileRoute("/")({
       { name: "description", content: "Türkiye'de üretilen premium spor giyim & supplement. Old School zihniyeti, modern güç. Hiçbir mazeret yok." },
     ],
     links: [
-      { rel: "preload", as: "image", href: "/images/hero-end.jpg", fetchpriority: "high" },
+      { rel: "preload", as: "image", href: "/images/hero-end.jpg", fetchPriority: "high" },
     ],
   }),
   component: Home,

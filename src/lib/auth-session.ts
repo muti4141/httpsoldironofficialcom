@@ -66,9 +66,15 @@ export function getReturnPath(location: { pathname: string; searchStr?: string; 
   return `${location.pathname}${location.searchStr ?? ""}${hash}`;
 }
 
+export function getSafeRedirectPath(path: string, fallback = "/") {
+  if (!path.startsWith("/") || path.startsWith("//") || path.includes("://")) return fallback;
+  if (path === "/auth" || path.startsWith("/auth?")) return fallback;
+  return path;
+}
+
 export function setPostAuthRedirect(path: string) {
   if (typeof window === "undefined") return;
-  const safePath = path.startsWith("/") && !path.startsWith("//") && !path.includes("://") ? path : "/";
+  const safePath = getSafeRedirectPath(path);
   window.sessionStorage.setItem(POST_AUTH_REDIRECT_KEY, safePath);
 }
 
@@ -76,5 +82,5 @@ export function takePostAuthRedirect() {
   if (typeof window === "undefined") return null;
   const path = window.sessionStorage.getItem(POST_AUTH_REDIRECT_KEY);
   window.sessionStorage.removeItem(POST_AUTH_REDIRECT_KEY);
-  return path && path.startsWith("/") && !path.startsWith("//") && !path.includes("://") ? path : null;
+  return path ? getSafeRedirectPath(path, "") || null : null;
 }

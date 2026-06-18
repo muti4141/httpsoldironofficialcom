@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -53,12 +53,6 @@ export const Route = createFileRoute("/admin/orders")({
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
-  beforeLoad: async ({ location }) => {
-    const session = await getReadySession();
-    if (!session) {
-      throw redirect({ to: "/auth", search: { mode: "login", redirect: getReturnPath(location) } });
-    }
-  },
   component: AdminOrdersPage,
 });
 
@@ -77,6 +71,7 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 function AdminOrdersPage() {
+  const navigate = useNavigate();
   const check = useServerFn(checkIsAdmin);
   const list = useServerFn(listAllOrders);
   const update = useServerFn(updateOrderStatus);
@@ -88,9 +83,16 @@ function AdminOrdersPage() {
   const [filter, setFilter] = useState<string>("all");
 
   useEffect(() => {
+    let active = true;
     (async () => {
       try {
+        const session = await getReadySession();
+        if (!session) {
+          navigate({ to: "/auth", search: { mode: "login", redirect: getReturnPath(window.location) }, replace: true });
+          return;
+        }
         const { isAdmin } = await check();
+        if (!active) return;
         if (!isAdmin) {
           setAuthorized(false);
           setLoading(false);
@@ -98,15 +100,20 @@ function AdminOrdersPage() {
         }
         setAuthorized(true);
         const { orders } = await list();
+        if (!active) return;
         setOrders(orders as Order[]);
       } catch (e: any) {
+        if (!active) return;
         toast.error(e?.message ?? "Yüklenirken hata oluştu");
         setAuthorized(false);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
     })();
-  }, []);
+    return () => {
+      active = false;
+    };
+  }, [check, list, navigate]);
 
   const handleStatus = async (orderId: string, status: string) => {
     try {

@@ -1,11 +1,11 @@
-import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { getReadySession, setPostAuthRedirect } from "@/lib/auth-session";
+import { getReadySession, getSafeRedirectPath, setPostAuthRedirect } from "@/lib/auth-session";
 
 export const Route = createFileRoute("/auth")({
   ssr: false,
@@ -17,17 +17,10 @@ export const Route = createFileRoute("/auth")({
   }),
   validateSearch: (s: Record<string, unknown>) => {
     const raw = typeof s.redirect === "string" ? s.redirect : "/";
-    // Only allow same-origin relative paths to prevent open-redirect.
-    const safeRedirect =
-      raw.startsWith("/") && !raw.startsWith("//") && !raw.includes("://") ? raw : "/";
     return {
       mode: (s.mode === "signup" ? "signup" : "login") as "login" | "signup",
-      redirect: safeRedirect,
+      redirect: getSafeRedirectPath(raw, "/admin/orders"),
     };
-  },
-  beforeLoad: async ({ search }) => {
-    const session = await getReadySession();
-    if (session) throw redirect({ to: search.redirect });
   },
   component: AuthPage,
 });
@@ -41,6 +34,16 @@ function AuthPage() {
   const [busy,        setBusy]        = useState(false);
 
   const isSignup = mode === "signup";
+
+  useEffect(() => {
+    let active = true;
+    getReadySession().then((session) => {
+      if (active && session) navigate({ to: redirectTo, replace: true });
+    });
+    return () => {
+      active = false;
+    };
+  }, [navigate, redirectTo]);
 
   const handleEmailAuth = async (e: FormEvent) => {
     e.preventDefault();
