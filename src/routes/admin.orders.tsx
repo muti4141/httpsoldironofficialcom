@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { updateOrderStatus } from "@/lib/admin.functions";
 
 const STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled", "refunded", "expired"] as const;
+type AdminStatus = (typeof STATUSES)[number];
 
 type Item = {
   id: string;
@@ -42,6 +43,9 @@ type Order = {
   items: Item[];
 };
 
+type OrderRow = Omit<Order, "items">;
+type OrderItemRow = Item & { order_id: string };
+
 const QUERY_TIMEOUT_MS = 12000;
 
 function withTimeout<T>(promise: PromiseLike<T>, message: string) {
@@ -58,6 +62,10 @@ function withTimeout<T>(promise: PromiseLike<T>, message: string) {
       },
     );
   });
+}
+
+function getErrorMessage(error: unknown, fallback: string) {
+  return error instanceof Error ? error.message : fallback;
 }
 
 export const Route = createFileRoute("/admin/orders")({
@@ -132,7 +140,7 @@ function AdminOrdersPage() {
         if (!active) return;
         if (ordersResult.error) throw ordersResult.error;
 
-        const orderRows = (ordersResult.data ?? []) as any[];
+        const orderRows = (ordersResult.data ?? []) as OrderRow[];
         const ids = orderRows.map((order) => order.id);
         const itemsByOrder: Record<string, Item[]> = {};
         if (ids.length > 0) {
@@ -142,15 +150,15 @@ function AdminOrdersPage() {
           );
           if (!active) return;
           if (itemsResult.error) throw itemsResult.error;
-          for (const item of (itemsResult.data ?? []) as any[]) {
-            (itemsByOrder[item.order_id] ||= []).push(item as Item);
+          for (const item of (itemsResult.data ?? []) as OrderItemRow[]) {
+            (itemsByOrder[item.order_id] ||= []).push(item);
           }
         }
 
         setOrders(orderRows.map((order) => ({ ...order, items: itemsByOrder[order.id] ?? [] })) as Order[]);
-      } catch (e: any) {
+      } catch (e: unknown) {
         if (!active) return;
-        toast.error(e?.message ?? "Yüklenirken hata oluştu");
+        toast.error(getErrorMessage(e, "Yüklenirken hata oluştu"));
         setAuthorized(false);
       } finally {
         if (active) setLoading(false);
@@ -161,13 +169,13 @@ function AdminOrdersPage() {
     };
   }, [navigate]);
 
-  const handleStatus = async (orderId: string, status: string) => {
+  const handleStatus = async (orderId: string, status: AdminStatus) => {
     try {
-      await update({ data: { orderId, status: status as any } });
+      await update({ data: { orderId, status } });
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status } : o)));
       toast.success("Durum güncellendi");
-    } catch (e: any) {
-      toast.error(e?.message ?? "Güncelleme başarısız");
+    } catch (e: unknown) {
+      toast.error(getErrorMessage(e, "Güncelleme başarısız"));
     }
   };
 
