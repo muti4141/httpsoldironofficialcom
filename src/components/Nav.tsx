@@ -304,7 +304,7 @@ export function Nav() {
 
           {/* Footer */}
           <div className="px-6 py-4 border-t border-outline-variant/20 flex-shrink-0">
-            <p className="text-[10px] text-outline uppercase tracking-widest">Almanya'da Üretildi · Türkiye'ye Teslim</p>
+            <p className="text-[10px] text-outline uppercase tracking-widest">Türkiye'de Üretildi · Türkiye'ye Teslim</p>
           </div>
         </div>
       </div>

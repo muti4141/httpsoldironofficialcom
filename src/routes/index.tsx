@@ -12,7 +12,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "OLD IRON — Disiplinden Dövülmüş" },
-      { name: "description", content: "Almanya'da üretilen premium spor giyim & supplement. Old School zihniyeti, modern güç. Hiçbir mazeret yok." },
+      { name: "description", content: "Türkiye'de üretilen premium spor giyim & supplement. Old School zihniyeti, modern güç. Hiçbir mazeret yok." },
     ],
     links: [
       { rel: "preload", as: "image", href: "/images/hero-end.jpg", fetchpriority: "high" },
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/")({
 /* ── Marquee ─────────────────────────────────────────────────────── */
 const marqueeItems = [
   "DİSİPLİNDEN DÖVÜLMÜŞ", "PREMİUM SPOR GİYİM", "IRON SUPPLEMENT",
-  "ALMANYA'DA ÜRETİLDİ",  "UZLAŞMA YOK",        "AĞIR PAMUK",
+  "TÜRKİYE'DE ÜRETİLDİ",  "UZLAŞMA YOK",        "AĞIR PAMUK",
   "SAF PROTEİN",           "OLD SCHOOL ZİHNİYETİ","LAB ONAYLI",
 ];
 
@@ -33,7 +33,7 @@ const stats = [
   { value: "300",   unit: "gsm",  label: "Pamuk Ağırlığı",    desc: "Heavyweight premium pamuk" },
   { value: "24",    unit: "g",    label: "Protein / Porsiyon", desc: "Mikro-filtreli whey" },
   { value: "100",   unit: "%",    label: "Saf & Doğal",        desc: "Dolgu maddesi yok" },
-  { value: "DE",    unit: "",     label: "Üretim Yeri",         desc: "Almanya menşei" },
+  { value: "TR",    unit: "",     label: "Üretim Yeri",         desc: "Türkiye menşei" },
 ];
 
 /* ── Testimonials ────────────────────────────────────────────────── */
@@ -133,7 +133,7 @@ function Home() {
           {/* Eyebrow with flanking lines */}
           <p className="animate-fade-up-1 text-eyebrow mb-7 flex items-center justify-center gap-4">
             <span className="inline-block w-10 h-px bg-accent-warm" />
-            Almanya'da Üretildi · Premium Kalite
+            Türkiye'de Üretildi · Premium Kalite
             <span className="inline-block w-10 h-px bg-accent-warm" />
           </p>
 
@@ -176,7 +176,7 @@ function Home() {
         {/* Side label — editorial */}
         <div className="hidden xl:flex absolute right-8 top-1/2 -translate-y-1/2 z-10 items-center gap-3">
           <span className="text-vertical text-[9px] uppercase tracking-[0.4em] text-outline/60">
-            Est. 2024 · Germany
+            Est. 2024 · Turkey
           </span>
           <div className="w-px h-20 bg-gradient-to-b from-transparent via-outline/30 to-transparent" />
         </div>
@@ -329,7 +329,7 @@ function Home() {
               </h2>
               <div className="flex items-center gap-3 mt-4">
                 <span className="accent-line" />
-                <span className="text-[11px] text-secondary uppercase tracking-widest">Lab Onaylı · Dolgu Yok · Almanya Kalitesi</span>
+                <span className="text-[11px] text-secondary uppercase tracking-widest">Lab Onaylı · Dolgu Yok · Türkiye Kalitesi</span>
               </div>
             </div>
             <Link to="/shop"
@@ -420,7 +420,7 @@ function Home() {
             </h2>
             <div className="flex items-center gap-3 mt-4">
               <span className="accent-line" />
-              <span className="text-[11px] text-secondary uppercase tracking-widest">300gsm Premium Pamuk · Almanya'da Üretildi</span>
+              <span className="text-[11px] text-secondary uppercase tracking-widest">300gsm Premium Pamuk · Türkiye'de Üretildi</span>
             </div>
           </div>
           <Link to="/shop"
@@ -531,7 +531,7 @@ function Home() {
                 {/* Vertical label */}
                 <div className="absolute -left-4 top-1/2 -translate-y-1/2 hidden lg:block">
                   <p className="text-vertical text-[9px] uppercase tracking-[0.4em] text-outline/50">
-                    Germany · Premium · Iron
+                    Turkey · Premium · Iron
                   </p>
                 </div>
               </div>
@@ -551,7 +551,7 @@ function Home() {
                   dövüp güçlendirdiğimiz iradeden bahsediyoruz.
                 </p>
                 <p className="text-[16px] text-secondary leading-relaxed">
-                  Almanya'nın katı kalite standartlarında üretilen her ürün, bodybuildingin altın çağına
+                  Türkiye'nin katı kalite standartlarında üretilen her ürün, bodybuildingin altın çağına
                   bir saygı duruşudur. 300gsm pamuk. ISO onaylı protein. Uzlaşma yok.
                 </p>
                 <p className="text-[16px] text-on-surface-variant leading-relaxed">
@@ -563,7 +563,7 @@ function Home() {
               <div className="grid grid-cols-2 gap-4 mb-10">
                 {[
                   { n: "01", label: "Premium Kalite",   desc: "Uzlaşma yok" },
-                  { n: "02", label: "Almanya Üretimi",  desc: "AB standartları" },
+                  { n: "02", label: "Türkiye Üretimi",  desc: "Yüksek standartlar" },
                   { n: "03", label: "Lab Onaylı",       desc: "ISO 17025" },
                   { n: "04", label: "Türkiye'ye Kargo", desc: "1–3 iş günü" },
                 ].map((v) => (
@@ -609,7 +609,7 @@ function Home() {
             </span> bir disiplinin sonucudur.
           </h2>
           <p className="reveal max-w-2xl text-[17px] md:text-[19px] leading-loose text-black/60 font-light">
-            OLD IRON sadece bir marka değil, bir yaşam felsefesidir. Almanya'nın mühendislik
+            OLD IRON sadece bir marka değil, bir yaşam felsefesidir. Türkiye'nin mühendislik
             disipliniyle salonların tozunu birleştiriyoruz. En iyi ekipman, en saf içerik,
             en sert antrenman.
           </p>
@@ -617,7 +617,7 @@ function Home() {
           {/* Signature line */}
           <div className="reveal flex items-center gap-4 mt-12">
             <span className="h-px w-12 bg-black/20" />
-            <span className="font-headline text-[12px] tracking-[0.4em] uppercase text-black/50">Old Iron · Est. 2024 · Germany</span>
+            <span className="font-headline text-[12px] tracking-[0.4em] uppercase text-black/50">Old Iron · Est. 2024 · Turkey</span>
             <span className="h-px w-12 bg-black/20" />
           </div>
         </div>

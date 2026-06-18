@@ -10,7 +10,7 @@ const shopLinks = [
 
 const infoLinks = [
   { label: "Hakkımızda",       to: "/" },
-  { label: "Almanya Kalitesi", to: "/" },
+  { label: "Türkiye Kalitesi", to: "/" },
   { label: "İletişim",         to: "/" },
   { label: "SSS",              to: "/" },
 ];
@@ -45,14 +45,14 @@ export function Footer() {
             </div>
 
             <p className="text-[13px] text-secondary leading-relaxed mb-6 max-w-xs">
-              Premium spor giyim ve supplement. Almanya'da üretildi,
+              Premium spor giyim ve supplement. Türkiye'de üretildi,
               Türkiye'ye teslim. Old School zihniyeti, modern güç.
             </p>
 
             {/* Badges */}
             <div className="space-y-2">
               {[
-                { icon: "workspace_premium", text: "Almanya'da Üretildi" },
+                { icon: "workspace_premium", text: "Türkiye'de Üretildi" },
                 { icon: "science",           text: "ISO 17025 Lab Onaylı" },
                 { icon: "local_shipping",    text: "Türkiye'ye Hızlı Kargo" },
               ].map((b) => (
@@ -117,7 +117,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="material-symbols-outlined text-accent-warm/60 text-[14px] mt-0.5 flex-shrink-0">location_on</span>
-                <span className="text-[11px] text-secondary uppercase tracking-wide">Almanya · Türkiye'ye Gönderim</span>
+                <span className="text-[11px] text-secondary uppercase tracking-wide">Türkiye · Türkiye'ye Gönderim</span>
               </li>
             </ul>
 
