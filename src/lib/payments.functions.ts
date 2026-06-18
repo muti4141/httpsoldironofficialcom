@@ -95,8 +95,8 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     });
 
     const subtotal = lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0);
-    const allFreeShipping = lines.every((l) => l.freeShipping);
-    const shippingPrice = allFreeShipping || subtotal >= 1500 ? 0 : 140;
+    // 1500₺ altı kargo alıcı ödemelidir (kapıda kuryeye ödenir). Sipariş tutarına eklenmez.
+    const shippingPrice = 0;
     const total = subtotal + shippingPrice;
 
     const basketItems: IyzicoBasketItem[] = lines.map((l) => ({
