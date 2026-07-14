@@ -23,16 +23,16 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Seite nicht gefunden</h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          Die gesuchte Seite existiert nicht oder wurde verschoben.
         </p>
         <div className="mt-6">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
+            Zur Startseite
           </Link>
         </div>
       </div>
@@ -48,10 +48,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          Diese Seite konnte nicht geladen werden
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Etwas ist schiefgelaufen. Versuche es erneut oder gehe zurück zur Startseite.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -61,13 +61,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            Erneut versuchen
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            Zur Startseite
           </a>
         </div>
       </div>
@@ -80,15 +80,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "OLD IRON — Disiplinden Dövülmüş" },
-      { name: "description", content: "Türkiye menşeili premium spor giyim & supplement. Old School zihniyeti, modern güç." },
-      { property: "og:title", content: "OLD IRON — Disiplinden Dövülmüş" },
-      { property: "og:description", content: "Türkiye menşeili premium spor giyim & supplement. Old School zihniyeti, modern güç." },
+      { title: "OLD IRON — Aus Disziplin geschmiedet" },
+      { name: "description", content: "Premium Sportbekleidung aus Deutschland. Heavyweight Oversize Tees, Stringer und mehr. Old-School-Mentalität, moderne Kraft." },
+      { property: "og:title", content: "OLD IRON — Aus Disziplin geschmiedet" },
+      { property: "og:description", content: "Premium Sportbekleidung aus Deutschland. Heavyweight Oversize Tees, Stringer und mehr." },
       { property: "og:type", content: "website" },
-      { name: "twitter:title", content: "OLD IRON — Disiplinden Dövülmüş" },
-      { name: "twitter:description", content: "Türkiye menşeili premium spor giyim & supplement. Old School zihniyeti, modern güç." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3dbab38f-3813-4915-8fc1-c0bacfa37ccc/id-preview-e7b9e356--1d98a88c-c10e-4031-b1b5-e037619a1e1d.lovable.app-1779702882774.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3dbab38f-3813-4915-8fc1-c0bacfa37ccc/id-preview-e7b9e356--1d98a88c-c10e-4031-b1b5-e037619a1e1d.lovable.app-1779702882774.png" },
+      { property: "og:locale", content: "de_DE" },
+      { name: "twitter:title", content: "OLD IRON — Aus Disziplin geschmiedet" },
+      { name: "twitter:description", content: "Premium Sportbekleidung aus Deutschland." },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
@@ -109,7 +108,7 @@ const OLD_DOMAIN_REDIRECT_SCRIPT = `(function(){try{var h=location.hostname.toLo
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr">
+    <html lang="de">
       <head>
         <script dangerouslySetInnerHTML={{ __html: OLD_DOMAIN_REDIRECT_SCRIPT }} />
         <HeadContent />
