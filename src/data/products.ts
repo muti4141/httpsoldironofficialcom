@@ -43,6 +43,7 @@ export const products: Product[] = [
     categoryLabel: "Oberteile",
     type: "apparel",
     price: 17.90,
+    badge: "Bald erhältlich",
     image: "https://images.unsplash.com/photo-1571945153237-4929e783af4a?w=800&q=80",
     video: "/videos/stringer-hustle.mp4",
     subtitle: "Classic Cut · Anthrazit",
