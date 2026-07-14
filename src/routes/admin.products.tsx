@@ -337,7 +337,7 @@ function AdminProductsPage() {
                       <div className="text-xs text-muted-foreground">{r.id}</div>
                     </td>
                     <td className="px-3 py-2">{r.category_label}</td>
-                    <td className="px-3 py-2 text-right">₺{r.price}</td>
+                    <td className="px-3 py-2 text-right">{r.price} €</td>
                     <td className="px-3 py-2 text-right space-x-2 whitespace-nowrap">
                       <Button size="sm" variant="outline" onClick={() => onEdit(r)}>Bearbeiten</Button>
                       <Button size="sm" variant="destructive" onClick={() => onDelete(r.id)}>Löschen</Button>
