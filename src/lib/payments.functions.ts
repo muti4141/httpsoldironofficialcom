@@ -29,7 +29,7 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     shippingPrice: number;
     callbackUrl: string;
   }) => {
-    if (!data.items.length) throw new Error("Sepet boş");
+    if (!data.items.length) throw new Error("Warenkorb ist leer");
     for (const i of data.items) {
       if (!i.productId || i.quantity < 1 || i.quantity > 99) {
         throw new Error("Geçersiz sepet satırı");
@@ -60,7 +60,7 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
       .eq("user_id", userId)
       .maybeSingle();
     if (orderErr) throw new Error(orderErr.message);
-    if (!orderRow) throw new Error("Sipariş bulunamadı");
+    if (!orderRow) throw new Error("Bestellung nicht gefunden");
     const order = orderRow as any;
 
     // ── Build authoritative price map from DB + static catalog (server-trusted)
@@ -82,8 +82,8 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     // Server-recomputed line items (ignore any client-supplied prices).
     const lines = data.items.map((i, idx) => {
       const t = trusted.get(i.productId);
-      if (!t) throw new Error("Geçersiz ürün");
-      if (t.price < 0.01) throw new Error("Geçersiz fiyat");
+      if (!t) throw new Error("Ungültiges Produkt");
+      if (t.price < 0.01) throw new Error("Ungültiger Preis");
       return {
         idx,
         productId: i.productId,
@@ -95,7 +95,7 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     });
 
     const subtotal = lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0);
-    // 1500₺ altı kargo alıcı ödemelidir (kapıda kuryeye ödenir). Sipariş tutarına eklenmez.
+    // Versandkosten werden im Frontend berechnet und über den Auftrag übertragen.
     const shippingPrice = 0;
     const total = subtotal + shippingPrice;
 
@@ -109,7 +109,7 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     if (shippingPrice > 0) {
       basketItems.push({
         id: "shipping",
-        name: "Kargo",
+        name: "Versand",
         category1: "Shipping",
         itemType: "VIRTUAL",
         price: toDecimal(shippingPrice),
@@ -125,17 +125,17 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     const surname = rest.join(" ") || firstName;
     const ip = getRequestIP({ xForwardedFor: true }) || "85.34.78.112";
 
-    const address = order.shipping_address || "Adres";
-    const city = order.shipping_city || "Istanbul";
-    const country = order.shipping_country === "TR" ? "Turkey" : (order.shipping_country || "Turkey");
-    const zip = order.shipping_zip || "34000";
+    const address = order.shipping_address || "Adresse";
+    const city = order.shipping_city || "Berlin";
+    const country = order.shipping_country === "DE" ? "Germany" : (order.shipping_country || "Germany");
+    const zip = order.shipping_zip || "10115";
 
     const result = await initCheckoutForm({
-      locale: "tr",
+      locale: "en",
       conversationId: data.orderId,
       price,
       paidPrice,
-      currency: "TRY",
+      currency: "EUR",
       basketId: data.orderId,
       paymentGroup: "PRODUCT",
       callbackUrl: data.callbackUrl,
