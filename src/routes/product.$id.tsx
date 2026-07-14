@@ -174,11 +174,12 @@ function ProductPage() {
             </section>
 
             <div className="flex flex-col gap-3">
-              <button onClick={handleAdd}
-                className="bg-accent-warm text-on-primary-container py-5 px-8 font-headline text-[22px] uppercase tracking-widest hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-3 cursor-pointer">
-                <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_cart</span>
-                In den Warenkorb
+              <button disabled
+                className="bg-surface-container-low border border-outline-variant/40 text-outline py-5 px-8 font-headline text-[22px] uppercase tracking-widest flex items-center justify-center gap-3 cursor-not-allowed">
+                <span className="material-symbols-outlined text-[22px]">schedule</span>
+                Bald erhältlich
               </button>
+
 
               <div className="flex items-start gap-3 bg-accent-warm/10 border border-accent-warm/30 px-4 py-3">
                 <span className="material-symbols-outlined text-accent-warm text-[20px] mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>local_shipping</span>
