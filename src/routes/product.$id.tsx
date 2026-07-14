@@ -142,17 +142,10 @@ function ProductPage() {
               <p className="text-[15px] text-secondary">{product.subtitle}</p>
 
               <div className="flex items-baseline gap-4 mt-1">
-                <span className="font-headline text-[32px] text-accent-warm">{product.price.toFixed(2)} €</span>
-                {product.originalPrice && (
-                  <>
-                    <span className="text-secondary text-[18px] line-through">{product.originalPrice.toFixed(2)} €</span>
-                    <span className="bg-accent-warm/20 text-accent-warm text-[12px] font-bold px-2 py-0.5">
-                      -{discountPct}%
-                    </span>
-                  </>
-                )}
+                <span className="font-headline text-[28px] text-accent-warm uppercase tracking-widest">Bald erhältlich</span>
               </div>
-              <p className="text-[11px] text-outline italic">inkl. 19% MwSt., zzgl. <Link to="/legal/versand" className="underline hover:text-primary">Versand</Link></p>
+              <p className="text-[11px] text-outline italic">Dieses Produkt ist in Kürze verfügbar.</p>
+
             </header>
 
             <div className="h-px bg-outline-variant/20" />
