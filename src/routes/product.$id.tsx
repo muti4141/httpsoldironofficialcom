@@ -142,17 +142,10 @@ function ProductPage() {
               <p className="text-[15px] text-secondary">{product.subtitle}</p>
 
               <div className="flex items-baseline gap-4 mt-1">
-                <span className="font-headline text-[32px] text-accent-warm">{product.price.toFixed(2)} €</span>
-                {product.originalPrice && (
-                  <>
-                    <span className="text-secondary text-[18px] line-through">{product.originalPrice.toFixed(2)} €</span>
-                    <span className="bg-accent-warm/20 text-accent-warm text-[12px] font-bold px-2 py-0.5">
-                      -{discountPct}%
-                    </span>
-                  </>
-                )}
+                <span className="font-headline text-[28px] text-accent-warm uppercase tracking-widest">Bald erhältlich</span>
               </div>
-              <p className="text-[11px] text-outline italic">inkl. 19% MwSt., zzgl. <Link to="/legal/versand" className="underline hover:text-primary">Versand</Link></p>
+              <p className="text-[11px] text-outline italic">Dieses Produkt ist in Kürze verfügbar.</p>
+
             </header>
 
             <div className="h-px bg-outline-variant/20" />
@@ -181,11 +174,12 @@ function ProductPage() {
             </section>
 
             <div className="flex flex-col gap-3">
-              <button onClick={handleAdd}
-                className="bg-accent-warm text-on-primary-container py-5 px-8 font-headline text-[22px] uppercase tracking-widest hover:brightness-110 active:scale-[0.99] transition-all flex items-center justify-center gap-3 cursor-pointer">
-                <span className="material-symbols-outlined text-[22px]" style={{ fontVariationSettings: "'FILL' 1" }}>shopping_cart</span>
-                In den Warenkorb
+              <button disabled
+                className="bg-surface-container-low border border-outline-variant/40 text-outline py-5 px-8 font-headline text-[22px] uppercase tracking-widest flex items-center justify-center gap-3 cursor-not-allowed">
+                <span className="material-symbols-outlined text-[22px]">schedule</span>
+                Bald erhältlich
               </button>
+
 
               <div className="flex items-start gap-3 bg-accent-warm/10 border border-accent-warm/30 px-4 py-3">
                 <span className="material-symbols-outlined text-accent-warm text-[20px] mt-0.5" style={{ fontVariationSettings: "'FILL' 1" }}>local_shipping</span>
@@ -254,11 +248,9 @@ function ProductPage() {
                   <p className="text-[10px] text-secondary uppercase tracking-widest">{p.categoryLabel}</p>
                   <h3 className="font-headline text-[18px] text-primary uppercase leading-tight">{p.name}</h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-[14px] text-accent-warm font-semibold">{p.price.toFixed(2)} €</p>
-                    {p.originalPrice && (
-                      <p className="text-[12px] text-outline line-through">{p.originalPrice.toFixed(2)} €</p>
-                    )}
+                    <p className="text-[13px] text-accent-warm font-semibold uppercase tracking-widest">Bald erhältlich</p>
                   </div>
+
                 </div>
               </Link>
             ))}

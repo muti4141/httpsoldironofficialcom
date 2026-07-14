@@ -176,28 +176,16 @@ function ProductCard({ product: p }: { product: Product }) {
             onError={(e) => { e.currentTarget.src = APPAREL_PLACEHOLDER; }}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         )}
-        <button onClick={handleQuickAdd}
-          className="absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110 cursor-pointer bg-primary text-on-primary"
-          aria-label={`${p.name} in den Warenkorb`}>
-          <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
-        </button>
       </div>
 
       <div className="space-y-1 p-5">
         <p className="uppercase tracking-widest text-outline text-[11px]">{p.categoryLabel}</p>
         <h3 className="font-headline text-primary uppercase leading-tight text-[22px]">{p.name}</h3>
         <p className="text-secondary text-[13px]">{p.subtitle}</p>
-        <div className="flex items-center gap-2 pt-1">
-          <p className="font-semibold text-primary text-[15px]">{p.price.toFixed(2)} €</p>
-          {p.originalPrice && (
-            <>
-              <p className="text-outline line-through text-[13px]">{p.originalPrice.toFixed(2)} €</p>
-              <span className="bg-accent-warm/20 text-accent-warm font-semibold uppercase px-1.5 py-0.5 text-[10px]">
-                -{Math.round((1 - p.price / p.originalPrice) * 100)}%
-              </span>
-            </>
-          )}
+        <div className="pt-1">
+          <p className="font-semibold text-accent-warm text-[13px] uppercase tracking-widest">Bald erhältlich</p>
         </div>
+
       </div>
     </Link>
   );
