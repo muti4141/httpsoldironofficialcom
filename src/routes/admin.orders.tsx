@@ -207,12 +207,12 @@ function AdminOrdersPage() {
           <div className="flex gap-2">
             <Link to="/admin/products">
               <Button variant="outline" size="sm">
-                Ürünler
+                Produkte
               </Button>
             </Link>
             <Link to="/account">
               <Button variant="outline" size="sm">
-                Hesabım
+                Mein Konto
               </Button>
             </Link>
           </div>
