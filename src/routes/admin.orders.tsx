@@ -79,13 +79,13 @@ function getErrorMessage(error: unknown, fallback: string) {
 export const Route = createFileRoute("/admin/orders")({
   ssr: false,
   head: () => ({
-    meta: [{ title: "Admin — Siparişler" }, { name: "robots", content: "noindex,nofollow" }],
+    meta: [{ title: "Admin — Bestellungen" }, { name: "robots", content: "noindex,nofollow" }],
   }),
   component: AdminOrdersPage,
 });
 
-function fmt(cents: number, currency = "TRY") {
-  return new Intl.NumberFormat("tr-TR", { style: "currency", currency }).format((cents ?? 0) / 100);
+function fmt(cents: number, currency = "EUR") {
+  return new Intl.NumberFormat("de-DE", { style: "currency", currency }).format((cents ?? 0) / 100);
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -129,7 +129,7 @@ function AdminOrdersPage() {
             .eq("user_id", session.user.id)
             .eq("role", "admin")
             .maybeSingle(),
-          "Yönetici yetkisi kontrol edilemedi. Lütfen sayfayı yenileyin.",
+          "Admin-Berechtigung konnte nicht geprüft werden. Bitte Seite neu laden.",
         );
         if (!active) return;
         if (roleResult.error) throw roleResult.error;
@@ -140,7 +140,7 @@ function AdminOrdersPage() {
         setAuthorized(true);
         const ordersResult = await withTimeout(
           supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(500),
-          "Siparişler yüklenemedi. Lütfen sayfayı yenileyin.",
+          "Bestellungen konnten nicht geladen werden. Bitte Seite neu laden.",
         );
         if (!active) return;
         if (ordersResult.error) throw ordersResult.error;
@@ -151,7 +151,7 @@ function AdminOrdersPage() {
         if (ids.length > 0) {
           const itemsResult = await withTimeout(
             supabase.from("order_items").select("*").in("order_id", ids),
-            "Sipariş ürünleri yüklenemedi. Lütfen sayfayı yenileyin.",
+            "Bestellpositionen konnten nicht geladen werden. Bitte Seite neu laden.",
           );
           if (!active) return;
           if (itemsResult.error) throw itemsResult.error;
@@ -165,7 +165,7 @@ function AdminOrdersPage() {
         );
       } catch (e: unknown) {
         if (!active) return;
-        toast.error(getErrorMessage(e, "Yüklenirken hata oluştu"));
+        toast.error(getErrorMessage(e, "Fehler beim Laden"));
         setAuthorized(false);
       } finally {
         if (active) setLoading(false);
@@ -180,9 +180,9 @@ function AdminOrdersPage() {
     try {
       await update({ data: { orderId, status } });
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status } : o)));
-      toast.success("Durum güncellendi");
+      toast.success("Status aktualisiert");
     } catch (e: unknown) {
-      toast.error(getErrorMessage(e, "Güncelleme başarısız"));
+      toast.error(getErrorMessage(e, "Aktualisierung fehlgeschlagen"));
     }
   };
 
@@ -203,7 +203,7 @@ function AdminOrdersPage() {
       <Nav />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
         <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-          <h1 className="text-3xl font-bold">Siparişler</h1>
+          <h1 className="text-3xl font-bold">Bestellungen</h1>
           <div className="flex gap-2">
             <Link to="/admin/products">
               <Button variant="outline" size="sm">
@@ -218,12 +218,12 @@ function AdminOrdersPage() {
           </div>
         </div>
 
-        {loading && <p className="text-muted-foreground">Yükleniyor…</p>}
+        {loading && <p className="text-muted-foreground">Wird geladen…</p>}
 
         {!loading && authorized === false && (
           <div className="border border-border rounded-lg p-8 text-center">
-            <p className="text-lg font-medium mb-2">Erişim Yok</p>
-            <p className="text-muted-foreground">Yönetici yetkiniz bulunmuyor.</p>
+            <p className="text-lg font-medium mb-2">Kein Zugriff</p>
+            <p className="text-muted-foreground">Du hast keine Admin-Rechte.</p>
           </div>
         )}
 
@@ -232,13 +232,13 @@ function AdminOrdersPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               <div className="border border-border rounded-lg p-4">
                 <div className="text-xs text-muted-foreground uppercase tracking-wider">
-                  Toplam Sipariş
+                  Bestellungen gesamt
                 </div>
                 <div className="text-2xl font-bold mt-1">{stats.total}</div>
               </div>
               <div className="border border-border rounded-lg p-4">
                 <div className="text-xs text-muted-foreground uppercase tracking-wider">
-                  Ciro (Ödenmiş)
+                  Umsatz (bezahlt)
                 </div>
                 <div className="text-2xl font-bold mt-1">{fmt(stats.revenue)}</div>
               </div>
@@ -255,7 +255,7 @@ function AdminOrdersPage() {
                 onClick={() => setFilter("all")}
                 className={`px-3 py-1.5 rounded-full text-sm border ${filter === "all" ? "bg-foreground text-background" : "border-border"}`}
               >
-                Tümü ({orders.length})
+                Alle ({orders.length})
               </button>
               {STATUSES.map((s) => {
                 const count = orders.filter((o) => o.status === s).length;
@@ -272,7 +272,7 @@ function AdminOrdersPage() {
               })}
             </div>
 
-            {filtered.length === 0 && <p className="text-muted-foreground">Sipariş yok.</p>}
+            {filtered.length === 0 && <p className="text-muted-foreground">Keine Bestellungen.</p>}
 
             <div className="space-y-3">
               {filtered.map((o) => {
@@ -293,33 +293,33 @@ function AdminOrdersPage() {
                       )}
                       <div className="flex-1 grid grid-cols-2 md:grid-cols-5 gap-3 items-center">
                         <div>
-                          <div className="text-xs text-muted-foreground">Tarih</div>
+                          <div className="text-xs text-muted-foreground">Datum</div>
                           <div className="text-sm">
-                            {new Date(o.created_at).toLocaleDateString("tr-TR")}
+                            {new Date(o.created_at).toLocaleDateString("de-DE")}
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {new Date(o.created_at).toLocaleTimeString("tr-TR", {
+                            {new Date(o.created_at).toLocaleTimeString("de-DE", {
                               hour: "2-digit",
                               minute: "2-digit",
                             })}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-muted-foreground">Müşteri</div>
+                          <div className="text-xs text-muted-foreground">Kunde</div>
                           <div className="text-sm font-medium truncate">{o.full_name}</div>
                           <div className="text-xs text-muted-foreground truncate">{o.email}</div>
                         </div>
                         <div className="hidden md:block">
-                          <div className="text-xs text-muted-foreground">Ürün</div>
+                          <div className="text-xs text-muted-foreground">Artikel</div>
                           <div className="text-sm">
-                            {o.items.reduce((s, i) => s + i.quantity, 0)} adet
+                            {o.items.reduce((s, i) => s + i.quantity, 0)} Stk.
                           </div>
                           <div className="text-xs text-muted-foreground truncate">
                             {o.items.map((i) => i.product_name).join(", ")}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-muted-foreground">Tutar</div>
+                          <div className="text-xs text-muted-foreground">Betrag</div>
                           <div className="text-sm font-bold">{fmt(o.total_cents, o.currency)}</div>
                         </div>
                         <div>
@@ -337,11 +337,11 @@ function AdminOrdersPage() {
                         <div className="grid md:grid-cols-2 gap-6">
                           <div>
                             <div className="flex items-center gap-2 text-sm font-semibold mb-3">
-                              <User className="w-4 h-4" /> Müşteri Bilgileri
+                              <User className="w-4 h-4" /> Kundendaten
                             </div>
                             <div className="space-y-2 text-sm">
                               <div>
-                                <span className="text-muted-foreground">Ad Soyad:</span>{" "}
+                                <span className="text-muted-foreground">Name:</span>{" "}
                                 {o.full_name}
                               </div>
                               <div className="flex items-center gap-2">
@@ -355,14 +355,14 @@ function AdminOrdersPage() {
                                 </div>
                               )}
                               <div className="text-xs text-muted-foreground font-mono pt-1">
-                                Sipariş No: #{o.id}
+                                Bestell-Nr.: #{o.id}
                               </div>
                             </div>
                           </div>
 
                           <div>
                             <div className="flex items-center gap-2 text-sm font-semibold mb-3">
-                              <MapPin className="w-4 h-4" /> Teslimat Adresi
+                              <MapPin className="w-4 h-4" /> Lieferadresse
                             </div>
                             <div className="text-sm leading-relaxed whitespace-pre-wrap">
                               {o.full_name}
@@ -378,13 +378,13 @@ function AdminOrdersPage() {
 
                         <div>
                           <div className="flex items-center gap-2 text-sm font-semibold mb-3">
-                            <Package className="w-4 h-4" /> Sipariş Edilen Ürünler ({o.items.length}
+                            <Package className="w-4 h-4" /> Bestellte Artikel ({o.items.length}
                             )
                           </div>
                           <div className="border border-border rounded-lg divide-y divide-border bg-background">
                             {o.items.length === 0 && (
                               <div className="p-4 text-sm text-muted-foreground">
-                                Ürün bilgisi yok.
+                                Keine Artikel.
                               </div>
                             )}
                             {o.items.map((it) => (
@@ -405,18 +405,18 @@ function AdminOrdersPage() {
                                   <div className="text-xs text-muted-foreground">
                                     {it.size && (
                                       <>
-                                        Beden:{" "}
+                                        Größe:{" "}
                                         <span className="font-medium text-foreground">
                                           {it.size}
                                         </span>{" "}
                                         ·{" "}
                                       </>
                                     )}
-                                    Adet:{" "}
+                                    Menge:{" "}
                                     <span className="font-medium text-foreground">
                                       {it.quantity}
                                     </span>{" "}
-                                    · Birim: {fmt(it.unit_price_cents, o.currency)}
+                                    · Einzelpreis: {fmt(it.unit_price_cents, o.currency)}
                                   </div>
                                 </div>
                                 <div className="text-sm font-semibold whitespace-nowrap">
@@ -430,22 +430,22 @@ function AdminOrdersPage() {
                             <div className="mt-3 ml-auto max-w-xs text-sm space-y-1">
                               {o.subtotal_cents != null && (
                                 <div className="flex justify-between">
-                                  <span className="text-muted-foreground">Ara toplam</span>
+                                  <span className="text-muted-foreground">Zwischensumme</span>
                                   <span>{fmt(o.subtotal_cents, o.currency)}</span>
                                 </div>
                               )}
                               {o.shipping_cents != null && (
                                 <div className="flex justify-between">
-                                  <span className="text-muted-foreground">Kargo</span>
+                                  <span className="text-muted-foreground">Versand</span>
                                   <span>
                                     {o.shipping_cents === 0
-                                      ? "Ücretsiz"
+                                      ? "Kostenlos"
                                       : fmt(o.shipping_cents, o.currency)}
                                   </span>
                                 </div>
                               )}
                               <div className="flex justify-between font-bold pt-1 border-t border-border">
-                                <span>Toplam</span>
+                                <span>Gesamt</span>
                                 <span>{fmt(o.total_cents, o.currency)}</span>
                               </div>
                             </div>
@@ -453,7 +453,7 @@ function AdminOrdersPage() {
                         </div>
 
                         <div className="flex items-center gap-3 pt-2 border-t border-border">
-                          <label className="text-sm text-muted-foreground">Durum:</label>
+                          <label className="text-sm text-muted-foreground">Status:</label>
                           <select
                             value={o.status}
                             onChange={(e) => handleStatus(o.id, e.target.value as AdminStatus)}
@@ -470,7 +470,7 @@ function AdminOrdersPage() {
                             params={{ id: o.id }}
                             className="ml-auto text-sm underline text-muted-foreground hover:text-foreground"
                           >
-                            Müşteri görünümü
+                            Kundenansicht
                           </Link>
                         </div>
                       </div>
