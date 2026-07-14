@@ -176,11 +176,6 @@ function ProductCard({ product: p }: { product: Product }) {
             onError={(e) => { e.currentTarget.src = APPAREL_PLACEHOLDER; }}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         )}
-        <button onClick={handleQuickAdd}
-          className="absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110 cursor-pointer bg-primary text-on-primary"
-          aria-label={`${p.name} in den Warenkorb`}>
-          <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
-        </button>
       </div>
 
       <div className="space-y-1 p-5">
