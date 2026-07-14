@@ -202,7 +202,7 @@ function AdminProductsPage() {
       <div className="min-h-screen flex flex-col bg-background">
         <Nav />
         <main className="flex-1 container mx-auto px-4 py-12 text-center">
-          <h1 className="text-2xl font-bold mb-2">Erişim Yok</h1>
+          <h1 className="text-2xl font-bold mb-2">Kein Zugriff</h1>
           <p className="text-muted-foreground">Du hast keine Admin-Rechte.</p>
         </main>
         <Footer />
@@ -339,8 +339,8 @@ function AdminProductsPage() {
                     <td className="px-3 py-2">{r.category_label}</td>
                     <td className="px-3 py-2 text-right">₺{r.price}</td>
                     <td className="px-3 py-2 text-right space-x-2 whitespace-nowrap">
-                      <Button size="sm" variant="outline" onClick={() => onEdit(r)}>Düzenle</Button>
-                      <Button size="sm" variant="destructive" onClick={() => onDelete(r.id)}>Sil</Button>
+                      <Button size="sm" variant="outline" onClick={() => onEdit(r)}>Bearbeiten</Button>
+                      <Button size="sm" variant="destructive" onClick={() => onDelete(r.id)}>Löschen</Button>
                     </td>
                   </tr>
                 ))}
