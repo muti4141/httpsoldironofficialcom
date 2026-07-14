@@ -187,17 +187,10 @@ function ProductCard({ product: p }: { product: Product }) {
         <p className="uppercase tracking-widest text-outline text-[11px]">{p.categoryLabel}</p>
         <h3 className="font-headline text-primary uppercase leading-tight text-[22px]">{p.name}</h3>
         <p className="text-secondary text-[13px]">{p.subtitle}</p>
-        <div className="flex items-center gap-2 pt-1">
-          <p className="font-semibold text-primary text-[15px]">{p.price.toFixed(2)} €</p>
-          {p.originalPrice && (
-            <>
-              <p className="text-outline line-through text-[13px]">{p.originalPrice.toFixed(2)} €</p>
-              <span className="bg-accent-warm/20 text-accent-warm font-semibold uppercase px-1.5 py-0.5 text-[10px]">
-                -{Math.round((1 - p.price / p.originalPrice) * 100)}%
-              </span>
-            </>
-          )}
+        <div className="pt-1">
+          <p className="font-semibold text-accent-warm text-[13px] uppercase tracking-widest">Bald erhältlich</p>
         </div>
+
       </div>
     </Link>
   );
