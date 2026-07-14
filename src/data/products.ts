@@ -32,7 +32,7 @@ export const products: Product[] = [
     price: 24.90,
     image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&q=80",
     video: "/videos/iron-tee.mp4",
-    badge: "Bestseller",
+    badge: "Bald erhältlich",
     subtitle: "Heavyweight Oversize · 300 gsm",
     description: "Der ultimative Pump Cover. Aus 300 g/m² Heavyweight-Baumwolle gefertigt, für maximale Haltbarkeit und Tragekomfort. Für Athleten, die im Gym keine Kompromisse eingehen. Athletic Oversize Fit, kastige Silhouette, tief angesetzte Ärmel.",
   },
