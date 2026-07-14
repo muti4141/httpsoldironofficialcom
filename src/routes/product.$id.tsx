@@ -248,11 +248,9 @@ function ProductPage() {
                   <p className="text-[10px] text-secondary uppercase tracking-widest">{p.categoryLabel}</p>
                   <h3 className="font-headline text-[18px] text-primary uppercase leading-tight">{p.name}</h3>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <p className="text-[14px] text-accent-warm font-semibold">{p.price.toFixed(2)} €</p>
-                    {p.originalPrice && (
-                      <p className="text-[12px] text-outline line-through">{p.originalPrice.toFixed(2)} €</p>
-                    )}
+                    <p className="text-[13px] text-accent-warm font-semibold uppercase tracking-widest">Bald erhältlich</p>
                   </div>
+
                 </div>
               </Link>
             ))}
