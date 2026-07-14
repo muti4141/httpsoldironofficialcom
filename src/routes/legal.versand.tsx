@@ -31,27 +31,27 @@ function Versand() {
           <tbody className="text-[16px]">
             <tr className="border-b border-outline-variant/20">
               <td className="py-3">Deutschland</td>
-              <td>[TODO: z. B. 4,90 €]</td>
+              <td>4,90 €</td>
               <td>2–4 Werktage</td>
             </tr>
             <tr className="border-b border-outline-variant/20">
               <td className="py-3">EU</td>
-              <td>[TODO: z. B. 9,90 €]</td>
+              <td>9,90 €</td>
               <td>4–7 Werktage</td>
             </tr>
             <tr>
               <td className="py-3">Schweiz / UK</td>
-              <td>[TODO]</td>
+              <td>14,90 €</td>
               <td>5–10 Werktage</td>
             </tr>
           </tbody>
         </table>
-        <p className="text-[14px] text-outline mt-2">Ab einem Bestellwert von [TODO: z. B. 99 €] versenden wir innerhalb Deutschlands versandkostenfrei.</p>
+        <p className="text-[14px] text-outline mt-2">Ab einem Bestellwert von 99 € versenden wir innerhalb Deutschlands versandkostenfrei.</p>
       </section>
 
       <section>
         <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">Versandpartner</h2>
-        <p>Der Versand erfolgt über [TODO: z. B. DHL]. Nach Versand erhalten Sie eine Sendungsnummer per E-Mail.</p>
+        <p>Der Versand erfolgt über DHL. Nach Versand erhältst du eine Sendungsnummer per E-Mail.</p>
       </section>
 
       <section>

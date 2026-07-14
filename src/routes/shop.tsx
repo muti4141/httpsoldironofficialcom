@@ -3,7 +3,7 @@ import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductVideo } from "@/components/ProductVideo";
-import { type Product, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { type Product, APPAREL_PLACEHOLDER } from "@/data/products";
 import { useAllProducts } from "@/hooks/useAllProducts";
 import { useCart } from "@/stores/cart";
 import { useState } from "react";
@@ -11,36 +11,24 @@ import { useState } from "react";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Mağaza — OLD IRON | Spor Giyim & Supplement" },
-      { name: "description", content: "Premium Spor Giyim ve Supplement. Oversize Tee, Stringer, Şort, Protein, Kreatin ve daha fazlası." },
+      { title: "Shop — OLD IRON | Premium Sportbekleidung aus Deutschland" },
+      { name: "description", content: "Premium Sportbekleidung. Oversize Tee, Stringer, Shorts und Hoodies. 300 g/m² Heavyweight-Baumwolle. Versand aus Deutschland." },
     ],
   }),
   component: Shop,
 });
 
 const APPAREL_CATEGORIES = [
-  { value: "tops",        label: "Üst Giyim" },
-  { value: "bottoms",     label: "Alt Giyim" },
-  { value: "accessories", label: "Aksesuar" },
+  { value: "tops",        label: "Oberteile" },
+  { value: "bottoms",     label: "Hosen & Shorts" },
+  { value: "accessories", label: "Accessoires" },
 ];
-
-const SUPPLEMENT_CATEGORIES = [
-  { value: "carbs",       label: "Pirinç Unu" },
-  { value: "protein",     label: "Protein" },
-  { value: "creatine",    label: "Kreatin" },
-  { value: "preworkout",  label: "Pre-Workout" },
-  { value: "aminoacids",  label: "Amino Asit" },
-  { value: "thermo",      label: "Thermo & Enerji" },
-];
-
-type Tab = "all" | "apparel" | "supplement";
 
 function Shop() {
-  const [activeTab, setActiveTab] = useState<Tab>("all");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [maxPrice, setMaxPrice] = useState(2000);
+  const [maxPrice, setMaxPrice] = useState(200);
   const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">("default");
-  const products = useAllProducts();
+  const products = useAllProducts().filter((p) => p.type === "apparel");
 
   const toggleCategory = (cat: string) => {
     setSelectedCategories((prev) =>
@@ -50,8 +38,6 @@ function Shop() {
 
   const filtered = products
     .filter((p) => {
-      if (activeTab === "apparel"    && p.type !== "apparel")    return false;
-      if (activeTab === "supplement" && p.type !== "supplement") return false;
       if (selectedCategories.length > 0 && !selectedCategories.includes(p.category)) return false;
       if (p.price > maxPrice) return false;
       return true;
@@ -62,11 +48,6 @@ function Shop() {
       return 0;
     });
 
-  const currentCategories =
-    activeTab === "supplement" ? SUPPLEMENT_CATEGORIES :
-    activeTab === "apparel"    ? APPAREL_CATEGORIES :
-    [...APPAREL_CATEGORIES, ...SUPPLEMENT_CATEGORIES];
-
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
@@ -75,52 +56,34 @@ function Shop() {
         {/* Header */}
         <div className="bg-surface-container-low border-b border-outline-variant/20 py-10 px-margin-mobile md:px-margin-desktop">
           <div className="max-w-[1440px] mx-auto">
-            <h1 className="font-display text-[clamp(2.5rem,7vw,5rem)] uppercase text-primary leading-none mb-3">Mağaza</h1>
+            <h1 className="font-display text-[clamp(2.5rem,7vw,5rem)] uppercase text-primary leading-none mb-3">Shop</h1>
             <p className="text-[16px] text-secondary border-l-2 border-accent-warm pl-4 max-w-xl">
-              Premium Spor Giyim & Supplement. Sınırları zorlayanlara yönelik ekipman.
+              Premium Sportbekleidung. Ausrüstung für alle, die ihre Grenzen verschieben.
             </p>
-
-            {/* Tabs */}
-            <div className="flex gap-2 mt-8 flex-wrap">
-              {(["all", "apparel", "supplement"] as Tab[]).map((tab) => (
-                <button key={tab}
-                  onClick={() => { setActiveTab(tab); setSelectedCategories([]); }}
-                  className={`px-6 py-2.5 text-[12px] font-semibold uppercase tracking-widest transition-all cursor-pointer border ${
-                    activeTab === tab
-                      ? "bg-accent-warm text-on-primary-container border-accent-warm"
-                      : "border-outline-variant text-secondary hover:text-primary hover:border-primary/50"
-                  }`}>
-                  {tab === "all" ? "Tümü" : tab === "apparel" ? "Spor Giyim" : "Supplement"}
-                  <span className="ml-2 opacity-60">
-                    ({tab === "all" ? products.length : products.filter((p) => p.type === tab).length})
-                  </span>
-                </button>
-              ))}
-            </div>
           </div>
         </div>
 
         <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
 
-            {/* Filtreler */}
+            {/* Filter */}
             <aside className="md:col-span-3 space-y-8 md:sticky md:top-28 h-fit">
 
               <div className="space-y-3">
-                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Sırala</h4>
+                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Sortieren</h4>
                 <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
                   className="w-full bg-surface-container border border-outline-variant text-[13px] text-primary px-3 py-2.5 focus:border-accent-warm focus:outline-none uppercase tracking-widest cursor-pointer"
-                  aria-label="Sıralama">
-                  <option value="default">Varsayılan</option>
-                  <option value="price-asc">Fiyat: Artan</option>
-                  <option value="price-desc">Fiyat: Azalan</option>
+                  aria-label="Sortierung">
+                  <option value="default">Standard</option>
+                  <option value="price-asc">Preis: aufsteigend</option>
+                  <option value="price-desc">Preis: absteigend</option>
                 </select>
               </div>
 
               <div className="space-y-3">
-                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Kategori</h4>
+                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Kategorie</h4>
                 <div className="flex flex-col gap-2">
-                  {currentCategories.map((c) => (
+                  {APPAREL_CATEGORIES.map((c) => (
                     <label key={c.value} className="flex items-center gap-3 cursor-pointer group">
                       <input type="checkbox" checked={selectedCategories.includes(c.value)} onChange={() => toggleCategory(c.value)}
                         className="w-4 h-4 bg-surface-container border-outline-variant accent-accent-warm cursor-pointer" />
@@ -131,32 +94,32 @@ function Shop() {
               </div>
 
               <div className="space-y-3">
-                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Maks. Fiyat</h4>
-                <input type="range" min={100} max={2000} step={50} value={maxPrice}
+                <h4 className="text-[12px] font-semibold text-secondary uppercase tracking-widest">Max. Preis</h4>
+                <input type="range" min={10} max={200} step={5} value={maxPrice}
                   onChange={(e) => setMaxPrice(Number(e.target.value))}
                   className="w-full accent-accent-warm bg-surface-container h-1.5 rounded-lg appearance-none cursor-pointer"
-                  aria-label="Maksimum fiyat" />
+                  aria-label="Maximaler Preis" />
                 <div className="flex justify-between text-[12px] text-outline">
-                  <span>₺100</span>
-                  <span className="text-primary font-semibold">₺{maxPrice}</span>
+                  <span>10 €</span>
+                  <span className="text-primary font-semibold">{maxPrice} €</span>
                 </div>
               </div>
 
-              {(selectedCategories.length > 0 || maxPrice < 2000) && (
-                <button onClick={() => { setSelectedCategories([]); setMaxPrice(2000); }}
+              {(selectedCategories.length > 0 || maxPrice < 200) && (
+                <button onClick={() => { setSelectedCategories([]); setMaxPrice(200); }}
                   className="text-[12px] uppercase tracking-widest text-accent-warm hover:text-primary transition-colors border-b border-accent-warm/40 pb-0.5 cursor-pointer">
-                  Filtreleri Temizle
+                  Filter zurücksetzen
                 </button>
               )}
             </aside>
 
-            {/* Ürün Izgarası */}
+            {/* Produkt-Grid */}
             <div className="md:col-span-9">
-              <p className="text-[12px] text-outline uppercase tracking-widest mb-6">{filtered.length} Ürün</p>
+              <p className="text-[12px] text-outline uppercase tracking-widest mb-6">{filtered.length} Produkte</p>
               {filtered.length === 0 ? (
                 <div className="text-center py-20">
                   <span className="material-symbols-outlined text-[48px] text-outline/40 mb-4 block">search_off</span>
-                  <p className="text-secondary uppercase tracking-widest text-[14px]">Ürün bulunamadı</p>
+                  <p className="text-secondary uppercase tracking-widest text-[14px]">Keine Produkte gefunden</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-gutter">
@@ -168,11 +131,11 @@ function Shop() {
 
           <section className="mt-stack-lg pt-stack-lg border-t border-outline-variant/20">
             <div className="max-w-3xl">
-              <h2 className="font-headline text-[22px] text-primary uppercase mb-4">Türkiye'nin Elite Spor Giyim & Supplement Markası</h2>
+              <h2 className="font-headline text-[22px] text-primary uppercase mb-4">Premium Sportbekleidung — kompromisslos gefertigt</h2>
               <p className="text-[15px] text-on-surface-variant leading-relaxed">
-                OLD IRON, premium spor giyim ve yüksek kaliteli supplementleri tek çatı altında sunuyor. Giyimlerimiz 300gsm
-                pamuktan üretilir — uzlaşma tanımayan sporcular için tasarlanmıştır. Supplementlerimiz dolgu maddesi içermez,
-                lab testlidir ve maksimum etken madde konsantrasyonu sunar. Disiplinden dövülmüş — elit için.
+                OLD IRON bietet hochwertige Sportbekleidung für Athleten, die keine Kompromisse eingehen.
+                Unsere Teile sind aus 300 g/m² Heavyweight-Baumwolle gefertigt und für harte Trainingseinheiten
+                gebaut. Preise inkl. gesetzlicher MwSt. Versand aus Deutschland.
               </p>
             </div>
           </section>
@@ -185,65 +148,52 @@ function Shop() {
 
 function ProductCard({ product: p }: { product: Product }) {
   const add = useCart((s) => s.add);
-  const isSupp = p.type === "supplement";
-  const isCompact = p.id === "cream-of-rice";
-  const imageSrc = p.id === "bcaa-4001"
-    ? "/__l5e/assets-v1/d9b7bf9b-7d6f-4330-9794-16a9b21f03f8/bcaa-411.png"
-    : p.image;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    add(p, isSupp ? "Standart" : "M");
-    toast.success(`${p.name} sepete eklendi`, { duration: 2000 });
+    add(p, "M");
+    toast.success(`${p.name} zum Warenkorb hinzugefügt`, { duration: 2000 });
   };
 
   return (
     <Link to="/product/$id" params={{ id: p.id }}
-      className={`group flex flex-col relative overflow-hidden cursor-pointer ${isSupp ? "supplement-card-glow orange-bevel" : "steel-bevel"} ${isCompact ? "scale-[0.92] origin-top" : ""} bg-surface-container`}>
+      className="group flex flex-col relative overflow-hidden cursor-pointer steel-bevel bg-surface-container">
       {p.badge && (
-        <div className={`absolute top-3 left-3 z-10 ${isCompact ? "top-2 left-2" : ""}`}>
-          <span className={`text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 ${isSupp ? "bg-accent-warm pulse-glow text-on-primary-container" : "bg-primary text-on-primary"} ${isCompact ? "text-[9px] px-2 py-0.5" : ""}`}>
+        <div className="absolute top-3 left-3 z-10">
+          <span className="text-[10px] font-semibold uppercase tracking-widest px-2.5 py-1 bg-primary text-on-primary">
             {p.badge}
           </span>
         </div>
       )}
 
-      <div className={`overflow-hidden bg-surface-container-highest relative ${isCompact ? "aspect-[3/4]" : "aspect-[4/5]"}`}>
+      <div className="overflow-hidden bg-surface-container-highest relative aspect-[4/5]">
         {p.video ? (
           <ProductVideo src={p.video} poster={p.videoPoster} alt={p.name}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-        ) : imageSrc ? (
-          <img src={imageSrc} alt={p.name} loading={p.id === "bcaa-4001" ? "eager" : "lazy"}
-            onError={(e) => { e.currentTarget.src = isSupp ? SUPPLEMENT_PLACEHOLDER : APPAREL_PLACEHOLDER; }}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-surface-container-high via-surface-container to-surface-container-lowest flex items-center justify-center relative">
-            <div className="absolute inset-0 grain-overlay opacity-40" />
-            <p className="font-headline text-[28px] text-primary/30 uppercase tracking-widest text-center px-4">{p.name}</p>
-          </div>
+          <img src={p.image} alt={p.name} loading="lazy"
+            onError={(e) => { e.currentTarget.src = APPAREL_PLACEHOLDER; }}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
         )}
         <button onClick={handleQuickAdd}
-          className={`absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110 cursor-pointer ${isSupp ? "bg-accent-warm text-on-primary-container" : "bg-primary text-on-primary"} ${isCompact ? "bottom-2 right-2 w-9 h-9" : ""}`}
-          aria-label={`${p.name} sepete ekle`}>
+          className="absolute bottom-3 right-3 w-10 h-10 flex items-center justify-center translate-y-16 group-hover:translate-y-0 transition-transform duration-300 hover:brightness-110 cursor-pointer bg-primary text-on-primary"
+          aria-label={`${p.name} in den Warenkorb`}>
           <span className="material-symbols-outlined text-[18px]" style={{ fontVariationSettings: "'FILL' 1" }}>add_shopping_cart</span>
         </button>
       </div>
 
-      <div className={`space-y-1 ${isCompact ? "p-3.5" : "p-5"}`}>
-        <div className="flex items-center justify-between">
-          <p className={`uppercase tracking-widest ${isSupp ? "text-accent-warm-soft" : "text-outline"} ${isCompact ? "text-[10px]" : "text-[11px]"}`}>{p.categoryLabel}</p>
-          {isSupp && p.servings && <p className={`text-outline uppercase ${isCompact ? "text-[9px]" : "text-[10px]"}`}>{p.servings} porsiyon</p>}
-        </div>
-        <h3 className={`font-headline text-primary uppercase leading-tight ${isCompact ? "text-[18px]" : "text-[22px]"}`}>{p.name}</h3>
-        <p className={`text-secondary ${isCompact ? "text-[12px]" : "text-[13px]"}`}>{p.subtitle}</p>
+      <div className="space-y-1 p-5">
+        <p className="uppercase tracking-widest text-outline text-[11px]">{p.categoryLabel}</p>
+        <h3 className="font-headline text-primary uppercase leading-tight text-[22px]">{p.name}</h3>
+        <p className="text-secondary text-[13px]">{p.subtitle}</p>
         <div className="flex items-center gap-2 pt-1">
-          <p className={`font-semibold ${isSupp ? "text-accent-warm" : "text-primary"} ${isCompact ? "text-[14px]" : "text-[15px]"}`}>₺{p.price.toFixed(2)}</p>
+          <p className="font-semibold text-primary text-[15px]">{p.price.toFixed(2)} €</p>
           {p.originalPrice && (
             <>
-              <p className={`text-outline line-through ${isCompact ? "text-[12px]" : "text-[13px]"}`}>₺{p.originalPrice.toFixed(2)}</p>
-              <span className={`bg-accent-warm/20 text-accent-warm font-semibold uppercase px-1.5 py-0.5 ${isCompact ? "text-[9px]" : "text-[10px]"}`}>
-                -%{Math.round((1 - p.price / p.originalPrice) * 100)}
+              <p className="text-outline line-through text-[13px]">{p.originalPrice.toFixed(2)} €</p>
+              <span className="bg-accent-warm/20 text-accent-warm font-semibold uppercase px-1.5 py-0.5 text-[10px]">
+                -{Math.round((1 - p.price / p.originalPrice) * 100)}%
               </span>
             </>
           )}

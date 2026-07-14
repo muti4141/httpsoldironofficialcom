@@ -11,8 +11,8 @@ export const Route = createFileRoute("/auth")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Giriş Yap — OLD IRON" },
-      { name: "description", content: "OLD IRON hesabına giriş yap veya yeni hesap oluştur." },
+      { title: "Anmelden — OLD IRON" },
+      { name: "description", content: "Melde dich bei deinem OLD IRON Konto an oder erstelle ein neues Konto." },
     ],
   }),
   validateSearch: (s: Record<string, unknown>) => {
@@ -59,16 +59,16 @@ function AuthPage() {
           },
         });
         if (error) throw error;
-        toast.success("Hesap oluşturuldu. Lütfen e-postanı onayla.");
+        toast.success("Konto erstellt. Bitte bestätige deine E-Mail-Adresse.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-        toast.success("Tekrar hoş geldin.");
+        toast.success("Willkommen zurück.");
         setPostAuthRedirect(redirectTo);
         navigate({ to: redirectTo });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Bir hata oluştu.");
+      toast.error(err instanceof Error ? err.message : "Ein Fehler ist aufgetreten.");
     } finally {
       setBusy(false);
     }
@@ -91,10 +91,10 @@ function AuthPage() {
       <main className="pt-[120px] pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-md mx-auto">
         <header className="mb-stack-md text-center">
           <h1 className="font-display text-[48px] md:text-[56px] uppercase tracking-tight text-primary leading-none">
-            {isSignup ? "Hesap Oluştur" : "Giriş Yap"}
+            {isSignup ? "Konto erstellen" : "Anmelden"}
           </h1>
           <p className="text-[13px] font-semibold uppercase tracking-widest text-outline mt-2">
-            {isSignup ? "Topluluğumuza katıl." : "Tekrar hoş geldin."}
+            {isSignup ? "Werde Teil unserer Community." : "Willkommen zurück."}
           </p>
         </header>
 
@@ -106,44 +106,44 @@ function AuthPage() {
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
-          Google ile Devam Et
+          Mit Google fortfahren
         </button>
 
         <div className="relative py-6 flex items-center gap-3">
           <div className="flex-grow h-px bg-outline-variant/30" />
-          <span className="text-[10px] uppercase text-outline tracking-widest">Veya E-posta ile</span>
+          <span className="text-[10px] uppercase text-outline tracking-widest">Oder per E-Mail</span>
           <div className="flex-grow h-px bg-outline-variant/30" />
         </div>
 
         <form onSubmit={handleEmailAuth} className="space-y-4">
           {isSignup && (
-            <Field label="Ad Soyad">
+            <Field label="Name">
               <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)}
                 className="w-full bg-surface-container-low border border-outline-variant px-4 py-3 text-[15px] text-primary focus:border-accent-warm focus:outline-none"
-                placeholder="Adın Soyadın" />
+                placeholder="Vor- und Nachname" />
             </Field>
           )}
-          <Field label="E-posta">
+          <Field label="E-Mail">
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
               className="w-full bg-surface-container-low border border-outline-variant px-4 py-3 text-[15px] text-primary focus:border-accent-warm focus:outline-none"
-              placeholder="ornek@email.com" />
+              placeholder="beispiel@email.com" />
           </Field>
-          <Field label="Şifre">
+          <Field label="Passwort">
             <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
               className="w-full bg-surface-container-low border border-outline-variant px-4 py-3 text-[15px] text-primary focus:border-accent-warm focus:outline-none"
               placeholder="••••••••" />
           </Field>
           <button type="submit" disabled={busy}
             className="w-full bg-accent-warm text-on-primary-container font-headline text-[20px] py-4 uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer">
-            {busy ? "..." : isSignup ? "Hesap Oluştur" : "Giriş Yap"}
+            {busy ? "..." : isSignup ? "Konto erstellen" : "Anmelden"}
           </button>
         </form>
 
         <p className="text-center text-[14px] text-secondary mt-8">
-          {isSignup ? "Zaten hesabın var mı?" : "Hesabın yok mu?"}{" "}
+          {isSignup ? "Du hast bereits ein Konto?" : "Noch kein Konto?"}{" "}
           <Link to="/auth" search={{ mode: isSignup ? "login" : "signup", redirect: redirectTo }}
             className="text-accent-warm underline uppercase tracking-widest text-[12px] font-semibold cursor-pointer">
-            {isSignup ? "Giriş Yap" : "Hesap Oluştur"}
+            {isSignup ? "Anmelden" : "Konto erstellen"}
           </Link>
         </p>
       </main>

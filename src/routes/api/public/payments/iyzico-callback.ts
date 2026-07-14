@@ -26,7 +26,7 @@ async function sendOrderEmails(orderId: string) {
   const { data: itemsRows } = await supabase.from("order_items").select("*").eq("order_id", orderId);
   const items = (itemsRows || []) as any[];
 
-  const fmt = (cents: number) => `₺${(cents / 100).toFixed(2)}`;
+  const fmt = (cents: number) => `${(cents / 100).toFixed(2)} €`;
   const itemRows = items
     .map((i: any) =>
       `<tr><td style="padding:8px;border-bottom:1px solid #eee">${i.product_name}${i.size ? ` (${i.size})` : ""} × ${i.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">${fmt(i.line_total_cents)}</td></tr>`,
@@ -35,16 +35,16 @@ async function sendOrderEmails(orderId: string) {
 
   const html = `
     <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#111">
-      <h1 style="margin:0 0 16px">Sipariş onayı</h1>
-      <p>Merhaba ${order.full_name},</p>
-      <p>Siparişin alındı. Sipariş no: <strong>#${String(order.id).slice(0, 8)}</strong></p>
+      <h1 style="margin:0 0 16px">Bestellbestätigung</h1>
+      <p>Hallo ${order.full_name},</p>
+      <p>deine Bestellung ist bei uns eingegangen. Bestellnummer: <strong>#${String(order.id).slice(0, 8)}</strong></p>
       <table style="width:100%;border-collapse:collapse;margin:16px 0">
         ${itemRows}
-        <tr><td style="padding:8px;text-align:right">Ara toplam</td><td style="padding:8px;text-align:right">${fmt(order.subtotal_cents)}</td></tr>
-        <tr><td style="padding:8px;text-align:right">Kargo</td><td style="padding:8px;text-align:right">${fmt(order.shipping_cents)}</td></tr>
-        <tr><td style="padding:8px;text-align:right"><strong>Toplam</strong></td><td style="padding:8px;text-align:right"><strong>${fmt(order.total_cents)}</strong></td></tr>
+        <tr><td style="padding:8px;text-align:right">Zwischensumme</td><td style="padding:8px;text-align:right">${fmt(order.subtotal_cents)}</td></tr>
+        <tr><td style="padding:8px;text-align:right">Versand</td><td style="padding:8px;text-align:right">${fmt(order.shipping_cents)}</td></tr>
+        <tr><td style="padding:8px;text-align:right"><strong>Gesamt</strong></td><td style="padding:8px;text-align:right"><strong>${fmt(order.total_cents)}</strong></td></tr>
       </table>
-      <p><strong>Teslimat:</strong><br/>${order.shipping_address}<br/>${order.shipping_zip} ${order.shipping_city}<br/>${order.shipping_country}</p>
+      <p><strong>Lieferadresse:</strong><br/>${order.shipping_address}<br/>${order.shipping_zip} ${order.shipping_city}<br/>${order.shipping_country}</p>
       <p style="color:#666;font-size:12px">OLD IRON</p>
     </div>`;
 
@@ -53,7 +53,7 @@ async function sendOrderEmails(orderId: string) {
     sends.push(fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
-      body: JSON.stringify({ from: fromEmail, to: order.email, subject: `Sipariş onayı #${String(order.id).slice(0, 8)}`, html }),
+      body: JSON.stringify({ from: fromEmail, to: order.email, subject: `Bestellbestätigung #${String(order.id).slice(0, 8)}`, html }),
     }));
   }
   if (adminEmail) {

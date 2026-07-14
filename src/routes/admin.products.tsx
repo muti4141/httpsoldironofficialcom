@@ -16,7 +16,7 @@ export const Route = createFileRoute("/admin/products")({
   ssr: false,
   head: () => ({
     meta: [
-      { title: "Admin — Ürünler" },
+      { title: "Admin — Produkte" },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
@@ -48,14 +48,14 @@ const EMPTY: Row = {
   id: "",
   name: "",
   category: "carbs",
-  category_label: "Pirinç Unu",
+  category_label: "Oberteile",
   type: "supplement",
   price: 280,
   original_price: 400,
   image: "",
   video: null,
   video_poster: null,
-  badge: "Lansman İndirimi",
+  badge: "Launch-Rabatt",
   subtitle: "",
   description: "",
   flavors: [],
@@ -138,10 +138,10 @@ function AdminProductsPage() {
   };
 
   const onDelete = async (id: string) => {
-    if (!confirm(`"${id}" ürününü silmek istediğinize emin misiniz?`)) return;
+    if (!confirm(`Möchtest du "${id}" wirklich löschen?`)) return;
     const { error } = await supabase.from("admin_products").delete().eq("id", id);
     if (error) return toast.error(error.message);
-    toast.success("Ürün silindi");
+    toast.success("Produkt gelöscht");
     refresh();
   };
 
@@ -159,9 +159,9 @@ function AdminProductsPage() {
       setForm((f) =>
         kind === "image" ? { ...f, image: url } : { ...f, video: url, video_poster: f.video_poster || f.image }
       );
-      toast.success(`${kind === "image" ? "Görsel" : "Video"} yüklendi`);
+      toast.success(`${kind === "image" ? "Bild" : "Video"} hochgeladen`);
     } catch (e: any) {
-      toast.error(e?.message ?? "Yükleme başarısız");
+      toast.error(e?.message ?? "Upload fehlgeschlagen");
     } finally {
       setUploading(null);
     }
@@ -169,8 +169,8 @@ function AdminProductsPage() {
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim()) return toast.error("Ürün adı gerekli");
-    if (!form.image) return toast.error("Görsel yükleyin");
+    if (!form.name.trim()) return toast.error("Produktname erforderlich");
+    if (!form.image) return toast.error("Bitte ein Bild hochladen");
     const id = form.id?.trim() || slugify(form.name);
     const payload = {
       ...form,
@@ -182,7 +182,7 @@ function AdminProductsPage() {
       .from("admin_products")
       .upsert(payload as any, { onConflict: "id" });
     if (error) return toast.error(error.message);
-    toast.success(editing ? "Güncellendi" : "Eklendi");
+    toast.success(editing ? "Aktualisiert" : "Hinzugefügt");
     resetForm();
     refresh();
   };
@@ -191,7 +191,7 @@ function AdminProductsPage() {
     return (
       <div className="min-h-screen flex flex-col bg-background">
         <Nav />
-        <main className="flex-1 container mx-auto px-4 py-12">Yükleniyor…</main>
+        <main className="flex-1 container mx-auto px-4 py-12">Wird geladen…</main>
         <Footer />
       </div>
     );
@@ -202,8 +202,8 @@ function AdminProductsPage() {
       <div className="min-h-screen flex flex-col bg-background">
         <Nav />
         <main className="flex-1 container mx-auto px-4 py-12 text-center">
-          <h1 className="text-2xl font-bold mb-2">Erişim Yok</h1>
-          <p className="text-muted-foreground">Yönetici yetkiniz bulunmuyor.</p>
+          <h1 className="text-2xl font-bold mb-2">Kein Zugriff</h1>
+          <p className="text-muted-foreground">Du hast keine Admin-Rechte.</p>
         </main>
         <Footer />
       </div>
@@ -215,20 +215,20 @@ function AdminProductsPage() {
       <Nav />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-5xl">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold">Ürün Yönetimi</h1>
-          <Link to="/admin/orders"><Button variant="outline" size="sm">Siparişler</Button></Link>
+          <h1 className="text-3xl font-bold">Produktverwaltung</h1>
+          <Link to="/admin/orders"><Button variant="outline" size="sm">Bestellungen</Button></Link>
         </div>
 
         <form onSubmit={onSubmit} className="border border-border rounded-lg p-5 mb-10 space-y-4">
-          <h2 className="text-xl font-semibold">{editing ? `Düzenle: ${form.id}` : "Yeni Ürün Ekle"}</h2>
+          <h2 className="text-xl font-semibold">{editing ? `Bearbeiten: ${form.id}` : "Neues Produkt anlegen"}</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>Ürün Adı *</Label>
+              <Label>Produktname *</Label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
             <div>
-              <Label>ID (slug) — boşsa otomatik</Label>
+              <Label>ID (Slug) — leer = automatisch</Label>
               <Input value={form.id} disabled={editing} onChange={(e) => setForm({ ...form, id: e.target.value })} placeholder="ornek-urun-id" />
             </div>
             <div>
@@ -248,7 +248,7 @@ function AdminProductsPage() {
               <Input value={form.category_label} onChange={(e) => setForm({ ...form, category_label: e.target.value })} />
             </div>
             <div>
-              <Label>Alt Başlık</Label>
+              <Label>Untertitel</Label>
               <Input value={form.subtitle} onChange={(e) => setForm({ ...form, subtitle: e.target.value })} placeholder="1000g · Aroma" />
             </div>
             <div>
@@ -256,72 +256,72 @@ function AdminProductsPage() {
               <Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} />
             </div>
             <div>
-              <Label>Liste Fiyatı / Üstü Çizili (TL)</Label>
+              <Label>Streichpreis (€)</Label>
               <Input type="number" value={form.original_price ?? ""} onChange={(e) => setForm({ ...form, original_price: e.target.value ? Number(e.target.value) : null })} />
             </div>
             <div>
               <Label>Etiket (Badge)</Label>
-              <Input value={form.badge ?? ""} onChange={(e) => setForm({ ...form, badge: e.target.value || null })} placeholder="Lansman İndirimi" />
+              <Input value={form.badge ?? ""} onChange={(e) => setForm({ ...form, badge: e.target.value || null })} placeholder="Launch-Rabatt" />
             </div>
             <div>
-              <Label>Sıralama</Label>
+              <Label>Sortierung</Label>
               <Input type="number" value={form.sort_order} onChange={(e) => setForm({ ...form, sort_order: Number(e.target.value) })} />
             </div>
             <div>
-              <Label>Aromalar (virgülle)</Label>
+              <Label>Geschmacksrichtungen (Komma)</Label>
               <Input value={(form.flavors ?? []).join(", ")} onChange={(e) => setForm({ ...form, flavors: e.target.value.split(",").map((s) => s.trim()) })} />
             </div>
             <div>
-              <Label>Gramaj (virgülle)</Label>
+              <Label>Gewicht (Komma)</Label>
               <Input value={(form.weights ?? []).join(", ")} onChange={(e) => setForm({ ...form, weights: e.target.value.split(",").map((s) => s.trim()) })} />
             </div>
           </div>
 
           <div>
-            <Label>Açıklama</Label>
+            <Label>Beschreibung</Label>
             <Textarea rows={6} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label>Görsel *</Label>
+              <Label>Bild *</Label>
               <div className="flex gap-2 items-center">
                 <input ref={imgRef} type="file" accept="image/*" hidden onChange={(e) => e.target.files?.[0] && uploadFile(e.target.files[0], "image")} />
                 <Button type="button" variant="outline" onClick={() => imgRef.current?.click()} disabled={uploading === "image"}>
-                  {uploading === "image" ? "Yükleniyor..." : "Görsel Yükle"}
+                  {uploading === "image" ? "Wird hochgeladen..." : "Bild hochladen"}
                 </Button>
                 {form.image && <img src={form.image} alt="" className="h-12 w-12 object-cover rounded border border-border" />}
               </div>
-              <Input className="mt-2" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="veya URL yapıştır" />
+              <Input className="mt-2" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="oder URL einfügen" />
             </div>
             <div>
               <Label>Video (opsiyonel)</Label>
               <div className="flex gap-2 items-center">
                 <input ref={vidRef} type="file" accept="video/*" hidden onChange={(e) => e.target.files?.[0] && uploadFile(e.target.files[0], "video")} />
                 <Button type="button" variant="outline" onClick={() => vidRef.current?.click()} disabled={uploading === "video"}>
-                  {uploading === "video" ? "Yükleniyor..." : "Video Yükle"}
+                  {uploading === "video" ? "Wird hochgeladen..." : "Video hochladen"}
                 </Button>
                 {form.video && <span className="text-xs text-muted-foreground truncate max-w-[200px]">{form.video.split("/").pop()}</span>}
               </div>
-              <Input className="mt-2" value={form.video ?? ""} onChange={(e) => setForm({ ...form, video: e.target.value || null })} placeholder="veya URL yapıştır" />
+              <Input className="mt-2" value={form.video ?? ""} onChange={(e) => setForm({ ...form, video: e.target.value || null })} placeholder="oder URL einfügen" />
             </div>
           </div>
 
           <div className="flex gap-2 pt-2">
-            <Button type="submit">{editing ? "Güncelle" : "Ekle"}</Button>
-            {editing && <Button type="button" variant="outline" onClick={resetForm}>İptal</Button>}
+            <Button type="submit">{editing ? "Aktualisieren" : "Hinzufügen"}</Button>
+            {editing && <Button type="button" variant="outline" onClick={resetForm}>Abbrechen</Button>}
           </div>
         </form>
 
-        <h2 className="text-xl font-semibold mb-3">Mevcut Ürünler ({rows.length})</h2>
+        <h2 className="text-xl font-semibold mb-3">Vorhandene Produkte ({rows.length})</h2>
         {rows.length === 0 ? (
-          <p className="text-muted-foreground">Henüz panel üzerinden eklenmiş ürün yok.</p>
+          <p className="text-muted-foreground">Noch keine Produkte im Panel angelegt.</p>
         ) : (
           <div className="overflow-x-auto border border-border rounded-lg">
             <table className="w-full text-sm">
               <thead className="bg-muted/40 text-left">
                 <tr>
-                  <th className="px-3 py-2">Görsel</th>
+                  <th className="px-3 py-2">Bild</th>
                   <th className="px-3 py-2">Ad</th>
                   <th className="px-3 py-2">Kategori</th>
                   <th className="px-3 py-2 text-right">Fiyat</th>
@@ -337,10 +337,10 @@ function AdminProductsPage() {
                       <div className="text-xs text-muted-foreground">{r.id}</div>
                     </td>
                     <td className="px-3 py-2">{r.category_label}</td>
-                    <td className="px-3 py-2 text-right">₺{r.price}</td>
+                    <td className="px-3 py-2 text-right">{r.price} €</td>
                     <td className="px-3 py-2 text-right space-x-2 whitespace-nowrap">
-                      <Button size="sm" variant="outline" onClick={() => onEdit(r)}>Düzenle</Button>
-                      <Button size="sm" variant="destructive" onClick={() => onDelete(r.id)}>Sil</Button>
+                      <Button size="sm" variant="outline" onClick={() => onEdit(r)}>Bearbeiten</Button>
+                      <Button size="sm" variant="destructive" onClick={() => onDelete(r.id)}>Löschen</Button>
                     </td>
                   </tr>
                 ))}
