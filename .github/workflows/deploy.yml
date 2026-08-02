@@ -34,13 +34,6 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Pages baglantisini sok
-        continue-on-error: true
-        env:
-          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: python3 .github/scripts/pages_unbind.py
-
       - name: Fix DNS + Route domain to Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -156,3 +149,22 @@ jobs:
           curl -s "https://api.cloudflare.com/client/v4/zones?name=oldironofficial.com" -H "Authorization: Bearer $CF_TOKEN" > /tmp/z.json
           python3 -c "import json;d=json.load(open('/tmp/z.json'));r=d.get('result') or [];print('YOK' if not r else 'id=%s durum=%s paused=%s' % (r[0].get('id'),r[0].get('status'),r[0].get('paused')))"
           python3 -c "import json;d=json.load(open('/tmp/z.json'));r=d.get('result') or [];print('ns=%s' % (r[0].get('name_servers') if r else '-'))"
+
+      - name: Custom Domain bagla (Pages bagini ez)
+        if: always()
+        continue-on-error: true
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python3 .github/scripts/bind_domain.py
+
+      - name: Son kontrol
+        if: always()
+        continue-on-error: true
+        run: |
+          sleep 12
+          for H in oldironofficial.com www.oldironofficial.com; do
+            CODE=$(curl -sS -o /tmp/o.html -w "%{http_code}" --max-time 20 "https://$H")
+            TITLE=$(grep -o "<title>[^<]*</title>" /tmp/o.html | head -1)
+            echo "$H -> HTTP $CODE $TITLE"
+          done
