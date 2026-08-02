@@ -26,11 +26,6 @@ jobs:
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_PAYMENTS_CLIENT_TOKEN: ${{ secrets.VITE_PAYMENTS_CLIENT_TOKEN }}
 
-      - name: Show build output
-        run: |
-          echo "=== dist/ ===" && ls -la dist/ 2>/dev/null || echo "no dist/"
-          echo "=== .worker-build/ ===" && ls -la .worker-build/ 2>/dev/null || echo "no .worker-build/"
-
       - name: Deploy
         run: ./node_modules/.bin/wrangler deploy
         env:
