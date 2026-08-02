@@ -10,7 +10,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
@@ -29,10 +30,9 @@ jobs:
         run: |
           echo "=== dist/ ===" && ls -la dist/ 2>/dev/null || echo "no dist/"
           echo "=== .worker-build/ ===" && ls -la .worker-build/ 2>/dev/null || echo "no .worker-build/"
-          echo "=== dist/client/ ===" && ls -la dist/client/ 2>/dev/null || echo "no dist/client/"
 
-      - name: Deploy to Cloudflare Workers
-        uses: cloudflare/wrangler-action@v4
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      - name: Deploy
+        run: npx wrangler@latest deploy --no-bundle
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
