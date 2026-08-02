@@ -40,15 +40,27 @@ function Home() {
   useEffect(() => {
     let url = "";
     let alive = true;
+
+    const fallback = () => {
+      if (!alive) return;
+      /* Dış kaynak gelmezse kendi videomuza düş */
+      if (filmRef.current && !filmRef.current.src) filmRef.current.src = "/videos/hero.mp4";
+      setReady(true);
+    };
+
     fetch(VIDEO_URL)
-      .then((r) => r.blob())
+      .then((r) => (r.ok ? r.blob() : Promise.reject(new Error("kaynak yok"))))
       .then((blob) => {
         if (!alive) return;
         url = URL.createObjectURL(blob);
         if (filmRef.current) filmRef.current.src = url;
       })
-      .catch(() => { if (alive) setReady(true); });
-    return () => { alive = false; if (url) URL.revokeObjectURL(url); };
+      .catch(fallback);
+
+    /* Ne olursa olsun sayfa 5sn'den fazla "Yükleniyor"da kalmaz */
+    const t = setTimeout(fallback, 5000);
+
+    return () => { alive = false; clearTimeout(t); if (url) URL.revokeObjectURL(url); };
   }, []);
 
   /* Scrub döngüsü */
@@ -175,8 +187,8 @@ function Home() {
           {/* Yükleniyor */}
           <div style={{
             position: "absolute", inset: 0, zIndex: 10,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            background: "#080808",
+            display: "flex", alignItems: "flex-end", justifyContent: "center",
+            background: "#080808", paddingBottom: "18vh",
             fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
             letterSpacing: ".2em", textTransform: "uppercase", color: "rgba(255,255,255,.5)",
             opacity: ready ? 0 : 1, pointerEvents: ready ? "none" : "auto",
@@ -187,7 +199,7 @@ function Home() {
 
           {/* ── AÇILIŞ: LOGO ── */}
           <div aria-hidden={logoOut > 0.9} style={{
-            position: "absolute", inset: 0, zIndex: 8,
+            position: "absolute", inset: 0, zIndex: 12,
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
             gap: "28px", pointerEvents: "none",
             opacity: 1 - logoOut,
