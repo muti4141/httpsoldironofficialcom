@@ -4,24 +4,39 @@ import { Footer } from "@/components/Footer";
 import { RevealText } from "@/components/RevealText";
 import { useParallax } from "@/components/SmoothScroll";
 import { products, type Product } from "@/data/products";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useCart } from "@/stores/cart";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "OLD IRON — Disiplinden Dövülmüş" },
-      { name: "description", content: "Almanya'da üretilen premium spor giyim & supplement. Old School zihniyeti, modern güç." },
+      { title: "OLD IRON — Premium Spor Giyim & Elit Supplement" },
+      { name: "description", content: "Almanya'da üretilen premium spor giyim ve lab onaylı elit supplement. 1500₺ üzeri ücretsiz kargo, 14 gün iade." },
     ],
   }),
   component: Home,
 });
 
-/* ₺849,00 biçimi */
+/* ₺500,00 biçimi */
 const tl = (n: number) => `₺${n.toFixed(2).replace(".", ",")}`;
 
-const pressItems = ["ISO 17025", "ALMANYA ÜRETİMİ", "300 GSM", "SAF PROTEİN", "LAB ONAYLI"];
+const FREE_SHIPPING = 1500;
+
+const trustItems = [
+  { icon: "local_shipping",     text: "1500₺ üzeri ücretsiz kargo" },
+  { icon: "assignment_return",  text: "14 gün içinde iade" },
+  { icon: "science",            text: "ISO 17025 lab onaylı" },
+  { icon: "verified",           text: "Almanya'da üretildi" },
+];
+
+const testimonials = [
+  { quote: "Kumaşın kalitesi rakipsiz. Her antrenmanda farkı hissediyorsun.", name: "Mehmet Yılmaz", role: "Powerlifter · İstanbul" },
+  { quote: "Iron Whey içtiğim en iyi protein. Şişkinlik yok, maksimum emilim.", name: "Seda Kaya", role: "Kişisel Antrenör · Ankara" },
+  { quote: "Gerçek disiplin, gerçek kalite. Aradığım buydu.", name: "Burak Şahin", role: "Bodybuilder · İzmir" },
+];
+
+const APPAREL_SIZES = ["S", "M", "L", "XL"];
 
 /* ── Scroll reveal ─────────────────────────────────────────────────── */
 function useReveal() {
@@ -39,7 +54,7 @@ function useReveal() {
   }, []);
 }
 
-/* ── Ürün görseli: gerçek foto varsa o, yoksa plaster sahnede logo ── */
+/* ── Ürün görseli ──────────────────────────────────────────────────── */
 function ProductVisual({ ratio = "1 / 1", p }: { ratio?: string; p?: Product }) {
   if (p?.gallery?.length) {
     return (
@@ -66,16 +81,13 @@ function ProductVisual({ ratio = "1 / 1", p }: { ratio?: string; p?: Product }) 
         src="/images/logo.png"
         alt=""
         aria-hidden
-        style={{
-          width: "60%", maxHeight: "70%", objectFit: "contain",
-          filter: "invert(1) brightness(0.25)",
-        }}
+        style={{ width: "60%", maxHeight: "70%", objectFit: "contain", filter: "invert(1) brightness(0.25)" }}
       />
     </div>
   );
 }
 
-/* ── Kart metadata: OI çipi + isim + kredi + fiyat (sol hizalı) ───── */
+/* ── Kart metadata ─────────────────────────────────────────────────── */
 function CardMeta({ p }: { p: Product }) {
   return (
     <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginTop: "16px", textAlign: "left" }}>
@@ -132,9 +144,12 @@ function Home() {
   useParallax();
   const add = useCart((s) => s.add);
 
-  const ranked = products.slice(0, 4);
-  const fresh  = products.slice(4, 8);
-  const heroProduct = products[0];
+  const flagship = products[0];                          // gerçek fotoğraflı lansman ürünü
+  const ranked   = products.slice(0, 4);
+  const fresh    = products.slice(4, 8);
+
+  const [size, setSize] = useState("L");
+  const [added, setAdded] = useState(false);
 
   const rankedRef = useRef<HTMLDivElement>(null);
   const scrollRanked = (dir: 1 | -1) => {
@@ -149,13 +164,20 @@ function Home() {
     toast.success(`${p.name} sepete eklendi`);
   };
 
+  const addFlagship = () => {
+    add(flagship, size);
+    toast.success(`${flagship.name} (${size}) sepete eklendi`);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
+  };
+
   return (
     <div style={{ background: "#ffffff", color: "#111111", minHeight: "100vh", overflowX: "hidden" }}>
 
       <Nav />
 
       {/* ════════════════════════════════════════════════
-          HERO — tam ekran VİDEO, spec'in foto hero'su
+          1 — HERO: ne satıyoruz + net CTA
       ════════════════════════════════════════════════ */}
       <section style={{ position: "relative", minHeight: "100vh", overflow: "hidden", background: "#111111" }}>
         <video
@@ -164,31 +186,55 @@ function Home() {
           data-parallax="0.12"
           style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
         />
-        {/* Alt üçte-bir okunurluk gradyanı */}
         <div
           aria-hidden
           style={{
             position: "absolute", inset: 0,
-            background: "linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 42%, rgba(0,0,0,0.05) 100%)",
+            background: "linear-gradient(to top, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.22) 45%, rgba(0,0,0,0.06) 100%)",
           }}
         />
 
-        {/* Sol-alt yığın */}
-        <div style={{ position: "absolute", left: "clamp(20px, 4vw, 52px)", bottom: "clamp(36px, 7vh, 72px)", zIndex: 5, maxWidth: "760px" }}>
-          <span className="badge badge-new anim-1" style={{ display: "inline-flex", marginBottom: "20px" }}>YENİ</span>
+        <div style={{ position: "absolute", left: "clamp(20px, 4vw, 52px)", bottom: "clamp(36px, 7vh, 72px)", zIndex: 5, maxWidth: "780px" }}>
+          <span className="badge badge-new anim-1" style={{ display: "inline-flex", marginBottom: "20px" }}>
+            LANSMAN
+          </span>
+
           <h1 style={{
-            fontSize: "clamp(64px, 9vw, 128px)", fontWeight: 700, letterSpacing: "-0.04em",
+            fontSize: "clamp(56px, 8.5vw, 116px)", fontWeight: 700, letterSpacing: "-0.04em",
             lineHeight: 1.0, color: "#ffffff", textTransform: "lowercase",
           }}>
             <span className="line-rise" style={{ display: "block", animationDelay: "0.12s" }}>disiplinden</span>
             <span className="line-rise" style={{ display: "block", animationDelay: "0.28s" }}>dövülmüş.</span>
           </h1>
-          <p className="anim-4" style={{ fontSize: "16px", color: "rgba(255,255,255,0.8)", letterSpacing: "-0.04em", marginTop: "16px", lineHeight: 1.4 }}>
-            Premium spor giyim & supplement. Almanya'da üretildi.
+
+          <p className="anim-4" style={{
+            fontSize: "17px", color: "rgba(255,255,255,0.85)", letterSpacing: "-0.04em",
+            marginTop: "18px", lineHeight: 1.4, maxWidth: "440px",
+          }}>
+            Premium spor giyim &amp; elit supplement. Almanya'da üretildi,
+            Türkiye'ye 1–3 iş gününde teslim.
           </p>
+
+          {/* CTA — hunideki ilk kapı */}
+          <div className="anim-5" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px", marginTop: "28px" }}>
+            <Link
+              to="/shop"
+              style={{
+                display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "8px",
+                background: "#000aff", color: "#ffffff", fontSize: "15px", fontWeight: 600,
+                letterSpacing: "-0.04em", padding: "16px 32px", borderRadius: "10px", textDecoration: "none",
+              }}
+            >
+              Koleksiyonu Keşfet
+              <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+            </Link>
+            <span className="text-brand-credit" style={{ color: "rgba(255,255,255,0.6)" }}>
+              {tl(flagship.price)}'den başlayan fiyatlar
+            </span>
+          </div>
         </div>
 
-        {/* Sağ yüzen ürün kartı */}
+        {/* Yüzen ürün kartı — gerçek ürün, gerçek fiyat */}
         <div
           className="anim-5"
           style={{
@@ -202,39 +248,229 @@ function Home() {
               width: 60, height: 60, borderRadius: "10px", background: "#ecedee", flexShrink: 0,
               display: "inline-flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
             }}>
-              {heroProduct.gallery?.length ? (
-                <img src={heroProduct.gallery[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              {flagship.gallery?.length ? (
+                <img src={flagship.gallery[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               ) : (
                 <img src="/images/logo.png" alt="" style={{ width: "65%", filter: "invert(1) brightness(0.2)" }} />
               )}
             </span>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: "16px", fontWeight: 600, letterSpacing: "-0.04em", color: "#111111", lineHeight: 1.2 }}>
-                {heroProduct.name}
+                {flagship.name}
               </p>
               <p className="text-brand-credit" style={{ marginTop: "4px" }}>By OLD IRON</p>
-              <p className="text-price-lg" style={{ marginTop: "4px", fontWeight: 600 }}>{tl(heroProduct.price)}</p>
+              <p className="text-price-lg" style={{ marginTop: "4px", fontWeight: 600 }}>{tl(flagship.price)}</p>
             </div>
           </div>
           <Link
             to="/product/$id"
-            params={{ id: heroProduct.id }}
+            params={{ id: flagship.id }}
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
               width: "100%", background: "#111111", color: "#ffffff",
               fontSize: "14px", fontWeight: 600, letterSpacing: "-0.04em",
-              padding: "10px 20px", borderRadius: "10px", textDecoration: "none",
+              padding: "12px 20px", borderRadius: "10px", textDecoration: "none",
             }}
           >
-            İncele: {heroProduct.name.split(" ")[0].toLocaleLowerCase("tr")}
+            Ürünü İncele
           </Link>
         </div>
       </section>
 
       {/* ════════════════════════════════════════════════
-          SIRALI GRID — haftanın en çok satanları
+          2 — GÜVEN ŞERİDİ: itirazları hemen kapat
       ════════════════════════════════════════════════ */}
-      <section style={{ background: "#ffffff", padding: "96px 0 48px" }}>
+      <section style={{ background: "#ecedee", padding: "22px clamp(20px, 4vw, 52px)" }}>
+        <div style={{
+          maxWidth: "1440px", margin: "0 auto",
+          display: "flex", flexWrap: "wrap", justifyContent: "space-between",
+          gap: "16px 32px",
+        }}>
+          {trustItems.map((t) => (
+            <div key={t.text} style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#111111" }}>{t.icon}</span>
+              <span style={{ fontSize: "13px", letterSpacing: "-0.04em", color: "#111111" }}>{t.text}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════
+          3 — LANSMAN ÜRÜNÜ: ana sayfadan direkt satın alma
+      ════════════════════════════════════════════════ */}
+      <section style={{ background: "#ffffff", padding: "96px 0" }}>
+        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" }}>
+          <div className="flagship-grid">
+
+            {/* Görseller */}
+            <div className="reveal-blur">
+              <div style={{ background: "#ecedee", borderRadius: "10px", overflow: "hidden", position: "relative" }}>
+                <span className="badge badge-new" style={{ position: "absolute", top: "16px", left: "16px", zIndex: 3 }}>
+                  LANSMAN ÜRÜNÜ
+                </span>
+                <img
+                  src={flagship.gallery?.[0] ?? "/images/logo.png"}
+                  alt={flagship.name}
+                  style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block" }}
+                />
+              </div>
+              {flagship.gallery && flagship.gallery.length > 1 && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px", marginTop: "10px" }}>
+                  {flagship.gallery.slice(1, 5).map((src, i) => (
+                    <img
+                      key={src}
+                      src={src}
+                      alt={`${flagship.name} açı ${i + 2}`}
+                      loading="lazy"
+                      style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", borderRadius: "10px", display: "block" }}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Satın alma kutusu */}
+            <div className="reveal-blur" style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+              <p className="text-eyebrow" style={{ marginBottom: "10px" }}>Giyim Koleksiyonu</p>
+
+              <RevealText
+                as="h2"
+                text={flagship.name}
+                style={{ fontSize: "clamp(32px, 4vw, 44px)", fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.05, color: "#111111" }}
+              />
+
+              <p className="text-brand-credit" style={{ marginTop: "8px" }}>By OLD IRON</p>
+
+              <p style={{ fontSize: "16px", lineHeight: 1.5, color: "#737780", letterSpacing: "-0.04em", marginTop: "16px", maxWidth: "440px" }}>
+                {flagship.description}
+              </p>
+
+              <p className="text-price-lg" style={{ fontSize: "24px", fontWeight: 600, marginTop: "24px" }}>
+                {tl(flagship.price)}
+              </p>
+              <p className="text-brand-credit" style={{ marginTop: "4px" }}>KDV dahil</p>
+
+              {/* Beden */}
+              <div style={{ marginTop: "24px" }}>
+                <p className="text-eyebrow" style={{ marginBottom: "10px" }}>Beden Seç</p>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                  {APPAREL_SIZES.map((s) => {
+                    const active = s === size;
+                    return (
+                      <button
+                        key={s}
+                        onClick={() => setSize(s)}
+                        style={{
+                          minWidth: "56px", padding: "10px 18px", borderRadius: "30px",
+                          border: `1px solid ${active ? "#000aff" : "#d7d7d7"}`,
+                          background: active ? "#000aff" : "#ffffff",
+                          color: active ? "#ffffff" : "#111111",
+                          fontSize: "14px", fontWeight: 500, letterSpacing: "-0.04em",
+                          cursor: "pointer", transition: "all .2s",
+                        }}
+                      >
+                        {s}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* CTA */}
+              <button
+                onClick={addFlagship}
+                style={{
+                  marginTop: "24px", width: "100%", maxWidth: "440px",
+                  background: added ? "#111111" : "#000aff", color: "#ffffff",
+                  fontSize: "16px", fontWeight: 600, letterSpacing: "-0.04em",
+                  padding: "18px 32px", borderRadius: "10px", border: "none", cursor: "pointer",
+                  transition: "background .25s",
+                }}
+              >
+                {added ? "Sepete eklendi ✓" : "Sepete Ekle"}
+              </button>
+
+              {/* Güven satırı — CTA'nın hemen altı */}
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", marginTop: "16px", maxWidth: "440px" }}>
+                {[
+                  { icon: "local_shipping",    text: "1500₺ üzeri ücretsiz kargo" },
+                  { icon: "assignment_return", text: "14 gün iade" },
+                  { icon: "lock",              text: "Güvenli ödeme" },
+                ].map((t) => (
+                  <span key={t.text} style={{ display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    <span className="material-symbols-outlined" style={{ fontSize: 16, color: "#737780" }}>{t.icon}</span>
+                    <span style={{ fontSize: "13px", color: "#737780", letterSpacing: "-0.04em" }}>{t.text}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════
+          4 — KATEGORİ KAPILARI
+      ════════════════════════════════════════════════ */}
+      <section style={{ background: "#ffffff", padding: "0 0 96px" }}>
+        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" }}>
+          <SectionHeader title="ne arıyorsun?" />
+          <div className="cat-grid">
+            {[
+              { title: "spor giyim", desc: "300 gsm ağır pamuk, oversize kesim", img: flagship.gallery?.[2] ?? null },
+              { title: "supplement", desc: "ISO 17025 lab onaylı, sıfır dolgu", img: null },
+            ].map((c, i) => (
+              <Link
+                key={c.title}
+                to="/shop"
+                className="reveal-blur"
+                style={{
+                  position: "relative", display: "block", textDecoration: "none",
+                  background: "#ecedee", borderRadius: "10px", overflow: "hidden",
+                  minHeight: "320px", transitionDelay: `${i * 80}ms`,
+                }}
+              >
+                {c.img ? (
+                  <img src={c.img} alt="" loading="lazy"
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
+                ) : (
+                  <span style={{
+                    position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <img src="/images/logo.png" alt="" style={{ width: "38%", filter: "invert(1) brightness(0.25)", opacity: .5 }} />
+                  </span>
+                )}
+                <span aria-hidden style={{
+                  position: "absolute", inset: 0,
+                  background: "linear-gradient(to top, rgba(0,0,0,.72), rgba(0,0,0,.05))",
+                }} />
+                <span style={{ position: "absolute", left: "24px", right: "24px", bottom: "24px", zIndex: 2 }}>
+                  <span style={{
+                    display: "block", fontSize: "clamp(26px, 3vw, 36px)", fontWeight: 700,
+                    letterSpacing: "-0.04em", color: "#ffffff", textTransform: "lowercase", lineHeight: 1.05,
+                  }}>
+                    {c.title}
+                  </span>
+                  <span style={{ display: "block", fontSize: "14px", color: "rgba(255,255,255,.75)", letterSpacing: "-0.04em", marginTop: "6px" }}>
+                    {c.desc}
+                  </span>
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: "6px", marginTop: "14px",
+                    fontSize: "14px", fontWeight: 600, color: "#ffffff", letterSpacing: "-0.04em",
+                  }}>
+                    Keşfet
+                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>arrow_forward</span>
+                  </span>
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════
+          5 — EN ÇOK SATANLAR
+      ════════════════════════════════════════════════ */}
+      <section style={{ background: "#ffffff", padding: "0 0 48px" }}>
         <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" }}>
           <SectionHeader title="haftanın en çok satanları" onPrev={() => scrollRanked(-1)} onNext={() => scrollRanked(1)} />
 
@@ -257,10 +493,7 @@ function Home() {
                 <span className="rank-numeral" data-parallax="-0.2">{i + 1}</span>
                 <ProductVisual p={p} />
                 <CardMeta p={p} />
-                <button
-                  className="card-add-btn"
-                  onClick={(e) => { e.preventDefault(); quickAdd(p); }}
-                >
+                <button className="card-add-btn" onClick={(e) => { e.preventDefault(); quickAdd(p); }}>
                   Sepete Ekle
                 </button>
               </Link>
@@ -270,9 +503,39 @@ function Home() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          STANDART GRID — yeni gelenler
+          6 — ÜCRETSİZ KARGO BANDI (sepet ortalamasını yükseltir)
       ════════════════════════════════════════════════ */}
-      <section style={{ background: "#ffffff", padding: "48px 0 96px" }}>
+      <section style={{ background: "#000aff", padding: "56px clamp(20px, 4vw, 52px)" }}>
+        <div style={{
+          maxWidth: "1440px", margin: "0 auto",
+          display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "20px",
+        }}>
+          <RevealText
+            text={`${FREE_SHIPPING}₺ üzeri kargo bizden.`}
+            style={{
+              fontSize: "clamp(28px, 4vw, 48px)", fontWeight: 700, letterSpacing: "-0.04em",
+              lineHeight: 1.0, color: "#ffffff", textTransform: "lowercase",
+            }}
+          />
+          <Link
+            to="/shop"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "8px",
+              background: "#ffffff", color: "#000aff", fontSize: "15px", fontWeight: 600,
+              letterSpacing: "-0.04em", padding: "16px 32px", borderRadius: "10px", textDecoration: "none",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Alışverişe Başla
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>arrow_forward</span>
+          </Link>
+        </div>
+      </section>
+
+      {/* ════════════════════════════════════════════════
+          7 — YENİ GELENLER
+      ════════════════════════════════════════════════ */}
+      <section style={{ background: "#ffffff", padding: "96px 0" }}>
         <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" }}>
           <SectionHeader title="yeni gelenler" />
 
@@ -292,10 +555,7 @@ function Home() {
                 )}
                 <ProductVisual p={p} />
                 <CardMeta p={p} />
-                <button
-                  className="card-add-btn"
-                  onClick={(e) => { e.preventDefault(); quickAdd(p); }}
-                >
+                <button className="card-add-btn" onClick={(e) => { e.preventDefault(); quickAdd(p); }}>
                   Sepete Ekle
                 </button>
               </Link>
@@ -309,79 +569,67 @@ function Home() {
       </section>
 
       {/* ════════════════════════════════════════════════
-          PRESS BARI — güvence standartları
+          8 — SOSYAL KANIT
       ════════════════════════════════════════════════ */}
-      <section style={{ padding: "48px 0 0" }}>
-        <p className="text-brand-credit" style={{ textAlign: "center", marginBottom: "24px" }}>
-          Güvence standartlarımız
-        </p>
-        <div style={{
-          background: "#111111", minHeight: "100px",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          flexWrap: "wrap", gap: "clamp(24px, 5vw, 72px)", padding: "32px clamp(20px, 4vw, 52px)",
-        }}>
-          {pressItems.map((item, i) => (
-            <span
-              key={item}
-              className="press-item"
-              style={{
-                fontWeight: 700, fontSize: "clamp(14px, 2vw, 22px)", letterSpacing: "-0.04em",
-                color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", transitionDelay: `${i * 90}ms`,
-              }}
-            >
-              {item}
-            </span>
-          ))}
+      <section style={{ background: "#ecedee", padding: "96px 0" }}>
+        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" }}>
+          <SectionHeader title="sporcular ne diyor?" />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+            {testimonials.map((t, i) => (
+              <div
+                key={t.name}
+                className="reveal-blur"
+                style={{ background: "#ffffff", borderRadius: "10px", padding: "28px", transitionDelay: `${i * 80}ms` }}
+              >
+                <div style={{ display: "flex", gap: "2px", marginBottom: "16px" }}>
+                  {Array.from({ length: 5 }).map((_, s) => (
+                    <span key={s} className="material-symbols-outlined"
+                      style={{ fontSize: 15, color: "#000aff", fontVariationSettings: "'FILL' 1" }}>star</span>
+                  ))}
+                </div>
+                <p style={{ fontSize: "16px", lineHeight: 1.5, color: "#111111", letterSpacing: "-0.04em", marginBottom: "20px" }}>
+                  "{t.quote}"
+                </p>
+                <p style={{ fontSize: "14px", fontWeight: 600, color: "#111111", letterSpacing: "-0.04em" }}>{t.name}</p>
+                <p className="text-brand-credit" style={{ marginTop: "2px" }}>{t.role}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ════════════════════════════════════════════════
-          COBALT CLAIM — tek renk anı
-      ════════════════════════════════════════════════ */}
-      <section style={{ background: "#000aff", padding: "120px clamp(20px, 4vw, 52px)" }}>
-        <RevealText
-          text="disiplinden dövülmüş."
-          once={false}
-          stagger={120}
-          style={{
-            fontSize: "clamp(48px, 7vw, 96px)", fontWeight: 700, letterSpacing: "-0.04em",
-            lineHeight: 1.0, color: "#ffffff", textAlign: "center", textTransform: "lowercase",
-          }}
-        />
-      </section>
-
-      {/* ════════════════════════════════════════════════
-          BÜLTEN
+          9 — BÜLTEN
       ════════════════════════════════════════════════ */}
       <section style={{ background: "#ffffff", padding: "96px 20px" }}>
         <div className="reveal" style={{ maxWidth: "480px", margin: "0 auto", textAlign: "center" }}>
           <RevealText
-            text="elitin bir parçası ol"
+            text="lansmanı kaçırma"
             style={{
               fontSize: "clamp(32px, 4.5vw, 48px)", fontWeight: 700, letterSpacing: "-0.04em",
               lineHeight: 1.05, color: "#111111", textTransform: "lowercase", marginBottom: "12px",
             }}
           />
           <p className="text-brand-credit" style={{ marginBottom: "32px" }}>
-            Sınırlı stok · Erken erişim · Üyeye özel indirimler
+            Yeni ürünler · Erken erişim · Üyeye özel indirimler
           </p>
           <form
             style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}
-            onSubmit={(e) => { e.preventDefault(); toast.success("Hoş geldin — elitin bir parçasısın."); }}
+            onSubmit={(e) => { e.preventDefault(); toast.success("Kaydın alındı — lansmandan ilk sen haberdar olacaksın."); }}
           >
             <input
               type="email" required placeholder="E-posta adresin"
               style={{
                 flexGrow: 1, minWidth: "220px", background: "#ecedee", border: "none",
-                borderRadius: "10px", padding: "14px 18px", fontSize: "14px",
+                borderRadius: "10px", padding: "16px 18px", fontSize: "14px",
                 color: "#111111", letterSpacing: "-0.04em", outline: "none",
               }}
             />
             <button
               type="submit"
               style={{
-                background: "#111111", color: "#ffffff", fontSize: "14px", fontWeight: 600,
-                letterSpacing: "-0.04em", padding: "14px 28px", borderRadius: "10px",
+                background: "#000aff", color: "#ffffff", fontSize: "14px", fontWeight: 600,
+                letterSpacing: "-0.04em", padding: "16px 28px", borderRadius: "10px",
                 border: "none", cursor: "pointer",
               }}
             >
@@ -392,6 +640,23 @@ function Home() {
       </section>
 
       <Footer />
+
+      <style>{`
+        .flagship-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .cat-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 16px;
+        }
+        @media (min-width: 900px) {
+          .flagship-grid { grid-template-columns: 1fr 1fr; gap: 64px; }
+          .cat-grid { grid-template-columns: 1fr 1fr; }
+        }
+      `}</style>
     </div>
   );
 }
