@@ -32,7 +32,7 @@ jobs:
           echo "=== .worker-build/ ===" && ls -la .worker-build/ 2>/dev/null || echo "no .worker-build/"
 
       - name: Deploy
-        run: npx wrangler@latest deploy --no-bundle
+        run: ./node_modules/.bin/wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
