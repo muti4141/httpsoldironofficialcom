@@ -39,29 +39,31 @@ function Home() {
   const beatRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const [ready, setReady] = useState(false);
 
-  /* Video: blob olarak çek — bazı sunucular byte-range vermez, seek donar */
+  /* Video kaynağı */
   useEffect(() => {
+    const film = filmRef.current;
+    if (!film) return;
     let url = "";
     let alive = true;
 
-    const fallback = () => {
-      if (!alive) return;
-      /* Dış kaynak gelmezse kendi videomuza düş */
-      if (filmRef.current && !filmRef.current.src) filmRef.current.src = "/videos/hero.mp4";
-      setReady(true);
-    };
+    /* 1) Önce doğrudan bağla — adam hemen ekranda olsun (stream) */
+    film.src = VIDEO_URL;
 
+    /* 2) Arka planda blob'a çek: bazı sunucular byte-range vermez,
+          o durumda seek donar. Blob gelince sessizce ona geçilir. */
     fetch(VIDEO_URL)
       .then((r) => (r.ok ? r.blob() : Promise.reject(new Error("kaynak yok"))))
       .then((blob) => {
-        if (!alive) return;
+        if (!alive || !filmRef.current) return;
         url = URL.createObjectURL(blob);
-        if (filmRef.current) filmRef.current.src = url;
+        const t = filmRef.current.currentTime;
+        filmRef.current.src = url;
+        try { filmRef.current.currentTime = t; } catch { /* noop */ }
       })
-      .catch(fallback);
+      .catch(() => { /* doğrudan kaynak zaten bağlı */ });
 
-    /* Ne olursa olsun sayfa 5sn'den fazla "Yükleniyor"da kalmaz */
-    const t = setTimeout(fallback, 5000);
+    /* Yükleme perdesi hiçbir koşulda kilitlenmesin */
+    const t = setTimeout(() => { if (alive) setReady(true); }, 6000);
 
     return () => { alive = false; clearTimeout(t); if (url) URL.revokeObjectURL(url); };
   }, []);
