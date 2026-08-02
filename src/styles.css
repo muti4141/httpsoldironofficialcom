@@ -607,24 +607,32 @@ body {
   width: 100vw;
   min-height: 85vh;
   overflow: hidden;
+  background: var(--plaster);   /* Zellerfeld: aydınlık galeri zemini */
 }
 
+/* Marka objesi — sağda, ürün gibi sergilenir */
 .hero-bg {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  top: 50%;
+  right: 4%;
+  transform: translateY(-50%);
+  width: 52%;
+  height: 82%;
+  object-fit: contain;
+  mix-blend-mode: multiply;   /* koyu grafiği plaster zemine oturtur */
+  opacity: 0.92;
 }
 
+/* Aydınlık zeminde metni okunur tutan yumuşak solma */
 .hero-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
-    to top,
-    rgba(0,0,0,0.65) 0%,
-    rgba(0,0,0,0.25) 45%,
-    rgba(0,0,0,0.08) 100%
+    to right,
+    var(--plaster) 0%,
+    rgba(236, 237, 238, 0.92) 38%,
+    rgba(236, 237, 238, 0.10) 62%,
+    rgba(236, 237, 238, 0) 100%
   );
 }
 
@@ -641,7 +649,7 @@ body {
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 1.0;
-  color: #ffffff;
+  color: var(--ink);
   text-transform: lowercase;
 }
 

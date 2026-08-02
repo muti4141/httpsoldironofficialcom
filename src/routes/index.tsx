@@ -119,7 +119,7 @@ function Home() {
             className="anim-3"
             style={{
               fontSize: "16px",
-              color: "rgba(255,255,255,0.8)",
+              color: "#737780",
               letterSpacing: "-0.04em",
               marginTop: "16px",
               lineHeight: 1.4,
@@ -136,8 +136,8 @@ function Home() {
                 display: "inline-flex",
                 alignItems: "center",
                 gap: "8px",
-                background: "#ffffff",
-                color: "#111111",
+                background: "#111111",
+                color: "#ffffff",
                 fontSize: "14px",
                 fontWeight: 600,
                 letterSpacing: "-0.04em",
