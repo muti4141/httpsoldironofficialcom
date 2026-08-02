@@ -25,9 +25,12 @@ const navLinks = [
 
 /* Caption beats — logo devrinden sonra */
 const beats = [
-  { text: "Disiplinden dövülmüş.",  from: 0.02, to: 0.22, pos: "upper" },
-  { text: "Ağır pamuk. Gerçek kesim.", from: 0.38, to: 0.52, pos: "lower" },
-  { text: "Saf formül. Sıfır dolgu.",  from: 0.70, to: 0.86, pos: "lower" },
+  /* 1 — marka kimliği */
+  { text: "Disiplinden dövülmüş.",        from: 0.02, to: 0.22, pos: "upper" },
+  /* 2 — giyim: dayanıklılık vaadi */
+  { text: "Kumaşı ağır. Yıllarca formunda.", from: 0.38, to: 0.52, pos: "lower" },
+  /* 3 — supplement: saflık ve güven vaadi */
+  { text: "Formülü saf. Etiketi dürüst.",    from: 0.70, to: 0.86, pos: "lower" },
 ];
 
 function Home() {
@@ -258,7 +261,7 @@ function Home() {
               fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
               letterSpacing: ".2em", textTransform: "uppercase", color: "rgba(255,255,255,.6)",
             }}>
-              Premium spor giyim &amp; elit supplement
+              İlk koleksiyon yayında — spor giyim &amp; elit supplement
             </p>
             <Link to="/shop" className="oi-cta-big">
               LANSMANI KEŞFET
@@ -291,7 +294,7 @@ function Home() {
           fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
           letterSpacing: ".14em", textTransform: "uppercase", color: "rgba(255,255,255,.45)",
         }}>
-          1500₺ üzeri ücretsiz kargo · 14 gün iade · Almanya'da üretildi
+          1500₺ üzeri ücretsiz kargo · 14 gün koşulsuz iade · 1–3 iş günü teslimat
         </p>
 
         <Link to="/shop" className="oi-cta-big oi-cta-solid">
