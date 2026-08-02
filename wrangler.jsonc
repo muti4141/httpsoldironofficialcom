@@ -4,5 +4,9 @@
   "account_id": "6009c5485ddb5fcdf8a36ddd61567f5b",
   "compatibility_date": "2025-09-24",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "src/server.ts"
+  "main": "src/server.ts",
+  "custom_domains": [
+    { "pattern": "oldironofficial.com" },
+    { "pattern": "www.oldironofficial.com" }
+  ]
 }
