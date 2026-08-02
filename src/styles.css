@@ -922,6 +922,181 @@ html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
 
+
+/* ══════════════════════════════════════════════════════════════════
+   ZELLERFELD ANA SAYFA — KARANLIK TEMA
+   Siyah kanvas, uçuşan objeler, turuncu CTA, koyu kartlar.
+══════════════════════════════════════════════════════════════════ */
+:root {
+  --z-black:  #0d0d0d;
+  --z-card:   #181818;
+  --z-card-2: #1f1f1f;
+  --z-orange: #ff4b26;
+  --z-white:  #ffffff;
+  --z-mute:   rgba(255, 255, 255, 0.55);
+}
+
+.dk-page { background: var(--z-black); color: var(--z-white); }
+
+/* Koyu nav */
+.dk-nav {
+  position: fixed;
+  top: 36px; left: 0; right: 0;
+  z-index: 50;
+  background: rgba(13, 13, 13, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* Turuncu CTA — Zellerfeld GET STARTED */
+.btn-orange {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--z-orange);
+  color: #ffffff;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 16px 36px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.25s ease, transform 0.3s cubic-bezier(0.22,1,0.36,1);
+}
+.btn-orange:hover  { background: #ff5f3d; transform: translateY(-2px); }
+.btn-orange:active { transform: scale(0.98); }
+
+/* Koyu ürün kartı — Now trending */
+.dk-card {
+  background: var(--z-card);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  transition: background 0.35s ease, transform 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.dk-card:hover { background: var(--z-card-2); transform: translateY(-6px); }
+
+/* Sıra numarası kutusu — sol üst, çerçeveli */
+.dk-rank {
+  display: inline-flex;
+  align-items: flex-start;
+  padding: 6px 28px 6px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+  color: var(--z-white);
+  align-self: flex-start;
+}
+
+/* Kart içi ürün sahnesi */
+.dk-stage {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.22,1,0.36,1);
+}
+.dk-card:hover .dk-stage { transform: scale(1.05); }
+
+/* Marka çipi — beyaz köşeli kare */
+.dk-chip {
+  width: 40px; height: 40px;
+  background: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 11px;
+  color: #111111;
+  letter-spacing: -0.02em;
+}
+
+/* Uçuşan hero objeleri */
+@keyframes float-drift {
+  0%, 100% { transform: translate3d(0, 0, 0)      rotate(var(--r, 0deg)); }
+  50%      { transform: translate3d(0, -18px, 0)  rotate(calc(var(--r, 0deg) + 3deg)); }
+}
+.float-obj {
+  position: absolute;
+  animation: float-drift 7s ease-in-out infinite;
+  will-change: transform;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Hero başlık — merkez, dev, beyaz */
+.dk-hero-title {
+  font-weight: 800;
+  letter-spacing: -0.045em;
+  line-height: 0.98;
+  color: var(--z-white);
+  text-align: center;
+  font-size: clamp(52px, 9vw, 128px);
+}
+
+/* Serif alt satır — Zellerfeld'in "Step into the future" hissi */
+.dk-hero-sub {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(18px, 2.2vw, 26px);
+  color: rgba(255, 255, 255, 0.65);
+  text-align: center;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+/* Koyu bölüm başlığı */
+.dk-heading {
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  color: var(--z-white);
+  text-align: center;
+  font-size: clamp(40px, 6.5vw, 88px);
+}
+
+/* Koyu zeminde metadata */
+.dk-mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--z-mute);
+}
+.dk-price {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--z-white);
+}
+
+/* Koyu sayfada mevcut Nav'ı karanlığa çevir */
+.dk-page .nav-bar {
+  background: rgba(13, 13, 13, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.dk-page .nav-bar.scrolled { background: rgba(13, 13, 13, 0.95); }
+.dk-page .nav-bar img { filter: none !important; }
+.dk-page .nav-bar a > span:not(.material-symbols-outlined),
+.dk-page .nav-bar .nav-link { color: rgba(255, 255, 255, 0.75) !important; }
+.dk-page .nav-bar .nav-link:hover { color: #ffffff !important; }
+.dk-page .nav-bar .material-symbols-outlined { color: rgba(255, 255, 255, 0.85); }
+.dk-page .nav-bar .nav-link::after { background: #ffffff; }
+
 /* Stat counter */
 .stat-number {
   font-family: var(--font-mono);

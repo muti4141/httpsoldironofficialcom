@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { ProductPlate } from "@/components/ProductPlate";
 import { RevealText } from "@/components/RevealText";
 import { useParallax } from "@/components/SmoothScroll";
 import { products } from "@/data/products";
@@ -19,7 +18,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-/* ── Marquee items ──────────────────────────────────────────────────── */
+/* ── Data ───────────────────────────────────────────────────────────── */
 const marqueeItems = [
   "DİSİPLİNDEN DÖVÜLMÜŞ", "PREMİUM SPOR GİYİM", "IRON SUPPLEMENT",
   "ALMANYA'DA ÜRETİLDİ",  "UZLAŞMA YOK",        "300 GSM PAMUK",
@@ -31,21 +30,21 @@ const pressItems = [
 ];
 
 const testimonials = [
-  {
-    quote: "Kumaşın kalitesi rakipsiz. Her antrenmanda farkı hissediyorsun.",
-    name: "Mehmet Yılmaz",
-    role: "Powerlifter · İstanbul",
-  },
-  {
-    quote: "Iron Whey şimdiye kadar içtiğim en iyi protein. Şişkinlik yok, maksimum emilim.",
-    name: "Seda Kaya",
-    role: "Kişisel Antrenör · Ankara",
-  },
-  {
-    quote: "Old Iron modern fitness dünyasında özlediğim şeyi sunuyor: gerçek disiplin, gerçek kalite.",
-    name: "Burak Şahin",
-    role: "Bodybuilder · İzmir",
-  },
+  { quote: "Kumaşın kalitesi rakipsiz. Her antrenmanda farkı hissediyorsun.", name: "Mehmet Yılmaz", role: "Powerlifter · İstanbul" },
+  { quote: "Iron Whey şimdiye kadar içtiğim en iyi protein. Şişkinlik yok, maksimum emilim.", name: "Seda Kaya", role: "Kişisel Antrenör · Ankara" },
+  { quote: "Old Iron modern fitness dünyasında özlediğim şeyi sunuyor: gerçek disiplin, gerçek kalite.", name: "Burak Şahin", role: "Bodybuilder · İzmir" },
+];
+
+/* Uçuşan hero objeleri: konum, boyut, dönüş, hız */
+const floaters = [
+  { top: "8%",  left: "6%",  size: 130, r: -14, d: 0.0, o: 0.85 },
+  { top: "12%", left: "78%", size: 150, r: 10,  d: 1.2, o: 0.9  },
+  { top: "55%", left: "3%",  size: 180, r: 8,   d: 0.6, o: 0.8  },
+  { top: "60%", left: "84%", size: 140, r: -8,  d: 1.8, o: 0.85 },
+  { top: "28%", left: "30%", size: 70,  r: 20,  d: 0.9, o: 0.35 },
+  { top: "70%", left: "38%", size: 80,  r: -18, d: 1.5, o: 0.3  },
+  { top: "18%", left: "55%", size: 60,  r: 30,  d: 0.3, o: 0.35 },
+  { top: "75%", left: "62%", size: 90,  r: -25, d: 2.1, o: 0.4  },
 ];
 
 /* ── Reveal hook ────────────────────────────────────────────────────── */
@@ -62,169 +61,112 @@ function useReveal() {
       { threshold: 0.06, rootMargin: "0px 0px -50px 0px" }
     );
     document
-      .querySelectorAll(
-        ".reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-wipe,.reveal-blur,.press-item"
-      )
+      .querySelectorAll(".reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-wipe,.reveal-blur,.press-item")
       .forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 }
 
-/* ── Main Component ─────────────────────────────────────────────────── */
+/* ── Main ───────────────────────────────────────────────────────────── */
 function Home() {
   useReveal();
   useParallax();
   const add = useCart((s) => s.add);
 
-  const topSellers = products.slice(0, 4);
-  const newReleases = products.slice(4, 8);
-  const heroProduct = products[0];
+  const trending = products.slice(0, 4);
+  const fresh    = products.slice(4, 8);
 
   return (
-    <div
-      style={{ background: "#ffffff", color: "#111111", minHeight: "100vh", overflowX: "hidden" }}
-    >
-      {/* ══════════════════════════════════════════════════════════
-          1. ANNOUNCEMENT BAR
-      ══════════════════════════════════════════════════════════ */}
+    <div className="dk-page" style={{ minHeight: "100vh", overflowX: "hidden" }}>
+
+      {/* 1 ── ANNOUNCEMENT BAR */}
       <div className="announcement-bar">
         <span>1500₺ üzeri ücretsiz kargo · Almanya kalitesi · Lab onaylı</span>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════
-          2. NAV
-      ══════════════════════════════════════════════════════════ */}
+      {/* 2 ── NAV (koyu görünüm .dk-page override ile) */}
       <Nav />
 
-      {/* ══════════════════════════════════════════════════════════
-          3. HERO — full-bleed, text overlay bottom-left, card right
-      ══════════════════════════════════════════════════════════ */}
-      <section className="hero-section">
-        {/* Background image + Ken Burns yavaş zoom */}
-        <img
-          src="/images/hero-end.jpg"
-          alt="OLD IRON Hero"
-          className="hero-bg hero-kenburns"
-          data-parallax="0.18"
-        />
-        <div className="hero-overlay" />
-
-        {/* Bottom-left: badge + headline + subhead */}
-        <div className="hero-content-left">
-          <div className="anim-1 mb-4">
-            <span className="badge badge-new">YENİ</span>
-          </div>
-          <h1 className="hero-headline">
-            <span style={{ animationDelay: "0.15s" }}>disiplinden</span>
-            <br />
-            <span style={{ animationDelay: "0.32s" }}>dövülmüş.</span>
-          </h1>
-          <p
-            className="anim-3"
+      {/* 3 ── HERO — siyah, uçuşan objeler, merkez dev tipografi */}
+      <section
+        style={{
+          position: "relative",
+          minHeight: "92vh",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "140px 20px 80px",
+          overflow: "hidden",
+          background: "#0d0d0d",
+        }}
+      >
+        {/* Uçuşan logolar */}
+        {floaters.map((f, i) => (
+          <img
+            key={i}
+            src="/images/logo.png"
+            alt=""
+            aria-hidden
+            className="float-obj"
+            data-parallax={`${(0.12 + (i % 4) * 0.07).toFixed(2)}`}
             style={{
-              fontSize: "16px",
-              color: "#737780",
-              letterSpacing: "-0.04em",
-              marginTop: "16px",
-              lineHeight: 1.4,
+              top: f.top,
+              left: f.left,
+              width: f.size,
+              opacity: f.o,
+              animationDelay: `${f.d}s`,
+              ["--r" as string]: `${f.r}deg`,
             }}
-          >
-            Premium spor giyim & supplement.<br />
-            Almanya'da üretildi.
-          </p>
-          <div className="anim-4" style={{ marginTop: "28px" }}>
-            <Link
-              to="/shop"
-              className="btn-sweep"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                background: "#111111",
-                color: "#ffffff",
-                fontSize: "14px",
-                fontWeight: 600,
-                letterSpacing: "-0.04em",
-                padding: "12px 24px",
-                borderRadius: "10px",
-                textDecoration: "none",
-              }}
-            >
+          />
+        ))}
+
+        {/* Radial vinyet — merkezi aydınlat */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute", inset: 0,
+            background: "radial-gradient(ellipse at center, rgba(13,13,13,0) 30%, rgba(13,13,13,0.85) 100%)",
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* Merkez içerik */}
+        <div style={{ position: "relative", zIndex: 5, display: "flex", flexDirection: "column", alignItems: "center", gap: "28px", maxWidth: "1100px" }}>
+          <h1 className="dk-hero-title">
+            <span className="anim-1" style={{ display: "block" }}>Disiplinden dövülmüş,</span>
+            <span className="anim-2" style={{ display: "block" }}>her vücuda uyar.</span>
+          </h1>
+
+          <p className="dk-hero-sub anim-3">Gücün geleceğine adım at</p>
+
+          <div className="anim-4" style={{ marginTop: "16px" }}>
+            <Link to="/shop" className="btn-orange">
               Alışverişe Başla
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#fff" }}>arrow_forward</span>
             </Link>
           </div>
         </div>
 
-        {/* Bottom-right: floating product card */}
-        <div className="hero-product-card anim-5" style={{ display: "none" as const }}>
-          <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "16px" }}>
-            <div
-              aria-hidden
-              style={{
-                width: 60, height: 60, borderRadius: "8px", background: "#ecedee",
-                flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
-                fontWeight: 700, fontSize: "24px", letterSpacing: "-0.04em", color: "#a1a4aa",
-              }}
-            >
-              {heroProduct?.name.charAt(0).toLocaleUpperCase("tr")}
-            </div>
-            <div>
-              <p style={{ fontSize: "16px", fontWeight: 600, color: "#111111", letterSpacing: "-0.04em", lineHeight: 1.2 }}>
-                {heroProduct?.name}
-              </p>
-              <p className="text-brand-credit" style={{ marginTop: "4px" }}>By OLD IRON</p>
-              <p className="text-price-lg" style={{ marginTop: "4px" }}>₺{heroProduct?.price.toFixed(2)}</p>
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              if (heroProduct) {
-                add(heroProduct, heroProduct.type === "apparel" ? "M" : "Standart");
-                toast.success(`${heroProduct.name} sepete eklendi`);
-              }
-            }}
-            style={{
-              width: "100%",
-              background: "#111111",
-              color: "#ffffff",
-              fontSize: "14px",
-              fontWeight: 600,
-              letterSpacing: "-0.04em",
-              padding: "12px",
-              borderRadius: "10px",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            Sepete Ekle
-          </button>
+        {/* Alt güven şeridi */}
+        <div
+          className="anim-5"
+          style={{
+            position: "absolute", bottom: 28, left: "50%", transform: "translateX(-50%)",
+            display: "flex", alignItems: "center", gap: "12px", zIndex: 5,
+            background: "rgba(255,255,255,0.06)", borderRadius: 30, padding: "8px 20px",
+          }}
+        >
+          <span className="dk-mono" style={{ whiteSpace: "nowrap" }}>10.000+ sporcunun güvendiği marka</span>
         </div>
-
-        {/* Desktop: show hero product card */}
-        <style>{`
-          @media (min-width: 768px) {
-            .hero-product-card { display: block !important; }
-          }
-        `}</style>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          4. MARQUEE BAND
-      ══════════════════════════════════════════════════════════ */}
-      <div style={{ background: "#111111", padding: "14px 0", overflow: "hidden" }}>
+      {/* 4 ── MARQUEE */}
+      <div style={{ background: "#111111", borderTop: "1px solid rgba(255,255,255,0.06)", borderBottom: "1px solid rgba(255,255,255,0.06)", padding: "14px 0", overflow: "hidden" }}>
         <div className="flex whitespace-nowrap marquee-track">
           {[...marqueeItems, ...marqueeItems, ...marqueeItems].map((item, i) => (
             <span key={i} className="inline-flex items-center" style={{ gap: "24px", padding: "0 24px" }}>
-              <span
-                style={{
-                  fontFamily: "var(--font-body)",
-                  fontWeight: 600,
-                  fontSize: "11px",
-                  color: "#ffffff",
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                }}
-              >
+              <span style={{ fontWeight: 600, fontSize: "11px", color: "#ffffff", letterSpacing: "0.18em", textTransform: "uppercase" }}>
                 {item}
               </span>
               <span style={{ color: "rgba(255,255,255,0.2)", fontSize: "6px" }}>■</span>
@@ -233,466 +175,211 @@ function Home() {
         </div>
       </div>
 
-      {/* ══════════════════════════════════════════════════════════
-          5. RANKED EDITORIAL GRID — "En Çok Satanlar"
-      ══════════════════════════════════════════════════════════ */}
-      <section style={{ background: "#ffffff", padding: "80px 0" }}>
-        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 72px" }}>
-
-          {/* Header */}
-          <div className="reveal-wipe" style={{ marginBottom: "40px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
-            <div>
-              <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Sıralama</p>
-              <RevealText
-                text="En Çok Satanlar"
-                style={{
-                  fontSize: "clamp(32px,4vw,40px)",
-                  fontWeight: 700,
-                  letterSpacing: "-0.04em",
-                  lineHeight: 1.0,
-                  color: "#111111",
-                }}
-              />
-            </div>
-            <Link to="/shop" className="link-underline" style={{ fontSize: "13px", fontWeight: 500, color: "#737780", letterSpacing: "-0.04em", textDecoration: "none" }}>
-              Tümünü Gör
-            </Link>
-          </div>
-
-          {/* Grid */}
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-              gap: "12px",
-            }}
-          >
-            {topSellers.map((p, i) => (
-              <Link
-                key={p.id}
-                to="/product/$id"
-                params={{ id: p.id }}
-                className="ranked-card reveal-blur"
-                style={{
-                  textDecoration: "none",
-                  transitionDelay: `${i * 60}ms`,
-                  display: "block",
-                }}
-              >
-                {/* Rank watermark */}
-                <div style={{ position: "relative", overflow: "hidden" }}>
-                  <span className="rank-numeral" data-parallax="-0.25">{i + 1}</span>
-
-                  {/* Badge */}
-                  {p.badge && (
-                    <span
-                      className="badge badge-new"
-                      style={{ position: "absolute", top: "0", left: "0", zIndex: 3 }}
-                    >
-                      YENİ
-                    </span>
-                  )}
-
-                  {/* Product plate */}
-                  <div style={{ position: "relative", zIndex: 1 }}>
-                    <ProductPlate product={p} ratio="1 / 1" />
-                  </div>
-                </div>
-
-                {/* Metadata */}
-                <div style={{ marginTop: "16px" }}>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: 600,
-                      color: "#111111",
-                      letterSpacing: "-0.04em",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {p.name}
-                  </p>
-                  <p className="text-brand-credit" style={{ marginTop: "4px" }}>By OLD IRON</p>
-                  <p className="text-price" style={{ marginTop: "6px" }}>₺{p.price.toFixed(2)}</p>
-                </div>
-
-                {/* Quick add */}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    add(p, p.type === "apparel" ? "M" : "Standart");
-                    toast.success(`${p.name} sepete eklendi`);
-                  }}
-                  className="card-add-btn"
-                >
-                  Sepete Ekle
-                </button>
-              </Link>
-            ))}
-          </div>
-
-          {/* See all */}
-          <div style={{ marginTop: "24px" }}>
-            <Link to="/shop" className="btn-see-all">
-              Tüm Ürünleri Gör
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          6. NEW RELEASES — standard product grid
-      ══════════════════════════════════════════════════════════ */}
-      <section style={{ background: "#ecedee", padding: "80px 0" }}>
-        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 72px" }}>
-
-          <div className="reveal-wipe" style={{ marginBottom: "40px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
-            <div>
-              <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Koleksiyon</p>
-              <RevealText
-                text="Yeni Gelenler"
-                style={{
-                  fontSize: "clamp(32px,4vw,40px)",
-                  fontWeight: 700,
-                  letterSpacing: "-0.04em",
-                  lineHeight: 1.0,
-                  color: "#111111",
-                }}
-              />
-            </div>
-            <Link to="/shop" className="link-underline" style={{ fontSize: "13px", fontWeight: 500, color: "#737780", letterSpacing: "-0.04em", textDecoration: "none" }}>
-              Tümünü Gör
-            </Link>
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-              gap: "12px",
-            }}
-          >
-            {newReleases.map((p, i) => (
-              <Link
-                key={p.id}
-                to="/product/$id"
-                params={{ id: p.id }}
-                className="product-card reveal-blur"
-                style={{
-                  textDecoration: "none",
-                  transitionDelay: `${i * 60}ms`,
-                  display: "block",
-                  background: "#ffffff",
-                }}
-              >
-                {/* Badge */}
-                {p.badge && (
-                  <span
-                    className="badge badge-new"
-                    style={{ position: "absolute", top: "12px", left: "12px", zIndex: 3 }}
-                  >
-                    YENİ
-                  </span>
-                )}
-
-                {/* Plate */}
-                <ProductPlate product={p} ratio="4 / 5" />
-
-                {/* Metadata */}
-                <div style={{ marginTop: "16px" }}>
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      fontWeight: 600,
-                      color: "#111111",
-                      letterSpacing: "-0.04em",
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {p.name}
-                  </p>
-                  <p className="text-brand-credit" style={{ marginTop: "4px" }}>By OLD IRON</p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px" }}>
-                    <span className="text-price">₺{p.price.toFixed(2)}</span>
-                    {p.originalPrice && (
-                      <span className="text-price-strike">₺{p.originalPrice.toFixed(2)}</span>
-                    )}
-                  </div>
-                </div>
-
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    add(p, p.type === "apparel" ? "M" : "Standart");
-                    toast.success(`${p.name} sepete eklendi`);
-                  }}
-                  className="card-add-btn"
-                >
-                  Sepete Ekle
-                </button>
-              </Link>
-            ))}
-          </div>
-
-          <div style={{ marginTop: "24px" }}>
-            <Link to="/shop" className="btn-see-all" style={{ background: "#ecedee", borderColor: "#d7d7d7" }}>
-              Tüm Yeni Ürünleri Gör
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════
-          7. CREDENTIALS / PRESS BAR
-      ══════════════════════════════════════════════════════════ */}
-      <div style={{ background: "#111111", padding: "0" }}>
-        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 72px" }}>
-          <p
-            className="font-mono"
-            style={{
-              fontSize: "12px",
-              color: "#737780",
-              letterSpacing: "0",
-              paddingTop: "24px",
-              paddingBottom: "12px",
-            }}
-          >
-            Öne Çıkan
-          </p>
-        </div>
-        <div
-          style={{
-            height: "76px",
-            display: "flex",
-            alignItems: "center",
-            borderTop: "1px solid rgba(255,255,255,0.08)",
-          }}
-        >
-          <div
-            style={{
-              maxWidth: "1440px",
-              margin: "0 auto",
-              padding: "0 72px",
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: "40px",
-            }}
-          >
-            {pressItems.map((item, i) => (
-              <span
-                key={item}
-                className="font-mono press-item"
-                style={{
-                  transitionDelay: `${i * 90}ms`,
-                  fontSize: "12px",
-                  color: "rgba(255,255,255,0.6)",
-                  letterSpacing: "0.12em",
-                  textTransform: "uppercase",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {item}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* ══════════════════════════════════════════════════════════
-          8. BRAND MANIFESTO — dark, large type
-      ══════════════════════════════════════════════════════════ */}
-      <section style={{ background: "#111111", padding: "120px 72px", overflow: "hidden" }}>
-        <div style={{ maxWidth: "1440px", margin: "0 auto" }}>
-          <p
-            className="reveal"
-            style={{
-              fontSize: "11px",
-              fontWeight: 600,
-              letterSpacing: "0.28em",
-              textTransform: "uppercase",
-              color: "rgba(255,255,255,0.25)",
-              marginBottom: "48px",
-            }}
-          >
-            — Manifesto —
-          </p>
-
+      {/* 5 ── NOW TRENDING — koyu kartlar, numaralı */}
+      <section style={{ background: "#0d0d0d", padding: "110px 0" }}>
+        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 24px" }}>
           <RevealText
-            text="disiplinden dövülmüş."
-            once={false}
-            stagger={120}
-            style={{
-              fontSize: "clamp(48px, 8vw, 96px)",
-              fontWeight: 700,
-              letterSpacing: "-0.05em",
-              lineHeight: 1.0,
-              color: "#ffffff",
-              textTransform: "lowercase",
-              maxWidth: "1000px",
-              marginBottom: "64px",
-            }}
+            text="Şimdi trend olanlar"
+            className="dk-heading"
+            style={{ marginBottom: "56px", fontSize: "clamp(32px,4.5vw,56px)" }}
           />
 
-          <div
-            className="reveal"
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "32px",
-              paddingTop: "40px",
-              borderTop: "1px solid rgba(255,255,255,0.1)",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "16px",
-                color: "rgba(255,255,255,0.5)",
-                lineHeight: 1.6,
-                letterSpacing: "-0.04em",
-                maxWidth: "480px",
-              }}
-            >
-              OLD IRON sadece bir marka değil, bir yaşam felsefesidir.
-              Almanya'nın mühendislik disipliniyle salonların tozu birleşiyor.
-              En iyi ekipman, en saf içerik.
-            </p>
-            <Link
-              to="/shop"
-              className="btn-sweep"
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "8px",
-                fontSize: "14px",
-                fontWeight: 600,
-                letterSpacing: "-0.04em",
-                color: "#ffffff",
-                textDecoration: "none",
-                alignSelf: "flex-start",
-              }}
-            >
-              Koleksiyonu Keşfet
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))", gap: "16px" }}>
+            {trending.map((p, i) => (
+              <Link
+                key={p.id}
+                to="/product/$id"
+                params={{ id: p.id }}
+                className="dk-card reveal-blur"
+                style={{ transitionDelay: `${i * 70}ms` }}
+              >
+                <span className="dk-rank">{i + 1}</span>
+
+                {/* Ürün sahnesi — beyaz kaide üzerinde monogram */}
+                <div className="dk-stage">
+                  <div
+                    style={{
+                      width: "70%", aspectRatio: "1/1", borderRadius: "50%",
+                      background: "radial-gradient(circle at 38% 32%, #3a3a3a, #1a1a1a 70%)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >
+                    <img src="/images/logo.png" alt={p.name} style={{ width: "55%", opacity: 0.95 }} />
+                  </div>
+                </div>
+
+                {/* Metadata satırı */}
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
+                  <span className="dk-chip">OI</span>
+                  <div style={{ flexGrow: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: "15px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {p.name}
+                    </p>
+                    <p className="dk-mono" style={{ marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {p.categoryLabel}
+                    </p>
+                  </div>
+                  <span className="dk-price">₺{p.price.toFixed(2)}</span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 6 ── BÜYÜK TİPOGRAFİ GEÇİŞİ */}
+      <section style={{ background: "#0d0d0d", padding: "140px 24px" }}>
+        <RevealText
+          text="Genişleyen bir güç evreni"
+          once={false}
+          stagger={110}
+          className="dk-heading"
+        />
+      </section>
+
+      {/* 7 ── YENİ GELENLER */}
+      <section style={{ background: "#0d0d0d", padding: "0 0 110px" }}>
+        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 24px" }}>
+          <RevealText
+            text="Yeni gelenler"
+            className="dk-heading"
+            style={{ marginBottom: "56px", fontSize: "clamp(32px,4.5vw,56px)" }}
+          />
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))", gap: "16px" }}>
+            {fresh.map((p, i) => (
+              <Link
+                key={p.id}
+                to="/product/$id"
+                params={{ id: p.id }}
+                className="dk-card reveal-blur"
+                style={{ transitionDelay: `${i * 70}ms` }}
+              >
+                {p.badge ? (
+                  <span className="badge badge-new" style={{ alignSelf: "flex-start" }}>YENİ</span>
+                ) : (
+                  <span style={{ height: 26 }} />
+                )}
+
+                <div className="dk-stage">
+                  <div
+                    style={{
+                      width: "70%", aspectRatio: "1/1", borderRadius: "50%",
+                      background: "radial-gradient(circle at 38% 32%, #3a3a3a, #1a1a1a 70%)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                    }}
+                  >
+                    <img src="/images/logo.png" alt={p.name} style={{ width: "55%", opacity: 0.95 }} />
+                  </div>
+                </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "8px" }}>
+                  <span className="dk-chip">OI</span>
+                  <div style={{ flexGrow: 1, minWidth: 0 }}>
+                    <p style={{ fontSize: "15px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {p.name}
+                    </p>
+                    <p className="dk-mono" style={{ marginTop: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                      {p.categoryLabel}
+                    </p>
+                  </div>
+                  <span className="dk-price">₺{p.price.toFixed(2)}</span>
+                </div>
+
+                <button
+                  className="card-add-btn"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    add(p, p.type === "apparel" ? "M" : "Standart");
+                    toast.success(`${p.name} sepete eklendi`);
+                  }}
+                >
+                  Sepete Ekle
+                </button>
+              </Link>
+            ))}
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "center", marginTop: "40px" }}>
+            <Link to="/shop" className="btn-orange">
+              Tümünü Gör
+              <span className="material-symbols-outlined" style={{ fontSize: 18, color: "#fff" }}>arrow_forward</span>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          9. TESTIMONIALS
-      ══════════════════════════════════════════════════════════ */}
-      <section style={{ background: "#ecedee", padding: "80px 0" }}>
-        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 72px" }}>
-          <div className="reveal-wipe" style={{ marginBottom: "40px" }}>
-            <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Topluluk</p>
-            <RevealText
-              text="Sporcuların Yorumları"
+      {/* 8 ── KREDENSİYEL BARI */}
+      <section style={{ background: "#111111", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "64px 24px" }}>
+        <p className="dk-mono" style={{ textAlign: "center", marginBottom: "32px" }}>Standartlarımız</p>
+        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "clamp(24px, 6vw, 80px)", maxWidth: "1200px", margin: "0 auto" }}>
+          {pressItems.map((item, i) => (
+            <span
+              key={item}
+              className="press-item"
               style={{
-                fontSize: "clamp(32px,4vw,40px)",
-                fontWeight: 700,
-                letterSpacing: "-0.04em",
-                lineHeight: 1.0,
-                color: "#111111",
+                fontWeight: 800, fontSize: "clamp(16px, 2.4vw, 26px)",
+                letterSpacing: "-0.02em", color: "rgba(255,255,255,0.55)",
+                transitionDelay: `${i * 90}ms`, whiteSpace: "nowrap",
               }}
-            />
-          </div>
+            >
+              {item}
+            </span>
+          ))}
+        </div>
+      </section>
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-              gap: "12px",
-            }}
-          >
+      {/* 9 ── MANİFESTO */}
+      <section style={{ background: "#0d0d0d", padding: "150px 24px" }}>
+        <RevealText
+          text="disiplinden dövülmüş."
+          once={false}
+          stagger={130}
+          className="dk-heading"
+          style={{ textTransform: "lowercase" }}
+        />
+        <p
+          className="reveal"
+          style={{
+            textAlign: "center", maxWidth: "560px", margin: "40px auto 0",
+            fontSize: "16px", lineHeight: 1.6, color: "rgba(255,255,255,0.55)",
+            letterSpacing: "-0.02em",
+          }}
+        >
+          OLD IRON sadece bir marka değil, bir yaşam felsefesidir.
+          Almanya'nın mühendislik disipliniyle salonların tozu birleşiyor.
+          En iyi ekipman, en saf içerik.
+        </p>
+      </section>
+
+      {/* 10 ── YORUMLAR */}
+      <section style={{ background: "#0d0d0d", padding: "0 0 110px" }}>
+        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 24px" }}>
+          <RevealText
+            text="Sporcuların yorumları"
+            className="dk-heading"
+            style={{ marginBottom: "56px", fontSize: "clamp(32px,4.5vw,56px)" }}
+          />
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: "16px" }}>
             {testimonials.map((t, i) => (
               <div
                 key={t.name}
-                className="reveal-blur testimonial-card"
-                style={{
-                  background: "#ffffff",
-                  borderRadius: "10px",
-                  padding: "32px",
-                  transitionDelay: `${i * 80}ms`,
-                }}
+                className="dk-card reveal-blur"
+                style={{ transitionDelay: `${i * 80}ms`, padding: "28px" }}
               >
-                {/* Stars */}
                 <div style={{ display: "flex", gap: "3px", marginBottom: "20px" }}>
                   {Array.from({ length: 5 }).map((_, s) => (
-                    <span
-                      key={s}
-                      style={{ color: "#000aff", fontSize: "14px" }}
-                    >
-                      ★
-                    </span>
+                    <span key={s} className="material-symbols-outlined" style={{ fontSize: 14, color: "#ff4b26", fontVariationSettings: "'FILL' 1" }}>star</span>
                   ))}
                 </div>
-
-                <p
-                  style={{
-                    fontSize: "16px",
-                    color: "#111111",
-                    lineHeight: 1.6,
-                    letterSpacing: "-0.04em",
-                    marginBottom: "28px",
-                  }}
-                >
+                <p style={{ fontSize: "15px", lineHeight: 1.6, color: "rgba(255,255,255,0.85)", letterSpacing: "-0.02em", marginBottom: "24px" }}>
                   "{t.quote}"
                 </p>
-
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "12px",
-                    paddingTop: "20px",
-                    borderTop: "1px solid #d7d7d7",
-                  }}
-                >
-                  <div
-                    style={{
-                      width: "32px",
-                      height: "32px",
-                      background: "#000aff",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <span
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 700,
-                        color: "#ffffff",
-                        lineHeight: 1,
-                      }}
-                    >
-                      {t.name.charAt(0)}
-                    </span>
-                  </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px", paddingTop: "16px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+                  <span className="dk-chip">{t.name.charAt(0)}</span>
                   <div>
-                    <p
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 600,
-                        color: "#111111",
-                        letterSpacing: "-0.04em",
-                      }}
-                    >
-                      {t.name}
-                    </p>
-                    <p
-                      style={{
-                        fontSize: "11px",
-                        color: "#737780",
-                        letterSpacing: "-0.04em",
-                        marginTop: "2px",
-                      }}
-                    >
-                      {t.role}
-                    </p>
+                    <p style={{ fontSize: "13px", fontWeight: 700, color: "#ffffff", letterSpacing: "-0.02em" }}>{t.name}</p>
+                    <p className="dk-mono" style={{ marginTop: "2px" }}>{t.role}</p>
                   </div>
                 </div>
               </div>
@@ -701,99 +388,39 @@ function Home() {
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          10. NEWSLETTER — centered, minimal
-      ══════════════════════════════════════════════════════════ */}
-      <section style={{ background: "#ffffff", padding: "80px 20px", borderTop: "1px solid #d7d7d7" }}>
-        <div
-          className="reveal"
-          style={{ maxWidth: "480px", margin: "0 auto", textAlign: "center" }}
-        >
-          <p className="text-eyebrow" style={{ marginBottom: "16px" }}>Özel Üyelik</p>
+      {/* 11 ── BÜLTEN */}
+      <section style={{ background: "#111111", borderTop: "1px solid rgba(255,255,255,0.06)", padding: "100px 24px" }}>
+        <div className="reveal" style={{ maxWidth: "520px", margin: "0 auto", textAlign: "center" }}>
           <RevealText
-            text="Elitin Bir Parçası Ol"
-            style={{
-              fontSize: "clamp(28px,4vw,40px)",
-              fontWeight: 700,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.0,
-              color: "#111111",
-              marginBottom: "12px",
-            }}
+            text="Elitin bir parçası ol"
+            className="dk-heading"
+            style={{ fontSize: "clamp(28px,4vw,48px)", marginBottom: "16px" }}
           />
-          <p
-            style={{
-              fontSize: "13px",
-              color: "#737780",
-              letterSpacing: "-0.04em",
-              lineHeight: 1.5,
-              marginBottom: "32px",
-            }}
-          >
+          <p className="dk-mono" style={{ marginBottom: "36px" }}>
             Sınırlı stok · Erken erişim · Üyeye özel indirimler
           </p>
-
           <form
-            style={{ display: "flex", flexDirection: "column", gap: "8px" }}
-            onSubmit={(e) => {
-              e.preventDefault();
-              toast.success("Hoş geldin — elitin bir parçasısın.");
-            }}
+            style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}
+            onSubmit={(e) => { e.preventDefault(); toast.success("Hoş geldin — elitin bir parçasısın."); }}
           >
-            <div style={{ display: "flex", gap: "8px" }}>
-              <input
-                type="email"
-                required
-                placeholder="E-posta adresin"
-                style={{
-                  flex: 1,
-                  background: "#ecedee",
-                  border: "none",
-                  borderRadius: "10px",
-                  padding: "14px 20px",
-                  fontSize: "14px",
-                  color: "#111111",
-                  letterSpacing: "-0.04em",
-                  outline: "none",
-                }}
-              />
-              <button
-                type="submit"
-                style={{
-                  background: "#111111",
-                  color: "#ffffff",
-                  fontSize: "14px",
-                  fontWeight: 600,
-                  letterSpacing: "-0.04em",
-                  padding: "14px 24px",
-                  borderRadius: "10px",
-                  border: "none",
-                  cursor: "pointer",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Kaydol
-              </button>
-            </div>
+            <input
+              type="email"
+              required
+              placeholder="E-posta adresin"
+              style={{
+                flexGrow: 1, minWidth: "220px",
+                background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)",
+                borderRadius: "4px", padding: "15px 18px",
+                fontSize: "14px", color: "#ffffff", letterSpacing: "-0.02em", outline: "none",
+              }}
+            />
+            <button type="submit" className="btn-orange" style={{ padding: "15px 28px" }}>
+              Kaydol
+            </button>
           </form>
-
-          <p
-            style={{
-              fontSize: "10px",
-              color: "rgba(115,119,128,0.5)",
-              letterSpacing: "0.12em",
-              textTransform: "uppercase",
-              marginTop: "16px",
-            }}
-          >
-            Spam yok. İstediğin zaman ayrılabilirsin.
-          </p>
         </div>
       </section>
 
-      {/* ══════════════════════════════════════════════════════════
-          11. FOOTER
-      ══════════════════════════════════════════════════════════ */}
       <Footer />
     </div>
   );
