@@ -11,6 +11,7 @@ import { useEffect } from "react";
 
 import appCss from "../styles.css?url";
 import { Toaster } from "@/components/ui/sonner";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { CookieBanner } from "@/components/CookieBanner";
 import { PerfMonitor } from "@/components/PerfMonitor";
@@ -114,6 +115,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthSync />
+      <SmoothScroll />
       <PaymentTestModeBanner />
       <Outlet />
       <CookieBanner />

@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductPlate } from "@/components/ProductPlate";
+import { RevealText } from "@/components/RevealText";
+import { useParallax } from "@/components/SmoothScroll";
 import { products, type Product } from "@/data/products";
 import { useCart } from "@/stores/cart";
 
@@ -123,6 +125,7 @@ function Shop() {
   const hasFilters = selectedCategories.length > 0 || maxPrice < 2000 || q.length > 0;
 
   useReveal([filtered.length, activeTab, sortBy]);
+  useParallax();
 
   return (
     <div style={{ background: "#ffffff", color: "#111111", minHeight: "100vh", overflowX: "hidden" }}>
@@ -142,7 +145,9 @@ function Shop() {
             <div className="shop-inner">
               <div className="reveal-wipe">
                 <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Koleksiyon</p>
-                <h1
+                <RevealText
+                  as="h1"
+                  text="mağaza"
                   style={{
                     fontSize: "clamp(40px,7vw,64px)",
                     fontWeight: 700,
@@ -151,9 +156,7 @@ function Shop() {
                     color: "#111111",
                     textTransform: "lowercase",
                   }}
-                >
-                  mağaza
-                </h1>
+                />
               </div>
 
               <p
@@ -380,7 +383,8 @@ function Shop() {
             <div className="shop-inner">
               <div className="reveal-wipe" style={{ marginBottom: "24px" }}>
                 <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Marka</p>
-                <h2
+                <RevealText
+                  text="Türkiye'nin Elit Spor Markası"
                   style={{
                     fontSize: "clamp(32px,4vw,40px)",
                     fontWeight: 700,
@@ -388,9 +392,7 @@ function Shop() {
                     lineHeight: 1.0,
                     color: "#111111",
                   }}
-                >
-                  Türkiye'nin Elit Spor Markası
-                </h2>
+                />
               </div>
               <p
                 className="reveal-right"

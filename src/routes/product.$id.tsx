@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductPlate } from "@/components/ProductPlate";
+import { RevealText } from "@/components/RevealText";
+import { useParallax } from "@/components/SmoothScroll";
 import { findProduct, products } from "@/data/products";
 import { useCart } from "@/stores/cart";
 
@@ -105,6 +107,7 @@ function ProductPage() {
   const related   = products.filter((p) => p.id !== product.id).slice(0, 4);
 
   useReveal([product.id]);
+  useParallax();
 
   const handleAdd = () => {
     const variant = isSupp
@@ -217,7 +220,10 @@ function ProductPage() {
                   <p className="text-eyebrow" style={{ marginBottom: "10px" }}>
                     {isSupp ? "Supplement Koleksiyonu" : "Giyim Koleksiyonu"}
                   </p>
-                  <h1
+                  <RevealText
+                    as="h1"
+                    text={product.name}
+                    stagger={45}
                     style={{
                       fontSize: "clamp(32px,4vw,40px)",
                       fontWeight: 600,
@@ -225,9 +231,7 @@ function ProductPage() {
                       lineHeight: 1.05,
                       color: "#111111",
                     }}
-                  >
-                    {product.name}
-                  </h1>
+                  />
                   <p className="text-brand-credit" style={{ marginTop: "8px" }}>By OLD IRON</p>
                   <p
                     style={{

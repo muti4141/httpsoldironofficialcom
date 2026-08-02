@@ -887,6 +887,41 @@ body {
 /* ── İmleç takipli hafif eğim (kartlar) ──────────────────────────── */
 .tilt { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
 
+
+/* ══════════════════════════════════════════════════════════════════
+   SCROLL'A BAĞLI YAZI ANİMASYONU — RevealText
+   Kelimeler maske içinde alttan yükselir, kademeli.
+══════════════════════════════════════════════════════════════════ */
+.rt { display: block; }
+.rt-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.08em;      /* alt kuyruklar (g, ş, y) kırpılmasın */
+  margin-bottom: -0.08em;
+}
+.rt-word {
+  display: inline-block;
+  transform: translateY(110%);
+  opacity: 0;
+  transition:
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity   0.55s ease;
+  white-space: pre;
+}
+.rt-visible .rt-word {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Paralaks elemanları GPU katmanında */
+[data-parallax] { will-change: transform; }
+
+/* Lenis smooth scroll gereksinimleri */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+
 /* Stat counter */
 .stat-number {
   font-family: var(--font-mono);

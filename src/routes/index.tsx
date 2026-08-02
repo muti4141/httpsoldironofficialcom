@@ -2,6 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductPlate } from "@/components/ProductPlate";
+import { RevealText } from "@/components/RevealText";
+import { useParallax } from "@/components/SmoothScroll";
 import { products } from "@/data/products";
 import { useEffect } from "react";
 import { useCart } from "@/stores/cart";
@@ -71,6 +73,7 @@ function useReveal() {
 /* ── Main Component ─────────────────────────────────────────────────── */
 function Home() {
   useReveal();
+  useParallax();
   const add = useCart((s) => s.add);
 
   const topSellers = products.slice(0, 4);
@@ -102,6 +105,7 @@ function Home() {
           src="/images/hero-end.jpg"
           alt="OLD IRON Hero"
           className="hero-bg hero-kenburns"
+          data-parallax="0.18"
         />
         <div className="hero-overlay" />
 
@@ -239,7 +243,8 @@ function Home() {
           <div className="reveal-wipe" style={{ marginBottom: "40px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
             <div>
               <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Sıralama</p>
-              <h2
+              <RevealText
+                text="En Çok Satanlar"
                 style={{
                   fontSize: "clamp(32px,4vw,40px)",
                   fontWeight: 700,
@@ -247,9 +252,7 @@ function Home() {
                   lineHeight: 1.0,
                   color: "#111111",
                 }}
-              >
-                En Çok Satanlar
-              </h2>
+              />
             </div>
             <Link to="/shop" className="link-underline" style={{ fontSize: "13px", fontWeight: 500, color: "#737780", letterSpacing: "-0.04em", textDecoration: "none" }}>
               Tümünü Gör
@@ -278,7 +281,7 @@ function Home() {
               >
                 {/* Rank watermark */}
                 <div style={{ position: "relative", overflow: "hidden" }}>
-                  <span className="rank-numeral">{i + 1}</span>
+                  <span className="rank-numeral" data-parallax="-0.25">{i + 1}</span>
 
                   {/* Badge */}
                   {p.badge && (
@@ -346,7 +349,8 @@ function Home() {
           <div className="reveal-wipe" style={{ marginBottom: "40px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
             <div>
               <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Koleksiyon</p>
-              <h2
+              <RevealText
+                text="Yeni Gelenler"
                 style={{
                   fontSize: "clamp(32px,4vw,40px)",
                   fontWeight: 700,
@@ -354,9 +358,7 @@ function Home() {
                   lineHeight: 1.0,
                   color: "#111111",
                 }}
-              >
-                Yeni Gelenler
-              </h2>
+              />
             </div>
             <Link to="/shop" className="link-underline" style={{ fontSize: "13px", fontWeight: 500, color: "#737780", letterSpacing: "-0.04em", textDecoration: "none" }}>
               Tümünü Gör
@@ -517,8 +519,10 @@ function Home() {
             — Manifesto —
           </p>
 
-          <h2
-            className="reveal"
+          <RevealText
+            text="disiplinden dövülmüş."
+            once={false}
+            stagger={120}
             style={{
               fontSize: "clamp(48px, 8vw, 96px)",
               fontWeight: 700,
@@ -529,10 +533,7 @@ function Home() {
               maxWidth: "1000px",
               marginBottom: "64px",
             }}
-          >
-            disiplinden<br />
-            dövülmüş.
-          </h2>
+          />
 
           <div
             className="reveal"
@@ -585,7 +586,8 @@ function Home() {
         <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 72px" }}>
           <div className="reveal-wipe" style={{ marginBottom: "40px" }}>
             <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Topluluk</p>
-            <h2
+            <RevealText
+              text="Sporcuların Yorumları"
               style={{
                 fontSize: "clamp(32px,4vw,40px)",
                 fontWeight: 700,
@@ -593,9 +595,7 @@ function Home() {
                 lineHeight: 1.0,
                 color: "#111111",
               }}
-            >
-              Sporcuların Yorumları
-            </h2>
+            />
           </div>
 
           <div
@@ -710,7 +710,8 @@ function Home() {
           style={{ maxWidth: "480px", margin: "0 auto", textAlign: "center" }}
         >
           <p className="text-eyebrow" style={{ marginBottom: "16px" }}>Özel Üyelik</p>
-          <h2
+          <RevealText
+            text="Elitin Bir Parçası Ol"
             style={{
               fontSize: "clamp(28px,4vw,40px)",
               fontWeight: 700,
@@ -719,9 +720,7 @@ function Home() {
               color: "#111111",
               marginBottom: "12px",
             }}
-          >
-            Elitin Bir Parçası Ol
-          </h2>
+          />
           <p
             style={{
               fontSize: "13px",
