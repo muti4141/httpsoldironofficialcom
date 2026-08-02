@@ -13,9 +13,6 @@ export const Route = createFileRoute("/shop")({
       { title: "Mağaza — OLD IRON | Spor Giyim & Supplement" },
       { name: "description", content: "Premium spor giyim ve analiz raporlu elit supplement. Oversize tee, stringer, şort, protein, kreatin ve daha fazlası." },
     ],
-    links: [
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" },
-    ],
   }),
   component: Shop,
 });

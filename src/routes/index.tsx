@@ -7,9 +7,6 @@ export const Route = createFileRoute("/")({
       { title: "OLD IRON — Disiplinden Dövülmüş" },
       { name: "description", content: "Premium spor giyim & elit supplement. Almanya'da üretildi, Türkiye'ye 1–3 iş gününde teslim." },
     ],
-    links: [
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" },
-    ],
   }),
   component: Home,
 });
@@ -46,33 +43,13 @@ function Home() {
   const logoBeatRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
-  /* Video kaynağı */
+  /* Video kaynağı — doğrudan stream, blob yok (tüm dosyayı belleğe çekmiyoruz) */
   useEffect(() => {
     const film = filmRef.current;
     if (!film) return;
-    let url = "";
-    let alive = true;
-
-    /* 1) Önce doğrudan bağla — adam hemen ekranda olsun (stream) */
     film.src = VIDEO_URL;
-
-    /* 2) Arka planda blob'a çek: bazı sunucular byte-range vermez,
-          o durumda seek donar. Blob gelince sessizce ona geçilir. */
-    fetch(VIDEO_URL)
-      .then((r) => (r.ok ? r.blob() : Promise.reject(new Error("kaynak yok"))))
-      .then((blob) => {
-        if (!alive || !filmRef.current) return;
-        url = URL.createObjectURL(blob);
-        const t = filmRef.current.currentTime;
-        filmRef.current.src = url;
-        try { filmRef.current.currentTime = t; } catch { /* noop */ }
-      })
-      .catch(() => { /* doğrudan kaynak zaten bağlı */ });
-
-    /* Yükleme perdesi hiçbir koşulda kilitlenmesin */
-    const t = setTimeout(() => { if (alive) setReady(true); }, 6000);
-
-    return () => { alive = false; clearTimeout(t); if (url) URL.revokeObjectURL(url); };
+    const t = setTimeout(() => setReady(true), 6000);
+    return () => clearTimeout(t);
   }, []);
 
   /* Scrub döngüsü — her karede React değil, doğrudan DOM güncellenir */
@@ -115,27 +92,41 @@ function Home() {
 
     let raf = 0;
     let current = 0;
+    let last = -1;
+
+    /* Layout ölçümlerini önbellekle — her karede okumak reflow tetikliyordu */
+    let stageTop = 0, total = 1;
+    const measure = () => {
+      stageTop = stage.getBoundingClientRect().top + window.scrollY;
+      total = Math.max(1, stage.offsetHeight - window.innerHeight);
+    };
+    measure();
+    window.addEventListener("resize", measure, { passive: true });
 
     const loop = () => {
-      const rect  = stage.getBoundingClientRect();
-      const total = stage.offsetHeight - window.innerHeight;
-      const target = total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0;
+      const target = Math.min(1, Math.max(0, (window.scrollY - stageTop) / total));
 
       /* Süzülmeyi veren satır */
       current += (target - current) * 0.12;
-      paint(current);
 
-      const film = filmRef.current;
-      if (film && film.duration) {
-        const t = current * (film.duration - 0.05);
-        if (Math.abs(film.currentTime - t) > 0.005) {
-          try { film.currentTime = t; } catch { /* seek hazır değil */ }
+      /* Hareket bittiyse boş boyama yapma */
+      if (Math.abs(current - last) > 0.0004) {
+        paint(current);
+        last = current;
+
+        const film = filmRef.current;
+        /* Dekoderi boğmamak için: önceki seek bitmeden yenisini isteme */
+        if (film && film.duration && !film.seeking) {
+          const t = current * (film.duration - 0.05);
+          if (Math.abs(film.currentTime - t) > 0.02) {
+            try { film.currentTime = t; } catch { /* hazır değil */ }
+          }
         }
       }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
-    return () => cancelAnimationFrame(raf);
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", measure); };
   }, []);
 
   return (
@@ -205,7 +196,7 @@ function Home() {
       </div>
 
       {/* ── STICKY SAHNE ────────────────────────────────── */}
-      <section ref={stageRef} style={{ height: "700vh", position: "relative" }}>
+      <section ref={stageRef} style={{ height: "420vh", position: "relative" }}>
         <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
 
           <video
