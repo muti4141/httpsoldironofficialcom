@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { ProductVideo } from "@/components/ProductVideo";
-import { products, APPAREL_PLACEHOLDER, SUPPLEMENT_PLACEHOLDER } from "@/data/products";
+import { ProductPlate } from "@/components/ProductPlate";
+import { products } from "@/data/products";
 import { useEffect } from "react";
 import { useCart } from "@/stores/cart";
 import { toast } from "sonner";
@@ -60,7 +60,9 @@ function useReveal() {
       { threshold: 0.06, rootMargin: "0px 0px -50px 0px" }
     );
     document
-      .querySelectorAll(".reveal,.reveal-left,.reveal-right,.reveal-scale")
+      .querySelectorAll(
+        ".reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-wipe,.reveal-blur,.press-item"
+      )
       .forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
@@ -95,11 +97,11 @@ function Home() {
           3. HERO — full-bleed, text overlay bottom-left, card right
       ══════════════════════════════════════════════════════════ */}
       <section className="hero-section">
-        {/* Background image */}
+        {/* Background image + Ken Burns yavaş zoom */}
         <img
           src="/images/hero-end.jpg"
           alt="OLD IRON Hero"
-          className="hero-bg"
+          className="hero-bg hero-kenburns"
         />
         <div className="hero-overlay" />
 
@@ -108,8 +110,10 @@ function Home() {
           <div className="anim-1 mb-4">
             <span className="badge badge-new">YENİ</span>
           </div>
-          <h1 className="anim-2 hero-headline">
-            disiplinden<br />dövülmüş.
+          <h1 className="hero-headline">
+            <span style={{ animationDelay: "0.15s" }}>disiplinden</span>
+            <br />
+            <span style={{ animationDelay: "0.32s" }}>dövülmüş.</span>
           </h1>
           <p
             className="anim-3"
@@ -127,6 +131,7 @@ function Home() {
           <div className="anim-4" style={{ marginTop: "28px" }}>
             <Link
               to="/shop"
+              className="btn-sweep"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -150,9 +155,9 @@ function Home() {
         <div className="hero-product-card anim-5" style={{ display: "none" as const }}>
           <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "16px" }}>
             <img
-              src={heroProduct?.image || APPAREL_PLACEHOLDER}
+              src="/images/logo.png"
               alt={heroProduct?.name}
-              style={{ width: 60, height: 60, borderRadius: "8px", objectFit: "cover", flexShrink: 0 }}
+              style={{ width: 60, height: 60, borderRadius: "8px", objectFit: "contain", background: "#ecedee", padding: 8, flexShrink: 0 }}
             />
             <div>
               <p style={{ fontSize: "16px", fontWeight: 600, color: "#111111", letterSpacing: "-0.04em", lineHeight: 1.2 }}>
@@ -226,7 +231,7 @@ function Home() {
         <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 72px" }}>
 
           {/* Header */}
-          <div className="reveal" style={{ marginBottom: "40px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+          <div className="reveal-wipe" style={{ marginBottom: "40px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
             <div>
               <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Sıralama</p>
               <h2
@@ -259,7 +264,7 @@ function Home() {
                 key={p.id}
                 to="/product/$id"
                 params={{ id: p.id }}
-                className="ranked-card reveal"
+                className="ranked-card reveal-blur"
                 style={{
                   textDecoration: "none",
                   transitionDelay: `${i * 60}ms`,
@@ -280,34 +285,9 @@ function Home() {
                     </span>
                   )}
 
-                  {/* Product image */}
-                  <div
-                    style={{
-                      aspectRatio: "1 / 1",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      position: "relative",
-                      zIndex: 1,
-                    }}
-                  >
-                    {p.video ? (
-                      <ProductVideo
-                        src={p.video}
-                        poster={p.videoPoster}
-                        alt={p.name}
-                        loop={p.type === "apparel"}
-                        className="w-full h-full object-cover"
-                        style={{ borderRadius: 0 }}
-                      />
-                    ) : (
-                      <img
-                        src={p.image || (p.type === "apparel" ? APPAREL_PLACEHOLDER : SUPPLEMENT_PLACEHOLDER)}
-                        alt={p.name}
-                        loading="lazy"
-                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      />
-                    )}
+                  {/* Product plate */}
+                  <div style={{ position: "relative", zIndex: 1 }}>
+                    <ProductPlate product={p} ratio="1 / 1" />
                   </div>
                 </div>
 
@@ -335,23 +315,7 @@ function Home() {
                     add(p, p.type === "apparel" ? "M" : "Standart");
                     toast.success(`${p.name} sepete eklendi`);
                   }}
-                  style={{
-                    width: "100%",
-                    marginTop: "12px",
-                    background: "#111111",
-                    color: "#ffffff",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    letterSpacing: "-0.04em",
-                    padding: "10px",
-                    borderRadius: "10px",
-                    border: "none",
-                    cursor: "pointer",
-                    opacity: 0,
-                    transition: "opacity 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                  className="card-add-btn"
                 >
                   Sepete Ekle
                 </button>
@@ -374,7 +338,7 @@ function Home() {
       <section style={{ background: "#ecedee", padding: "80px 0" }}>
         <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 72px" }}>
 
-          <div className="reveal" style={{ marginBottom: "40px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
+          <div className="reveal-wipe" style={{ marginBottom: "40px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", flexWrap: "wrap" }}>
             <div>
               <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Koleksiyon</p>
               <h2
@@ -406,7 +370,7 @@ function Home() {
                 key={p.id}
                 to="/product/$id"
                 params={{ id: p.id }}
-                className="product-card reveal"
+                className="product-card reveal-blur"
                 style={{
                   textDecoration: "none",
                   transitionDelay: `${i * 60}ms`,
@@ -424,25 +388,8 @@ function Home() {
                   </span>
                 )}
 
-                {/* Image */}
-                <div style={{ aspectRatio: "4/5", overflow: "hidden" }}>
-                  {p.video ? (
-                    <ProductVideo
-                      src={p.video}
-                      poster={p.videoPoster}
-                      alt={p.name}
-                      loop={p.type === "apparel"}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <img
-                      src={p.image || (p.type === "apparel" ? APPAREL_PLACEHOLDER : SUPPLEMENT_PLACEHOLDER)}
-                      alt={p.name}
-                      loading="lazy"
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                    />
-                  )}
-                </div>
+                {/* Plate */}
+                <ProductPlate product={p} ratio="4 / 5" />
 
                 {/* Metadata */}
                 <div style={{ marginTop: "16px" }}>
@@ -472,23 +419,7 @@ function Home() {
                     add(p, p.type === "apparel" ? "M" : "Standart");
                     toast.success(`${p.name} sepete eklendi`);
                   }}
-                  style={{
-                    width: "100%",
-                    marginTop: "12px",
-                    background: "#111111",
-                    color: "#ffffff",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    letterSpacing: "-0.04em",
-                    padding: "10px",
-                    borderRadius: "10px",
-                    border: "none",
-                    cursor: "pointer",
-                    opacity: 0,
-                    transition: "opacity 0.2s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "0")}
+                  className="card-add-btn"
                 >
                   Sepete Ekle
                 </button>
@@ -542,11 +473,12 @@ function Home() {
               gap: "40px",
             }}
           >
-            {pressItems.map((item) => (
+            {pressItems.map((item, i) => (
               <span
                 key={item}
-                className="font-mono"
+                className="font-mono press-item"
                 style={{
+                  transitionDelay: `${i * 90}ms`,
                   fontSize: "12px",
                   color: "rgba(255,255,255,0.6)",
                   letterSpacing: "0.12em",
@@ -622,6 +554,7 @@ function Home() {
             </p>
             <Link
               to="/shop"
+              className="btn-sweep"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -646,7 +579,7 @@ function Home() {
       ══════════════════════════════════════════════════════════ */}
       <section style={{ background: "#ecedee", padding: "80px 0" }}>
         <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 72px" }}>
-          <div className="reveal" style={{ marginBottom: "40px" }}>
+          <div className="reveal-wipe" style={{ marginBottom: "40px" }}>
             <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Topluluk</p>
             <h2
               style={{
@@ -671,7 +604,7 @@ function Home() {
             {testimonials.map((t, i) => (
               <div
                 key={t.name}
-                className="reveal"
+                className="reveal-blur testimonial-card"
                 style={{
                   background: "#ffffff",
                   borderRadius: "10px",

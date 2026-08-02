@@ -363,12 +363,15 @@ body {
   overflow: hidden;
   position: relative;
   padding: 20px;
-  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border: none;
   box-shadow: none;
+  transition:
+    transform  0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.4s ease;
 }
 .product-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-6px);
+  background: #e4e6e8;
 }
 
 /* Ranked card */
@@ -378,13 +381,64 @@ body {
   overflow: hidden;
   position: relative;
   padding: 20px;
-  transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   border: none;
   box-shadow: none;
+  transition:
+    transform  0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.4s ease;
 }
 .ranked-card:hover {
-  transform: translateY(-3px);
+  transform: translateY(-6px);
+  background: #e4e6e8;
 }
+
+/* Kart içindeki plaka — hover'da hafifçe büyür */
+.product-card > div[style*="aspect-ratio"],
+.ranked-card  div[style*="aspect-ratio"] {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.product-card:hover > div[style*="aspect-ratio"],
+.ranked-card:hover  div[style*="aspect-ratio"] {
+  transform: scale(1.03);
+}
+
+/* Kart üzerindeki sıra numarası hover'da belirginleşir */
+.ranked-card .rank-numeral {
+  transition: color 0.45s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ranked-card:hover .rank-numeral {
+  color: rgba(255, 255, 255, 0.85);
+  transform: translateY(-6px);
+}
+
+/* Sepete ekle butonu — kartın altından yukarı kayar */
+.card-add-btn {
+  width: 100%;
+  margin-top: 12px;
+  background: var(--ink);
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  padding: 10px;
+  border-radius: var(--radius-card);
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity   0.35s ease,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.25s ease;
+}
+.product-card:hover .card-add-btn,
+.ranked-card:hover  .card-add-btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+.card-add-btn:hover { background: var(--cobalt); }
+.card-add-btn:active { transform: scale(0.97); }
 
 
 /* ── Button Primitives ─────────────────────────────────────────────── */
@@ -681,6 +735,138 @@ body {
   transition: width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .link-underline:hover::after { width: 100%; }
+
+
+/* ══════════════════════════════════════════════════════════════════
+   ZELLERFELD HAREKET SİSTEMİ
+══════════════════════════════════════════════════════════════════ */
+
+/* ── Hero: yavaş Ken Burns zoom ──────────────────────────────────── */
+@keyframes kenburns {
+  from { transform: scale(1)    translateY(0); }
+  to   { transform: scale(1.12) translateY(-2%); }
+}
+.hero-kenburns {
+  animation: kenburns 22s ease-out both;
+}
+
+/* ── Hero başlığı: satır satır aşağıdan yükselir ─────────────────── */
+@keyframes line-rise {
+  from { opacity: 0; transform: translateY(100%) skewY(3deg); }
+  to   { opacity: 1; transform: translateY(0)    skewY(0);    }
+}
+.hero-headline > span,
+.line-rise {
+  display: inline-block;
+  animation: line-rise 0.95s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Bölüm başlıkları: clip-path ile soldan açılır ───────────────── */
+@keyframes wipe-in {
+  from { clip-path: inset(0 100% 0 0); opacity: 0; }
+  to   { clip-path: inset(0 0    0 0); opacity: 1; }
+}
+.reveal-wipe {
+  clip-path: inset(0 100% 0 0);
+  opacity: 0;
+}
+.reveal-wipe.visible {
+  animation: wipe-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Blur reveal ─────────────────────────────────────────────────── */
+.reveal-blur {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(20px);
+  transition:
+    opacity   0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    filter    0.8s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-blur.visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+/* ── Buton: dolgu soldan kayar ───────────────────────────────────── */
+.btn-sweep {
+  position: relative;
+  overflow: hidden;
+  z-index: 0;
+  transition: color 0.35s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-sweep::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--cobalt);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: -1;
+}
+.btn-sweep:hover::before { transform: scaleX(1); }
+.btn-sweep:hover  { color: #ffffff; transform: translateY(-2px); }
+.btn-sweep:active { transform: translateY(0) scale(0.98); }
+
+/* ── "Tümünü Gör" butonu: ok ileri kayar ─────────────────────────── */
+.btn-see-all {
+  transition:
+    background   0.3s ease,
+    border-color 0.3s ease,
+    transform    0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.btn-see-all:hover { transform: translateY(-2px); }
+
+/* ── Yorum kartları ──────────────────────────────────────────────── */
+.testimonial-card {
+  transition:
+    transform  0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.4s ease;
+}
+.testimonial-card:hover {
+  transform: translateY(-5px);
+  background: #ffffff;
+}
+
+/* ── Kredensiyel barı: sırayla belirir ───────────────────────────── */
+.press-item {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity   0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+    color     0.3s ease;
+}
+.press-item.visible { opacity: 1; transform: translateY(0); }
+.press-item:hover   { color: #ffffff !important; }
+
+/* ── Duyuru barı metni akar ──────────────────────────────────────── */
+@keyframes subtle-pulse {
+  0%, 100% { opacity: 1;    }
+  50%      { opacity: 0.72; }
+}
+.announcement-bar span {
+  animation: subtle-pulse 4s ease-in-out infinite;
+}
+
+/* ── Manifesto: kelime kelime yükselir ───────────────────────────── */
+@keyframes word-up {
+  from { opacity: 0; transform: translateY(80%); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+.word-up > span {
+  display: inline-block;
+  animation: word-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Nav: scroll'da inceltilir (Nav bileşeni ekler) ──────────────── */
+.nav-shrink { transition: padding 0.35s ease, box-shadow 0.35s ease; }
+
+/* ── İmleç takipli hafif eğim (kartlar) ──────────────────────────── */
+.tilt { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1); }
 
 /* Stat counter */
 .stat-number {
