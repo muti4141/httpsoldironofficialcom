@@ -120,3 +120,47 @@ jobs:
             -d '{"pattern":"www.oldironofficial.com/*","script":"tanstack-start-app"}'
 
           echo "Tamamlandı ✓"
+
+      - name: Domain teşhisi
+        if: always()
+        continue-on-error: true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          echo "=================== DNS ÇÖZÜMLEME ==================="
+          for H in oldironofficial.com www.oldironofficial.com; do
+            echo "--- $H ---"
+            getent ahostsv4 "$H" | awk '{print $1}' | sort -u || echo "çözümlenemedi"
+          done
+
+          echo "=================== NAMESERVER ==================="
+          (nslookup -type=NS oldironofficial.com 2>/dev/null || true) | grep -i "nameserver\|name server" || echo "NS okunamadı"
+
+          echo "=================== HTTP YANITI ==================="
+          for H in https://oldironofficial.com https://www.oldironofficial.com; do
+            echo "--- $H ---"
+            curl -sSI --max-time 20 "$H" 2>&1 | grep -iE "^HTTP|^server:|^cf-ray:|^location:|^content-type:" || echo "başlık alınamadı"
+            echo "  içerik ilk 300 karakter:"
+            curl -sS --max-time 20 "$H" 2>&1 | tr -d '\n' | head -c 300
+            echo
+          done
+
+          echo "=================== WORKER (referans) ==================="
+          curl -sSI --max-time 20 https://tanstack-start-app.mutlucanelcn.workers.dev/ 2>&1 | grep -iE "^HTTP|^cf-ray:" || true
+
+          echo "=================== ZONE DURUMU ==================="
+          curl -s "https://api.cloudflare.com/client/v4/zones?name=oldironofficial.com" \
+            -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+            | python3 -c "
+import sys,json
+d=json.load(sys.stdin)
+r=(d.get('result') or [])
+if not r: print('zone bulunamadi', d.get('errors'))
+else:
+    z=r[0]
+    print('zone id  :', z.get('id'))
+    print('durum    :', z.get('status'))
+    print('paused   :', z.get('paused'))
+    print('ns       :', z.get('name_servers'))
+    print('orig ns  :', z.get('original_name_servers'))
+"
