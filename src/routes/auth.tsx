@@ -75,16 +75,16 @@ function AuthPage() {
       <Nav />
       <main className="pt-[120px] pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-md mx-auto">
         <header className="mb-stack-md text-center">
-          <h1 className="font-display text-[48px] md:text-[56px] uppercase tracking-tight text-primary leading-none">
+          <h1 className="text-[40px] md:text-[48px] font-bold tracking-[-0.04em] text-foreground leading-none">
             {isSignup ? "Hesap Oluştur" : "Giriş Yap"}
           </h1>
-          <p className="text-[13px] font-semibold uppercase tracking-widest text-outline mt-2">
+          <p className="text-[13px] text-secondary mt-2 tracking-[-0.02em]">
             {isSignup ? "Topluluğumuza katıl." : "Tekrar hoş geldin."}
           </p>
         </header>
 
         <button type="button" onClick={handleGoogle} disabled={busy}
-          className="w-full bg-surface-container-low border border-outline-variant py-4 px-6 flex items-center justify-center gap-3 text-[13px] uppercase tracking-widest font-semibold text-primary hover:border-accent-warm transition-colors disabled:opacity-50 cursor-pointer">
+          className="w-full bg-white border border-outline-variant rounded-[10px] py-4 px-6 flex items-center justify-center gap-3 text-[14px] font-semibold tracking-[-0.02em] text-foreground hover:border-cobalt transition-colors disabled:opacity-50 cursor-pointer">
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
             <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -96,7 +96,7 @@ function AuthPage() {
 
         <div className="relative py-6 flex items-center gap-3">
           <div className="flex-grow h-px bg-outline-variant/30" />
-          <span className="text-[10px] uppercase text-outline tracking-widest">Veya E-posta ile</span>
+          <span className="text-[11px] uppercase text-secondary tracking-[0.12em]">Veya e-posta ile</span>
           <div className="flex-grow h-px bg-outline-variant/30" />
         </div>
 
@@ -104,22 +104,22 @@ function AuthPage() {
           {isSignup && (
             <Field label="Ad Soyad">
               <input type="text" value={displayName} onChange={(e) => setDisplayName(e.target.value)}
-                className="w-full bg-surface-container-low border border-outline-variant px-4 py-3 text-[15px] text-primary focus:border-accent-warm focus:outline-none"
+                className="w-full bg-white border border-outline-variant rounded-[10px] px-4 py-3 text-[15px] text-foreground focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/10 transition-colors"
                 placeholder="Adın Soyadın" />
             </Field>
           )}
           <Field label="E-posta">
             <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-surface-container-low border border-outline-variant px-4 py-3 text-[15px] text-primary focus:border-accent-warm focus:outline-none"
+              className="w-full bg-white border border-outline-variant rounded-[10px] px-4 py-3 text-[15px] text-foreground focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/10 transition-colors"
               placeholder="ornek@email.com" />
           </Field>
           <Field label="Şifre">
             <input type="password" required minLength={6} value={password} onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-surface-container-low border border-outline-variant px-4 py-3 text-[15px] text-primary focus:border-accent-warm focus:outline-none"
+              className="w-full bg-white border border-outline-variant rounded-[10px] px-4 py-3 text-[15px] text-foreground focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/10 transition-colors"
               placeholder="••••••••" />
           </Field>
           <button type="submit" disabled={busy}
-            className="w-full bg-accent-warm text-on-primary-container font-headline text-[20px] py-4 uppercase tracking-widest hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 cursor-pointer">
+            className="w-full btn-primary text-[15px] py-4 disabled:opacity-50">
             {busy ? "..." : isSignup ? "Hesap Oluştur" : "Giriş Yap"}
           </button>
         </form>
@@ -127,7 +127,7 @@ function AuthPage() {
         <p className="text-center text-[14px] text-secondary mt-8">
           {isSignup ? "Zaten hesabın var mı?" : "Hesabın yok mu?"}{" "}
           <Link to="/auth" search={{ mode: isSignup ? "login" : "signup", redirect: redirectTo }}
-            className="text-accent-warm underline uppercase tracking-widest text-[12px] font-semibold cursor-pointer">
+            className="text-cobalt underline text-[13px] font-semibold cursor-pointer">
             {isSignup ? "Giriş Yap" : "Hesap Oluştur"}
           </Link>
         </p>
@@ -140,7 +140,7 @@ function AuthPage() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <label className="block space-y-2">
-      <span className="text-[12px] font-semibold uppercase tracking-widest text-secondary">{label}</span>
+      <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-secondary">{label}</span>
       {children}
     </label>
   );

@@ -126,9 +126,6 @@ function ProductPage() {
 
   return (
     <div style={{ background: "#ffffff", color: "#111111", minHeight: "100vh", overflowX: "hidden" }}>
-      <div className="announcement-bar">
-        <span>1500₺ üzeri ücretsiz kargo · Almanya kalitesi · Lab onaylı</span>
-      </div>
 
       <Nav />
 
@@ -218,7 +215,7 @@ function ProductPage() {
                       marginTop: "12px",
                     }}
                   >
-                    {product.gallery.map((src, i) => (
+                    {product.gallery.map((src: string, i: number) => (
                       <button
                         key={src}
                         className="reveal-blur"

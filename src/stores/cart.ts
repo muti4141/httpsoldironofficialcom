@@ -45,7 +45,7 @@ export const useCart = create<CartState>()(
                 name: product.name,
                 size,
                 price: product.price,
-                image: product.image,
+                image: product.gallery?.[0] ?? product.image,
                 categoryLabel: product.categoryLabel,
                 qty,
               },

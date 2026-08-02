@@ -13,9 +13,22 @@ function createSupabaseClient() {
       ...(!SUPABASE_URL ? ['SUPABASE_URL'] : []),
       ...(!SUPABASE_PUBLISHABLE_KEY ? ['SUPABASE_PUBLISHABLE_KEY'] : []),
     ];
-    const message = `Missing Supabase environment variable(s): ${missing.join(', ')}. Connect Supabase in Lovable Cloud.`;
-    console.error(`[Supabase] ${message}`);
-    throw new Error(message);
+    // Uygulamayı çökertme: sayfa yine de render edilsin, auth çağrıları
+    // ağ hatasıyla yakalanır ve kullanıcıya Türkçe hata mesajı gösterilir.
+    console.error(
+      `[Supabase] Eksik ortam değişken(ler)i: ${missing.join(', ')}. Giriş/sepet işlemleri çalışmayabilir.`
+    );
+    return createClient<Database>(
+      SUPABASE_URL || 'https://placeholder.supabase.co',
+      SUPABASE_PUBLISHABLE_KEY || 'public-anon-key-placeholder',
+      {
+        auth: {
+          storage: typeof window !== 'undefined' ? localStorage : undefined,
+          persistSession: true,
+          autoRefreshToken: true,
+        },
+      }
+    );
   }
 
   return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {

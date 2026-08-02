@@ -152,11 +152,6 @@ function Home() {
   return (
     <div style={{ background: "#ffffff", color: "#111111", minHeight: "100vh", overflowX: "hidden" }}>
 
-      {/* ── Duyuru barı ── */}
-      <div className="announcement-bar">
-        <span>1500₺ üzeri ücretsiz kargo · Almanya kalitesi · Lab onaylı</span>
-      </div>
-
       <Nav />
 
       {/* ════════════════════════════════════════════════

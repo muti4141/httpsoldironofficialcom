@@ -1,10 +1,11 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useCartCount } from "@/stores/cart";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
 
 export function Nav() {
+  const navigate   = useNavigate();
   const cartCount  = useCartCount();
   const { user }   = useAuth();
   const [accountOpen,  setAccountOpen]  = useState(false);
@@ -40,6 +41,11 @@ export function Nav() {
 
   return (
     <>
+      {/* Duyuru barı — her sayfada sabit üstte */}
+      <div className="announcement-bar">
+        <span>1500₺ üzeri ücretsiz kargo · Almanya kalitesi · Lab onaylı</span>
+      </div>
+
       <nav
         className={`nav-bar fixed top-0 z-50 w-full ${scrolled ? "scrolled" : ""}`}
         style={{ background: "#ffffff", borderBottom: "1px solid #ecedee" }}
@@ -95,7 +101,8 @@ export function Nav() {
             <button
               className="hidden md:flex items-center justify-center w-8 h-8 cursor-pointer transition-opacity hover:opacity-70"
               style={{ color: "#111111" }}
-              aria-label="Ara"
+              aria-label="Ürün ara"
+              onClick={() => navigate({ to: "/shop" })}
             >
               <span className="material-symbols-outlined text-[20px]">search</span>
             </button>
