@@ -453,6 +453,49 @@ body {
 .img-darken   { filter: brightness(0.8) contrast(1.05); }
 .img-darken-2 { filter: brightness(0.65) contrast(1.08); }
 
+/* ── Horizontal drag scroll ─────────────────────────────────────────── */
+.drag-scroll {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.drag-scroll:active { cursor: grabbing; }
+.drag-scroll::-webkit-scrollbar { display: none; }
+.drag-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Clip text reveal ────────────────────────────────────────────────── */
+@keyframes clip-in {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+.animate-clip-in { animation: clip-in 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+
+/* ── Char stagger (JS-driven, use inline style delay) ─────────────────── */
+@keyframes char-up {
+  from { opacity: 0; transform: translateY(60%) skewY(4deg); }
+  to   { opacity: 1; transform: translateY(0)   skewY(0); }
+}
+.char-animate {
+  display: inline-block;
+  animation: char-up 0.55s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* ── Parallax image scale ─────────────────────────────────────────────── */
+.parallax-img {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* ── Hero split ────────────────────────────────────────────────────────── */
+.hero-split-img {
+  clip-path: inset(0 0 0 0);
+  animation: hero-reveal 1.1s cubic-bezier(0.22,1,0.36,1) 0.2s both;
+}
+@keyframes hero-reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+
 /* ── Reduced Motion ─────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
