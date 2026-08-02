@@ -11,6 +11,72 @@ import { products, type Product } from "@/data/products";
 const FREE_SHIPPING_THRESHOLD = 1500;
 const SHIPPING_FEE = 140;
 
+/* ── Karanlık tema jetonları ─────────────────────────────────────────────── */
+const BG     = "#080808";
+const CARD   = "#181818";
+const RAISED = "#1f1f1f";
+const HAIR   = "rgba(255,255,255,0.12)";
+const TEXT   = "#f4f4f4";
+const MUTED  = "rgba(255,255,255,0.55)";
+const DIM    = "rgba(255,255,255,0.38)";
+const BONE   = "#dcdcdc";
+const MONO   = "'JetBrains Mono', ui-monospace, monospace";
+const SANS   = "'Inter Tight', Inter, sans-serif";
+
+const microLabel: React.CSSProperties = {
+  fontFamily: MONO,
+  fontSize: "11px",
+  textTransform: "uppercase",
+  letterSpacing: ".08em",
+  color: MUTED,
+};
+
+const priceStyle: React.CSSProperties = {
+  fontFamily: MONO,
+  fontSize: "13px",
+  color: TEXT,
+  letterSpacing: ".02em",
+};
+
+const priceLg: React.CSSProperties = {
+  fontFamily: MONO,
+  fontSize: "16px",
+  color: TEXT,
+  letterSpacing: ".01em",
+};
+
+const cardStyle: React.CSSProperties = {
+  background: CARD,
+  border: `1px solid ${HAIR}`,
+  borderRadius: "10px",
+};
+
+const ctaPrimary: React.CSSProperties = {
+  background: "#ffffff",
+  color: BG,
+  border: "none",
+  borderRadius: "10px",
+  fontFamily: MONO,
+  fontSize: "12px",
+  fontWeight: 600,
+  textTransform: "uppercase",
+  letterSpacing: ".08em",
+  cursor: "pointer",
+};
+
+const ctaSecondary: React.CSSProperties = {
+  background: "transparent",
+  color: TEXT,
+  border: "1px solid rgba(255,255,255,0.25)",
+  borderRadius: "999px",
+  fontFamily: MONO,
+  fontSize: "11px",
+  fontWeight: 600,
+  textTransform: "uppercase",
+  letterSpacing: ".08em",
+  cursor: "pointer",
+};
+
 export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
@@ -57,7 +123,7 @@ function fallbackImg(e: React.SyntheticEvent<HTMLImageElement>) {
   img.src = "/images/logo.png";
   img.style.objectFit = "contain";
   img.style.padding = "10px";
-  img.style.filter = "invert(1) brightness(0.25)";
+  img.style.filter = "brightness(0) invert(1) opacity(0.7)";
 }
 
 /* ── İkonlar (ince çizgi, tek renk) ──────────────────────────────────────── */
@@ -223,29 +289,31 @@ function CartPage() {
     if (!list.length) return null;
     return (
       <section className="mt-8">
-        <h2 className="text-eyebrow mb-3" style={{ color: "#111111" }}>{title}</h2>
+        <h2 className="mb-3" style={microLabel}>{title}</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {list.map((p) => (
             <div key={p.id}
-              className="flex items-center gap-3 bg-plaster rounded-[10px] p-3"
-              style={{ letterSpacing: "-0.04em" }}>
+              className="flex items-center gap-3 rounded-[10px] p-3"
+              style={cardStyle}>
               <Link to="/product/$id" params={{ id: p.id }}
-                className="shrink-0 w-[56px] h-[56px] rounded-[10px] overflow-hidden bg-white block">
+                className="shrink-0 w-[56px] h-[56px] rounded-[10px] overflow-hidden block"
+                style={{ background: RAISED }}>
                 <img src={p.gallery?.[0] ?? p.image} alt={p.name} loading="lazy"
                   className="w-full h-full object-cover" onError={fallbackImg} />
               </Link>
               <div className="min-w-0 flex-1">
                 <Link to="/product/$id" params={{ id: p.id }}
-                  className="block truncate text-[14px] font-semibold text-ink hover:text-cobalt transition-colors">
+                  className="block truncate text-[14px] font-semibold"
+                  style={{ color: TEXT, textDecoration: "none" }}>
                   {p.name}
                 </Link>
-                <span className="text-price">{tl(p.price)}</span>
+                <span style={priceStyle}>{tl(p.price)}</span>
               </div>
               <button
                 type="button"
                 onClick={() => handleAdd(p)}
-                className="shrink-0 rounded-[30px] px-3 h-[32px] text-[12px] font-medium cursor-pointer transition-colors"
-                style={{ border: "1px solid #000aff", color: "#000aff", letterSpacing: "-0.04em" }}
+                className="shrink-0 px-3 h-[36px]"
+                style={ctaSecondary}
               >
                 Ekle
               </button>
@@ -265,15 +333,15 @@ function CartPage() {
           { icon: <TruckIcon />, label: "1–3 iş günü kargo" },
         ].map(({ icon, label }) => (
           <span key={label} className="flex items-center gap-1.5 text-[12px]"
-            style={{ color: "#737780", letterSpacing: "-0.04em" }}>
+            style={{ color: MUTED }}>
             {icon}{label}
           </span>
         ))}
       </div>
       <div className="flex flex-wrap gap-2">
         {["Visa", "Mastercard", "Troy"].map((m) => (
-          <span key={m} className="rounded-[30px] px-2.5 py-1 text-[11px]"
-            style={{ border: "1px solid #d7d7d7", color: "#737780", letterSpacing: "-0.04em" }}>
+          <span key={m} className="rounded-full px-2.5 py-1"
+            style={{ border: `1px solid ${HAIR}`, color: MUTED, fontFamily: MONO, fontSize: "10px", letterSpacing: ".08em", textTransform: "uppercase" }}>
             {m}
           </span>
         ))}
@@ -282,19 +350,19 @@ function CartPage() {
   );
 
   const ShippingProgress = () => (
-    <div className="bg-plaster rounded-[10px] p-4 md:p-5 mb-6" style={{ letterSpacing: "-0.04em" }}>
+    <div className="rounded-[10px] p-4 md:p-5 mb-6" style={cardStyle}>
       {remaining > 0 ? (
         <>
-          <p className="text-[13px] text-ink mb-2">
-            Ücretsiz kargoya <span className="text-price" style={{ fontSize: 13 }}>{tl(remaining)}</span> kaldı
+          <p className="text-[13px] mb-2" style={{ color: TEXT }}>
+            Ücretsiz kargoya <span style={priceStyle}>{tl(remaining)}</span> kaldı
           </p>
-          <div className="h-[3px] w-full rounded-full" style={{ background: "#d7d7d7" }}>
+          <div className="h-[3px] w-full rounded-full" style={{ background: HAIR }}>
             <div className="h-[3px] rounded-full transition-all duration-500"
-              style={{ width: `${progress}%`, background: "#000aff" }} />
+              style={{ width: `${progress}%`, background: BONE }} />
           </div>
         </>
       ) : (
-        <p className="flex items-center gap-2 text-[13px] font-medium" style={{ color: "#000aff" }}>
+        <p className="flex items-center gap-2" style={{ ...microLabel, color: TEXT }}>
           <CheckIcon /> Kargo bedava
         </p>
       )}
@@ -304,29 +372,29 @@ function CartPage() {
   /* ── Render ──────────────────────────────────────────────────────────── */
 
   return (
-    <div className="bg-background text-foreground min-h-screen">
+    <div className="min-h-screen" style={{ background: BG, color: TEXT, fontFamily: SANS }}>
       <Nav />
       <main className="pt-[120px] pb-[80px] px-[20px] md:px-[72px] max-w-[1440px] mx-auto"
         style={{ paddingBottom: items.length && !checkoutData ? "120px" : undefined }}>
         <header className="mb-stack-md pt-8">
-          <h1 className="text-[40px] md:text-[48px] font-bold tracking-[-0.04em] text-foreground leading-none">Sepetim</h1>
-          <p className="text-[13px] mt-2" style={{ color: "#737780", letterSpacing: "-0.04em" }}>Her dikişte hassasiyet.</p>
+          <h1 className="text-[40px] md:text-[48px] font-bold tracking-[-0.03em] leading-none" style={{ color: TEXT }}>Sepetim</h1>
+          <p className="mt-3" style={microLabel}>Her dikişte hassasiyet.</p>
         </header>
 
         {checkoutData ? (
-          <div className="bg-plaster rounded-[10px] p-6">
+          <div className="rounded-[10px] p-6" style={cardStyle}>
             <StripeCartCheckout {...checkoutData} />
           </div>
         ) : items.length === 0 ? (
           <div>
-            <div className="bg-plaster rounded-[10px] p-10 md:p-12" style={{ letterSpacing: "-0.04em" }}>
-              <h2 className="text-[32px] md:text-[40px] font-bold lowercase leading-none text-ink">sepetin boş</h2>
-              <p className="text-[14px] mt-3 max-w-[420px]" style={{ color: "#737780" }}>
+            <div className="rounded-[10px] p-10 md:p-12" style={cardStyle}>
+              <h2 className="text-[32px] md:text-[40px] font-bold lowercase leading-none" style={{ color: TEXT }}>sepetin boş</h2>
+              <p className="text-[14px] mt-3 max-w-[420px]" style={{ color: MUTED }}>
                 Henüz bir şey eklemedin. Koleksiyonda seni bekleyen parçalar var.
               </p>
               <Link to="/shop"
-                className="inline-flex items-center justify-center mt-6 rounded-[30px] px-8 h-[48px] text-[14px] font-medium cursor-pointer"
-                style={{ background: "#000aff", color: "#ffffff", letterSpacing: "-0.04em" }}>
+                className="inline-flex items-center justify-center mt-6 px-8 h-[48px]"
+                style={{ ...ctaPrimary, textDecoration: "none" }}>
                 Koleksiyonu Keşfet
               </Link>
             </div>
@@ -342,10 +410,11 @@ function CartPage() {
                 <div className="space-y-gutter">
                   {items.map((item) => (
                     <div key={item.id}
-                      className="bg-plaster rounded-[10px] p-4 md:p-5 flex gap-4"
-                      style={{ letterSpacing: "-0.04em" }}>
+                      className="rounded-[10px] p-4 md:p-5 flex gap-4"
+                      style={cardStyle}>
                       <Link to="/product/$id" params={{ id: item.productId }}
-                        className="w-[88px] h-[110px] md:w-[104px] md:h-[130px] bg-white rounded-[10px] overflow-hidden shrink-0">
+                        className="w-[88px] h-[110px] md:w-[104px] md:h-[130px] rounded-[10px] overflow-hidden shrink-0"
+                        style={{ background: RAISED }}>
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={fallbackImg} />
                       </Link>
 
@@ -353,32 +422,33 @@ function CartPage() {
                         <div className="flex justify-between items-start gap-3">
                           <div className="min-w-0">
                             <Link to="/product/$id" params={{ id: item.productId }}
-                              className="block text-[16px] font-semibold text-ink hover:text-cobalt transition-colors">
+                              className="block text-[16px] font-semibold"
+                              style={{ color: TEXT, textDecoration: "none", letterSpacing: "-0.02em" }}>
                               {item.name}
                             </Link>
-                            <p className="text-[13px] mt-1" style={{ color: "#737780" }}>
+                            <p className="mt-1" style={{ ...microLabel, color: DIM }}>
                               {isSupplementItem(item.size) ? item.size : `Beden: ${item.size}`}
                             </p>
-                            <p className="text-price mt-1" style={{ color: "#737780" }}>
+                            <p className="mt-1" style={{ ...priceStyle, color: MUTED }}>
                               {tl(item.price)} / adet
                             </p>
                           </div>
-                          <span className="text-price-lg whitespace-nowrap">{tl(item.price * item.qty)}</span>
+                          <span className="whitespace-nowrap" style={priceLg}>{tl(item.price * item.qty)}</span>
                         </div>
 
                         <div className="flex items-center justify-between gap-3 mt-auto pt-4">
                           <div className="flex items-center gap-2">
                             <button type="button" onClick={() => handleDec(item)} aria-label="Azalt"
-                              className="w-[36px] h-[36px] rounded-[10px] bg-white flex items-center justify-center text-[16px] cursor-pointer"
-                              style={{ border: "1px solid #d7d7d7", color: "#111111" }}>−</button>
-                            <span className="text-price-lg w-[28px] text-center">{item.qty}</span>
+                              className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[16px] cursor-pointer"
+                              style={{ border: "1px solid rgba(255,255,255,0.25)", color: TEXT, background: "transparent" }}>−</button>
+                            <span className="w-[28px] text-center" style={priceLg}>{item.qty}</span>
                             <button type="button" onClick={() => updateQty(item.id, 1)} aria-label="Artır"
-                              className="w-[36px] h-[36px] rounded-[10px] bg-white flex items-center justify-center text-[16px] cursor-pointer"
-                              style={{ border: "1px solid #d7d7d7", color: "#111111" }}>+</button>
+                              className="w-[36px] h-[36px] rounded-[10px] flex items-center justify-center text-[16px] cursor-pointer"
+                              style={{ border: "1px solid rgba(255,255,255,0.25)", color: TEXT, background: "transparent" }}>+</button>
                           </div>
                           <button type="button" onClick={() => handleRemove(item)}
-                            className="text-[13px] cursor-pointer transition-colors hover:text-ink"
-                            style={{ color: "#737780" }}>
+                            className="cursor-pointer"
+                            style={microLabel}>
                             Kaldır
                           </button>
                         </div>
@@ -393,38 +463,39 @@ function CartPage() {
               {/* Özet */}
               <div className="lg:col-span-4">
                 <div className="lg:sticky lg:top-[120px] space-y-gutter">
-                  <div id="siparis-ozeti" className="bg-plaster rounded-[10px] p-6" style={{ letterSpacing: "-0.04em" }}>
-                    <h2 className="text-[18px] font-semibold text-ink mb-5">Sipariş Özeti</h2>
+                  <div id="siparis-ozeti" className="rounded-[10px] p-6" style={cardStyle}>
+                    <h2 className="text-[18px] font-semibold mb-5" style={{ color: TEXT, letterSpacing: "-0.02em" }}>Sipariş Özeti</h2>
 
                     <div className="space-y-3">
                       <div className="flex justify-between items-baseline">
-                        <span className="text-[14px]" style={{ color: "#737780" }}>Ara Toplam</span>
-                        <span className="text-price-lg text-right">{tl(subtotal)}</span>
+                        <span className="text-[14px]" style={{ color: MUTED }}>Ara Toplam</span>
+                        <span className="text-right" style={priceLg}>{tl(subtotal)}</span>
                       </div>
                       <div className="flex justify-between items-baseline">
-                        <span className="text-[14px]" style={{ color: "#737780" }}>Kargo</span>
-                        <span className="text-price-lg text-right" style={shipping === 0 ? { color: "#000aff" } : undefined}>
+                        <span className="text-[14px]" style={{ color: MUTED }}>Kargo</span>
+                        <span className="text-right" style={priceLg}>
                           {shipping === 0 ? "Ücretsiz" : tl(shipping)}
                         </span>
                       </div>
-                      <div className="pt-3 flex justify-between items-baseline" style={{ borderTop: "1px solid #d7d7d7" }}>
-                        <span className="text-[16px] font-semibold text-ink">Toplam</span>
-                        <span className="text-price-lg text-right" style={{ fontSize: 20 }}>{tl(total)}</span>
+                      <div className="pt-3 flex justify-between items-baseline" style={{ borderTop: `1px solid ${HAIR}` }}>
+                        <span className="text-[16px] font-semibold" style={{ color: TEXT }}>Toplam</span>
+                        <span className="text-right" style={{ ...priceLg, fontSize: 20 }}>{tl(total)}</span>
                       </div>
-                      <p className="text-[12px]" style={{ color: "#737780" }}>KDV dahil ({tl(kdv)})</p>
+                      <p style={{ ...microLabel, color: DIM }}>KDV dahil ({tl(kdv)})</p>
                     </div>
 
                     <div className="space-y-4 pt-6">
                       <label className="flex items-start gap-3 cursor-pointer">
                         <input checked={terms} onChange={(e) => setTerms(e.target.checked)} type="checkbox"
-                          className="mt-1 accent-[#000aff] h-4 w-4 cursor-pointer" />
-                        <span className="text-[12px] leading-tight" style={{ color: "#737780" }}>
-                          <Link className="underline hover:text-ink" to="/legal/agb">Kullanım Koşulları</Link>'nı ve{" "}
-                          <Link className="underline hover:text-ink" to="/legal/datenschutz">Gizlilik Politikası</Link>'nı okudum ve kabul ediyorum.
+                          className="mt-1 h-4 w-4 cursor-pointer" style={{ accentColor: "#ffffff" }} />
+                        <span className="text-[12px] leading-tight" style={{ color: MUTED }}>
+                          <Link className="underline" style={{ color: TEXT }} to="/legal/agb">Kullanım Koşulları</Link>'nı ve{" "}
+                          <Link className="underline" style={{ color: TEXT }} to="/legal/datenschutz">Gizlilik Politikası</Link>'nı okudum ve kabul ediyorum.
                         </span>
                       </label>
                       <button onClick={checkout} disabled={!terms || placing}
-                        className="w-full btn-primary text-[15px] py-4 disabled:opacity-40 disabled:cursor-not-allowed">
+                        className="w-full py-4 disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={ctaPrimary}>
                         {placing ? "İşleniyor..." : "Güvenli Ödemeye Geç"}
                       </button>
                       <TrustRow />
@@ -436,14 +507,14 @@ function CartPage() {
 
             {/* Mobil sabit ödeme çubuğu */}
             <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 px-4 py-3 flex items-center justify-between gap-3"
-              style={{ background: "#ffffff", borderTop: "1px solid #d7d7d7", letterSpacing: "-0.04em" }}>
+              style={{ background: "rgba(8,8,8,0.85)", backdropFilter: "blur(12px)", borderTop: `1px solid ${HAIR}` }}>
               <div className="leading-tight">
-                <p className="text-[11px]" style={{ color: "#737780" }}>Toplam</p>
-                <span className="text-price-lg" style={{ fontSize: 16 }}>{tl(total)}</span>
+                <p style={{ ...microLabel, fontSize: "10px" }}>Toplam</p>
+                <span style={priceLg}>{tl(total)}</span>
               </div>
               <button type="button" onClick={tryCheckout} disabled={placing}
-                className="rounded-[30px] px-6 h-[48px] text-[14px] font-medium cursor-pointer disabled:opacity-40"
-                style={{ background: "#000aff", color: "#ffffff", letterSpacing: "-0.04em" }}>
+                className="px-6 h-[48px] disabled:opacity-40"
+                style={ctaPrimary}>
                 {placing ? "İşleniyor..." : "Ödemeye Geç"}
               </button>
             </div>

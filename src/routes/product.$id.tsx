@@ -29,6 +29,74 @@ export const Route = createFileRoute("/product/$id")({
   component: ProductPage,
 });
 
+/* ── Karanlık tema jetonları ────────────────────────────────────────── */
+const BG      = "#080808";
+const CARD    = "#181818";
+const RAISED  = "#1f1f1f";
+const HAIR    = "rgba(255,255,255,0.12)";
+const TEXT    = "#f4f4f4";
+const MUTED   = "rgba(255,255,255,0.55)";
+const DIM     = "rgba(255,255,255,0.38)";
+const BONE    = "#dcdcdc";
+const MONO    = "'JetBrains Mono', ui-monospace, monospace";
+const SANS    = "'Inter Tight', Inter, sans-serif";
+
+const microLabel: React.CSSProperties = {
+  fontFamily: MONO,
+  fontSize: "11px",
+  textTransform: "uppercase",
+  letterSpacing: ".08em",
+  color: MUTED,
+};
+
+const priceStyle: React.CSSProperties = {
+  fontFamily: MONO,
+  fontSize: "13px",
+  color: TEXT,
+  letterSpacing: ".02em",
+};
+
+const priceLg: React.CSSProperties = {
+  fontFamily: MONO,
+  fontSize: "26px",
+  color: TEXT,
+  letterSpacing: ".01em",
+};
+
+const priceStrike: React.CSSProperties = {
+  fontFamily: MONO,
+  fontSize: "14px",
+  color: DIM,
+  textDecoration: "line-through",
+};
+
+const ctaPrimary: React.CSSProperties = {
+  background: "#ffffff",
+  color: BG,
+  border: "none",
+  borderRadius: "10px",
+  fontFamily: MONO,
+  fontSize: "12px",
+  fontWeight: 600,
+  textTransform: "uppercase",
+  letterSpacing: ".08em",
+  cursor: "pointer",
+  transition: "background 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1)",
+};
+
+const ctaSecondary: React.CSSProperties = {
+  background: "transparent",
+  color: TEXT,
+  border: "1px solid rgba(255,255,255,0.25)",
+  borderRadius: "10px",
+  fontFamily: MONO,
+  fontSize: "12px",
+  fontWeight: 600,
+  textTransform: "uppercase",
+  letterSpacing: ".08em",
+  cursor: "pointer",
+};
+
 /* ── İngilizce değerleri Türkçeleştir ───────────────────────────────── */
 const TR: Record<string, string> = {
   "White Choco": "Beyaz Çikolata",
@@ -92,16 +160,18 @@ function optionPill(active: boolean, disabled = false): React.CSSProperties {
     alignItems: "center",
     justifyContent: "center",
     minWidth: "56px",
+    minHeight: "42px",
     padding: "10px 20px",
-    borderRadius: "30px",
-    fontSize: "13px",
+    borderRadius: "999px",
+    fontFamily: MONO,
+    fontSize: "12px",
     fontWeight: 500,
-    letterSpacing: "-0.04em",
+    letterSpacing: ".06em",
     lineHeight: 1.2,
-    border: "none",
+    border: active && !disabled ? "1px solid #ffffff" : `1px solid ${HAIR}`,
     cursor: disabled ? "not-allowed" : "pointer",
-    background: disabled ? "#ffffff" : active ? "#000aff" : "#ecedee",
-    color: disabled ? "#a1a4aa" : active ? "#ffffff" : "#111111",
+    background: disabled ? "transparent" : active ? "#ffffff" : RAISED,
+    color: disabled ? "rgba(255,255,255,0.25)" : active ? BG : TEXT,
     textDecoration: disabled ? "line-through" : "none",
     transition: "background 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1)",
   };
@@ -200,7 +270,7 @@ function ProductPage() {
   const label = badgeLabel(product.badge);
 
   return (
-    <div style={{ background: "#ffffff", color: "#111111", minHeight: "100vh", overflowX: "hidden" }}>
+    <div style={{ background: BG, color: TEXT, minHeight: "100vh", overflowX: "hidden", fontFamily: SANS }}>
 
       <Nav />
 
@@ -216,21 +286,23 @@ function ProductPage() {
                 alignItems: "center",
                 gap: "8px",
                 padding: "28px 0",
-                fontSize: "13px",
-                letterSpacing: "-0.04em",
-                color: "#737780",
+                fontFamily: MONO,
+                fontSize: "11px",
+                textTransform: "uppercase",
+                letterSpacing: ".08em",
+                color: MUTED,
                 flexWrap: "wrap",
               }}
             >
-              <Link to="/" className="link-underline" style={{ color: "#737780", textDecoration: "none" }}>
+              <Link to="/" style={{ color: MUTED, textDecoration: "none" }}>
                 Ana Sayfa
               </Link>
-              <span style={{ color: "#d7d7d7" }}>/</span>
-              <Link to="/shop" className="link-underline" style={{ color: "#737780", textDecoration: "none" }}>
+              <span style={{ color: DIM }}>/</span>
+              <Link to="/shop" style={{ color: MUTED, textDecoration: "none" }}>
                 Mağaza
               </Link>
-              <span style={{ color: "#d7d7d7" }}>/</span>
-              <span style={{ color: "#111111" }}>{product.name}</span>
+              <span style={{ color: DIM }}>/</span>
+              <span style={{ color: TEXT }}>{product.name}</span>
             </div>
 
             {/* ══════════════════════════════════════════════════════
@@ -243,7 +315,8 @@ function ProductPage() {
                 <div
                   className="reveal-scale"
                   style={{
-                    background: "#ecedee",
+                    background: CARD,
+                    border: `1px solid ${HAIR}`,
                     borderRadius: "10px",
                     padding: product.gallery ? "0" : "24px",
                     position: "relative",
@@ -252,8 +325,23 @@ function ProductPage() {
                 >
                   {label && (
                     <span
-                      className={`badge ${label === "YENİ" ? "badge-new" : "badge-new-color"}`}
-                      style={{ position: "absolute", top: "20px", left: "20px", zIndex: 3 }}
+                      style={{
+                        position: "absolute",
+                        top: "20px",
+                        left: "20px",
+                        zIndex: 3,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        background: "#ffffff",
+                        color: BG,
+                        borderRadius: "999px",
+                        padding: "6px 12px",
+                        fontFamily: MONO,
+                        fontSize: "10px",
+                        fontWeight: 600,
+                        textTransform: "uppercase",
+                        letterSpacing: ".08em",
+                      }}
                     >
                       {label}
                     </span>
@@ -297,8 +385,8 @@ function ProductPage() {
                         onClick={() => setGalleryIdx(i)}
                         aria-label={`Açı ${i + 1}`}
                         style={{
-                          background: "#ecedee",
-                          border: galleryIdx === i ? "2px solid #000aff" : "2px solid transparent",
+                          background: CARD,
+                          border: galleryIdx === i ? "2px solid #ffffff" : `2px solid ${HAIR}`,
                           borderRadius: "10px",
                           padding: 0,
                           cursor: "pointer",
@@ -319,8 +407,8 @@ function ProductPage() {
                         onClick={() => setGalleryIdx(-1)}
                         aria-label="Video"
                         style={{
-                          background: "#111111",
-                          border: galleryIdx === -1 ? "2px solid #000aff" : "2px solid transparent",
+                          background: CARD,
+                          border: galleryIdx === -1 ? "2px solid #ffffff" : `2px solid ${HAIR}`,
                           borderRadius: "10px",
                           padding: 0,
                           cursor: "pointer",
@@ -331,7 +419,7 @@ function ProductPage() {
                         <img
                           src={product.videoPoster ?? product.gallery[0]}
                           alt="Video önizleme"
-                          style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block", opacity: 0.6 }}
+                          style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block", opacity: 0.55 }}
                         />
                         <span
                           style={{
@@ -359,7 +447,8 @@ function ProductPage() {
                         key={i}
                         className="reveal-blur"
                         style={{
-                          background: "#ecedee",
+                          background: CARD,
+                          border: `1px solid ${HAIR}`,
                           borderRadius: "10px",
                           padding: "10px",
                           transitionDelay: `${i * 80}ms`,
@@ -376,7 +465,7 @@ function ProductPage() {
               <div className="reveal-right" style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
 
                 <div>
-                  <p className="text-eyebrow" style={{ marginBottom: "10px" }}>
+                  <p style={{ ...microLabel, marginBottom: "10px" }}>
                     {isSupp ? "Supplement Koleksiyonu" : "Giyim Koleksiyonu"}
                   </p>
 
@@ -385,13 +474,15 @@ function ProductPage() {
                       style={{
                         display: "inline-flex",
                         alignItems: "center",
-                        background: "#e5e7ff",
-                        color: "#000aff",
-                        borderRadius: "30px",
+                        background: "rgba(255,255,255,0.10)",
+                        color: TEXT,
+                        border: `1px solid ${HAIR}`,
+                        borderRadius: "999px",
                         padding: "6px 14px",
-                        fontSize: "11px",
+                        fontFamily: MONO,
+                        fontSize: "10px",
                         fontWeight: 600,
-                        letterSpacing: "-0.04em",
+                        letterSpacing: ".08em",
                         textTransform: "uppercase",
                         marginBottom: "12px",
                       }}
@@ -406,17 +497,17 @@ function ProductPage() {
                     style={{
                       fontSize: "clamp(32px,4vw,40px)",
                       fontWeight: 600,
-                      letterSpacing: "-0.04em",
+                      letterSpacing: "-0.03em",
                       lineHeight: 1.05,
-                      color: "#111111",
+                      color: TEXT,
                     }}
                   />
-                  <p className="text-brand-credit" style={{ marginTop: "8px" }}>By OLD IRON</p>
+                  <p style={{ ...microLabel, marginTop: "8px", color: DIM }}>By OLD IRON</p>
                   <p
                     style={{
                       fontSize: "16px",
-                      color: "#737780",
-                      letterSpacing: "-0.04em",
+                      color: MUTED,
+                      letterSpacing: "-0.01em",
                       lineHeight: 1.5,
                       marginTop: "12px",
                     }}
@@ -425,27 +516,33 @@ function ProductPage() {
                   </p>
 
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "18px", flexWrap: "wrap" }}>
-                    <span className="text-price-lg">{fmt(product.price)}</span>
+                    <span style={priceLg}>{fmt(product.price)}</span>
                     {product.originalPrice && (
                       <>
-                        <span className="text-price-strike">{fmt(product.originalPrice)}</span>
-                        <span className="badge badge-new-color">-%{discountPct}</span>
+                        <span style={priceStrike}>{fmt(product.originalPrice)}</span>
+                        <span
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            background: "#ffffff",
+                            color: BG,
+                            borderRadius: "999px",
+                            padding: "4px 10px",
+                            fontFamily: MONO,
+                            fontSize: "10px",
+                            fontWeight: 600,
+                            letterSpacing: ".08em",
+                          }}
+                        >
+                          -%{discountPct}
+                        </span>
                       </>
                     )}
                   </div>
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      color: "#a1a4aa",
-                      letterSpacing: "-0.04em",
-                      marginTop: "6px",
-                    }}
-                  >
-                    KDV dahil
-                  </p>
+                  <p style={{ ...microLabel, marginTop: "6px", color: DIM }}>KDV dahil</p>
                 </div>
 
-                <div style={{ height: "1px", background: "#d7d7d7" }} />
+                <div style={{ height: "1px", background: HAIR }} />
 
                 {/* Beden — giyim */}
                 {!isSupp && (
@@ -459,12 +556,12 @@ function ProductPage() {
                         marginBottom: "12px",
                       }}
                     >
-                      <span className="text-eyebrow">Beden Seç</span>
+                      <span style={microLabel}>Beden Seç</span>
                       <button
                         onClick={() => setGuideOpen((o) => !o)}
                         aria-expanded={guideOpen}
-                        className="text-brand-credit"
                         style={{
+                          ...microLabel,
                           background: "none",
                           border: "none",
                           padding: 0,
@@ -505,7 +602,8 @@ function ProductPage() {
                         <div
                           style={{
                             marginTop: guideOpen ? "14px" : 0,
-                            background: "#ecedee",
+                            background: CARD,
+                            border: `1px solid ${HAIR}`,
                             borderRadius: "10px",
                             padding: "14px 16px",
                             overflowX: "auto",
@@ -518,12 +616,9 @@ function ProductPage() {
                                   <th
                                     key={h}
                                     style={{
+                                      ...microLabel,
                                       textAlign: "left",
-                                      fontSize: "11px",
                                       fontWeight: 600,
-                                      textTransform: "uppercase",
-                                      letterSpacing: "-0.04em",
-                                      color: "#737780",
                                       padding: "0 0 8px",
                                     }}
                                   >
@@ -534,21 +629,19 @@ function ProductPage() {
                             </thead>
                             <tbody>
                               {SIZE_TABLE.map(([b, g, boy]) => (
-                                <tr key={b} style={{ borderTop: "1px solid #d7d7d7" }}>
-                                  <td style={{ padding: "8px 0", fontSize: "13px", letterSpacing: "-0.04em", color: "#111111" }}>
-                                    {b}
+                                <tr key={b} style={{ borderTop: `1px solid ${HAIR}` }}>
+                                  <td style={{ padding: "8px 0", ...priceStyle }}>{b}</td>
+                                  <td style={{ padding: "8px 0" }}>
+                                    <span style={priceStyle}>{g}</span>
                                   </td>
                                   <td style={{ padding: "8px 0" }}>
-                                    <span className="text-price">{g}</span>
-                                  </td>
-                                  <td style={{ padding: "8px 0" }}>
-                                    <span className="text-price">{boy}</span>
+                                    <span style={priceStyle}>{boy}</span>
                                   </td>
                                 </tr>
                               ))}
                             </tbody>
                           </table>
-                          <p style={{ marginTop: "10px", fontSize: "13px", color: "#737780", letterSpacing: "-0.04em" }}>
+                          <p style={{ marginTop: "10px", fontSize: "13px", color: MUTED, lineHeight: 1.5 }}>
                             Oversize kesim. Normal fit tercih edenler bir beden küçük alabilir.
                           </p>
                         </div>
@@ -562,7 +655,7 @@ function ProductPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                     {WEIGHTS && (
                       <div>
-                        <p className="text-eyebrow" style={{ marginBottom: "12px" }}>Gramaj</p>
+                        <p style={{ ...microLabel, marginBottom: "12px" }}>Gramaj</p>
                         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                           {WEIGHTS.map((w: string) => (
                             <button key={w} onClick={() => setWeight(w)} style={optionPill(weight === w)}>
@@ -574,7 +667,7 @@ function ProductPage() {
                     )}
                     {FLAVORS && (
                       <div>
-                        <p className="text-eyebrow" style={{ marginBottom: "12px" }}>Aroma</p>
+                        <p style={{ ...microLabel, marginBottom: "12px" }}>Aroma</p>
                         <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                           {FLAVORS.map((f: string) => (
                             <button key={f} onClick={() => setFlavor(f)} style={optionPill(flavor === f)}>
@@ -587,17 +680,15 @@ function ProductPage() {
                     {product.servings && (
                       <div
                         style={{
-                          background: "#ecedee",
+                          background: CARD,
+                          border: `1px solid ${HAIR}`,
                           borderRadius: "10px",
                           padding: "14px 18px",
                           fontSize: "13px",
-                          color: "#737780",
-                          letterSpacing: "-0.04em",
+                          color: MUTED,
                         }}
                       >
-                        <span style={{ color: "#111111", fontWeight: 500 }}>
-                          {product.servings} porsiyon
-                        </span>{" "}
+                        <span style={{ ...priceStyle }}>{product.servings} porsiyon</span>{" "}
                         · {product.subtitle}
                       </div>
                     )}
@@ -609,23 +700,23 @@ function ProductPage() {
                   {/* Ücretsiz kargo ilerlemesi */}
                   <div
                     style={{
-                      background: "#ecedee",
+                      background: CARD,
+                      border: `1px solid ${HAIR}`,
                       borderRadius: "10px",
                       padding: "14px 18px",
-                      letterSpacing: "-0.04em",
                     }}
                   >
                     {remaining > 0 ? (
                       <>
-                        <p style={{ fontSize: "13px", color: "#111111", marginBottom: "10px" }}>
+                        <p style={{ fontSize: "13px", color: TEXT, marginBottom: "10px" }}>
                           Ücretsiz kargoya{" "}
-                          <span className="text-price">{fmt(remaining)}</span> kaldı
+                          <span style={priceStyle}>{fmt(remaining)}</span> kaldı
                         </p>
                         <div
                           style={{
                             height: "3px",
-                            background: "#d7d7d7",
-                            borderRadius: "30px",
+                            background: HAIR,
+                            borderRadius: "999px",
                             overflow: "hidden",
                           }}
                         >
@@ -633,35 +724,26 @@ function ProductPage() {
                             style={{
                               width: `${progressPct}%`,
                               height: "100%",
-                              background: "#000aff",
+                              background: BONE,
                               transition: "width 0.4s cubic-bezier(0.22,1,0.36,1)",
                             }}
                           />
                         </div>
                       </>
                     ) : (
-                      <p style={{ fontSize: "13px", color: "#000aff", fontWeight: 500 }}>
-                        Kargo bedava ✓
-                      </p>
+                      <p style={{ ...microLabel, color: TEXT }}>Kargo bedava ✓</p>
                     )}
                   </div>
 
                   <button
                     ref={ctaRef}
                     onClick={handleAdd}
-                    className="btn-sweep"
+                    className="oi-cta"
                     style={{
+                      ...ctaPrimary,
                       width: "100%",
-                      background: "#111111",
-                      color: "#ffffff",
-                      fontSize: "14px",
-                      fontWeight: 600,
-                      letterSpacing: "-0.04em",
                       padding: "16px 24px",
                       minHeight: "48px",
-                      borderRadius: "10px",
-                      border: "none",
-                      cursor: "pointer",
                     }}
                   >
                     {added ? "Sepete eklendi ✓" : "Sepete Ekle"}
@@ -688,15 +770,10 @@ function ProductPage() {
                           alignItems: "center",
                           gap: "6px",
                           fontSize: "13px",
-                          color: "#737780",
-                          letterSpacing: "-0.04em",
+                          color: MUTED,
                         }}
                       >
-                        <Icon
-                          name={icon}
-                          size={18}
-                          style={{ color: "#111111" }}
-                        />
+                        <Icon name={icon} size={18} style={{ color: BONE }} />
                         {text}
                       </span>
                     ))}
@@ -706,15 +783,13 @@ function ProductPage() {
                   {bundlePartner && (
                     <div
                       style={{
-                        background: "#ecedee",
+                        background: CARD,
+                        border: `1px solid ${HAIR}`,
                         borderRadius: "10px",
                         padding: "16px 18px",
-                        letterSpacing: "-0.04em",
                       }}
                     >
-                      <p className="text-eyebrow" style={{ marginBottom: "14px" }}>
-                        Sık birlikte alınanlar
-                      </p>
+                      <p style={{ ...microLabel, marginBottom: "14px" }}>Sık birlikte alınanlar</p>
                       <div
                         style={{
                           display: "flex",
@@ -725,38 +800,24 @@ function ProductPage() {
                         }}
                       >
                         <BundleThumb product={product} />
-                        <span style={{ fontSize: "18px", color: "#737780", lineHeight: 1 }}>+</span>
+                        <span style={{ fontSize: "18px", color: MUTED, lineHeight: 1 }}>+</span>
                         <BundleThumb product={bundlePartner} />
                         <div style={{ minWidth: 0, flex: "1 1 120px" }}>
-                          <p
-                            style={{
-                              fontSize: "13px",
-                              color: "#111111",
-                              lineHeight: 1.35,
-                              letterSpacing: "-0.04em",
-                            }}
-                          >
+                          <p style={{ fontSize: "13px", color: TEXT, lineHeight: 1.35 }}>
                             {product.name} + {bundlePartner.name}
                           </p>
-                          <p style={{ marginTop: "4px", fontSize: "13px", color: "#737780" }}>
-                            Toplam <span className="text-price">{fmt(bundleTotal)}</span>
+                          <p style={{ marginTop: "4px", fontSize: "13px", color: MUTED }}>
+                            Toplam <span style={priceStyle}>{fmt(bundleTotal)}</span>
                           </p>
                         </div>
                       </div>
                       <button
                         onClick={handleBundleAdd}
                         style={{
+                          ...ctaSecondary,
                           width: "100%",
-                          background: "transparent",
-                          color: "#000aff",
-                          border: "1px solid #000aff",
-                          borderRadius: "10px",
                           padding: "14px 18px",
                           minHeight: "48px",
-                          fontSize: "13px",
-                          fontWeight: 600,
-                          letterSpacing: "-0.04em",
-                          cursor: "pointer",
                         }}
                       >
                         İkisini de sepete ekle ({fmt(bundleTotal)})
@@ -766,26 +827,27 @@ function ProductPage() {
 
                   <div
                     style={{
-                      background: "#e5e7ff",
+                      background: "rgba(255,255,255,0.05)",
+                      backdropFilter: "blur(12px)",
+                      border: "1px solid rgba(255,255,255,0.10)",
                       borderRadius: "10px",
                       padding: "14px 18px",
                       fontSize: "13px",
-                      color: "#111111",
-                      letterSpacing: "-0.04em",
+                      color: TEXT,
                       lineHeight: 1.4,
                     }}
                   >
                     <span style={{ fontWeight: 500 }}>1500₺ üzeri kargo ücretsiz.</span>{" "}
-                    <span style={{ color: "#737780" }}>Altındaki siparişlerde kargo ücreti 140₺.</span>
+                    <span style={{ color: MUTED }}>Altındaki siparişlerde kargo ücreti 140₺.</span>
                   </div>
                 </div>
 
-                <div style={{ height: "1px", background: "#d7d7d7" }} />
+                <div style={{ height: "1px", background: HAIR }} />
 
                 {/* Akordiyonlar */}
                 <div>
                   <Accordion title="Ürün Açıklaması" defaultOpen>
-                    <p style={{ fontSize: "16px", color: "#737780", letterSpacing: "-0.04em", lineHeight: 1.6 }}>
+                    <p style={{ fontSize: "16px", color: MUTED, lineHeight: 1.6 }}>
                       {product.description}
                     </p>
                   </Accordion>
@@ -810,14 +872,7 @@ function ProductPage() {
                         </div>
                       </Accordion>
                       <Accordion title="Yıkama Talimatı">
-                        <div
-                          style={{
-                            fontSize: "16px",
-                            color: "#737780",
-                            letterSpacing: "-0.04em",
-                            lineHeight: 1.8,
-                          }}
-                        >
+                        <div style={{ fontSize: "16px", color: MUTED, lineHeight: 1.8 }}>
                           <p>Maks. 30°C'de yıka</p>
                           <p>Yıkamadan önce ters çevir</p>
                           <p>Kurutma makinesinde kurutma</p>
@@ -835,7 +890,7 @@ function ProductPage() {
         {/* ══════════════════════════════════════════════════════════
             İLGİLİ ÜRÜNLER
         ══════════════════════════════════════════════════════════ */}
-        <section style={{ background: "#ecedee", padding: "80px 0" }}>
+        <section style={{ background: "#0d0d0d", borderTop: `1px solid ${HAIR}`, padding: "80px 0" }}>
           <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 20px" }}>
             <div className="pdp-inner">
               <div
@@ -850,14 +905,14 @@ function ProductPage() {
                 }}
               >
                 <div>
-                  <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Öneriler</p>
+                  <p style={{ ...microLabel, marginBottom: "8px" }}>Öneriler</p>
                   <h2
                     style={{
                       fontSize: "clamp(32px,4vw,40px)",
                       fontWeight: 700,
-                      letterSpacing: "-0.04em",
+                      letterSpacing: "-0.03em",
                       lineHeight: 1.0,
-                      color: "#111111",
+                      color: TEXT,
                     }}
                   >
                     Bunları da İnceleyebilirsin
@@ -865,8 +920,7 @@ function ProductPage() {
                 </div>
                 <Link
                   to="/shop"
-                  className="link-underline"
-                  style={{ fontSize: "13px", fontWeight: 500, color: "#737780", letterSpacing: "-0.04em", textDecoration: "none" }}
+                  style={{ ...microLabel, textDecoration: "none" }}
                 >
                   Tümünü Gör
                 </Link>
@@ -885,7 +939,18 @@ function ProductPage() {
               </div>
 
               <div style={{ marginTop: "24px" }}>
-                <Link to="/shop" className="btn-see-all" style={{ background: "#ecedee", borderColor: "#d7d7d7" }}>
+                <Link
+                  to="/shop"
+                  style={{
+                    ...ctaSecondary,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "14px 28px",
+                    minHeight: "48px",
+                    textDecoration: "none",
+                  }}
+                >
                   Tüm Ürünleri Gör
                 </Link>
               </div>
@@ -903,9 +968,9 @@ function ProductPage() {
           right: 0,
           bottom: 0,
           zIndex: 60,
-          background: "#ffffff",
-          borderTop: "1px solid #ecedee",
-          boxShadow: "0 -4px 24px rgba(17,17,17,0.06)",
+          background: "rgba(8,8,8,0.85)",
+          backdropFilter: "blur(12px)",
+          borderTop: `1px solid ${HAIR}`,
           padding: "10px 16px calc(10px + env(safe-area-inset-bottom))",
           transform: showSticky ? "translateY(0)" : "translateY(110%)",
           opacity: showSticky ? 1 : 0,
@@ -931,7 +996,7 @@ function ProductPage() {
                 flexShrink: 0,
                 borderRadius: "10px",
                 overflow: "hidden",
-                background: "#ecedee",
+                background: CARD,
               }}
             >
               <ProductPlate product={product} ratio="1 / 1" />
@@ -941,8 +1006,7 @@ function ProductPage() {
                 style={{
                   fontSize: "13px",
                   fontWeight: 500,
-                  color: "#111111",
-                  letterSpacing: "-0.04em",
+                  color: TEXT,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   textOverflow: "ellipsis",
@@ -951,24 +1015,18 @@ function ProductPage() {
               >
                 {product.name}
               </p>
-              <span className="text-price">{fmt(product.price)}</span>
+              <span style={priceStyle}>{fmt(product.price)}</span>
             </div>
           </div>
 
           <button
             onClick={handleAdd}
+            className="oi-cta"
             style={{
+              ...ctaPrimary,
               flexShrink: 0,
-              background: "#000aff",
-              color: "#ffffff",
-              border: "none",
-              borderRadius: "10px",
               padding: "14px 22px",
               minHeight: "48px",
-              fontSize: "14px",
-              fontWeight: 600,
-              letterSpacing: "-0.04em",
-              cursor: "pointer",
             }}
           >
             {added ? "Eklendi ✓" : "Sepete Ekle"}
@@ -983,6 +1041,8 @@ function ProductPage() {
           gap: 32px;
           align-items: start;
         }
+        .oi-cta:hover { background: #ffffff; transform: translateY(-1px); filter: brightness(1.05); }
+        .oi-cta:active { transform: translateY(0) scale(0.98); }
         @media (min-width: 768px) {
           .pdp-inner { padding-left: 52px; padding-right: 52px; }
         }
@@ -1006,7 +1066,7 @@ function BundleThumb({ product: p }: { product: typeof products[number] }) {
         flexShrink: 0,
         borderRadius: "10px",
         overflow: "hidden",
-        background: "#ffffff",
+        background: RAISED,
       }}
     >
       <ProductPlate product={p} ratio="1 / 1" />
@@ -1021,23 +1081,26 @@ function RelatedCard({ product: p, index }: { product: typeof products[number]; 
     <Link
       to="/product/$id"
       params={{ id: p.id }}
-      className="product-card reveal-blur"
+      className="reveal-blur oi-rel-card"
       style={{
         textDecoration: "none",
         transitionDelay: `${index * 60}ms`,
         display: "block",
-        background: "#ffffff",
+        background: CARD,
+        border: `1px solid ${HAIR}`,
+        borderRadius: "10px",
+        padding: "12px",
       }}
     >
       <ProductPlate product={p} ratio="4 / 5" />
       <div style={{ marginTop: "16px" }}>
-        <p style={{ fontSize: "16px", fontWeight: 600, color: "#111111", letterSpacing: "-0.04em", lineHeight: 1.2 }}>
+        <p style={{ fontSize: "16px", fontWeight: 600, color: TEXT, letterSpacing: "-0.02em", lineHeight: 1.2 }}>
           {p.name}
         </p>
-        <p className="text-brand-credit" style={{ marginTop: "4px" }}>By OLD IRON</p>
+        <p style={{ ...microLabel, marginTop: "4px", color: DIM }}>By OLD IRON</p>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px" }}>
-          <span className="text-price">{fmt(p.price)}</span>
-          {p.originalPrice && <span className="text-price-strike">{fmt(p.originalPrice)}</span>}
+          <span style={priceStyle}>{fmt(p.price)}</span>
+          {p.originalPrice && <span style={priceStrike}>{fmt(p.originalPrice)}</span>}
         </div>
       </div>
       <button
@@ -1047,7 +1110,13 @@ function RelatedCard({ product: p, index }: { product: typeof products[number]; 
           add(p, p.type === "apparel" ? "M" : "Standart");
           toast.success(`${p.name} sepete eklendi`);
         }}
-        className="card-add-btn"
+        style={{
+          ...ctaSecondary,
+          width: "100%",
+          marginTop: "14px",
+          padding: "12px 16px",
+          minHeight: "44px",
+        }}
       >
         Sepete Ekle
       </button>
@@ -1059,7 +1128,7 @@ function RelatedCard({ product: p, index }: { product: typeof products[number]; 
 function Accordion({ title, children, defaultOpen = false }: { title: string; children: React.ReactNode; defaultOpen?: boolean }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div style={{ borderTop: "1px solid #d7d7d7", padding: "18px 0" }}>
+    <div style={{ borderTop: `1px solid ${HAIR}`, padding: "18px 0" }}>
       <button
         onClick={() => setOpen(!open)}
         style={{
@@ -1072,10 +1141,11 @@ function Accordion({ title, children, defaultOpen = false }: { title: string; ch
           border: "none",
           padding: 0,
           cursor: "pointer",
+          fontFamily: SANS,
           fontSize: "16px",
           fontWeight: 500,
-          letterSpacing: "-0.04em",
-          color: "#111111",
+          letterSpacing: "-0.02em",
+          color: TEXT,
           textAlign: "left",
         }}
         aria-expanded={open}
@@ -1085,7 +1155,7 @@ function Accordion({ title, children, defaultOpen = false }: { title: string; ch
           style={{
             fontSize: "18px",
             lineHeight: 1,
-            color: "#737780",
+            color: MUTED,
             transition: "transform 0.3s cubic-bezier(0.22,1,0.36,1)",
             transform: open ? "rotate(45deg)" : "rotate(0deg)",
           }}
@@ -1116,11 +1186,11 @@ function Row({ k, v }: { k: string; v: string }) {
         justifyContent: "space-between",
         gap: "16px",
         padding: "10px 0",
-        borderBottom: "1px solid #ecedee",
+        borderBottom: `1px solid ${HAIR}`,
       }}
     >
-      <span style={{ fontSize: "13px", color: "#737780", letterSpacing: "-0.04em" }}>{k}</span>
-      <span className="text-price">{v}</span>
+      <span style={{ fontSize: "13px", color: MUTED }}>{k}</span>
+      <span style={priceStyle}>{v}</span>
     </div>
   );
 }
