@@ -162,7 +162,8 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          sleep 12
+          set +e
+          sleep 40
           for H in oldironofficial.com www.oldironofficial.com; do
             CODE=$(curl -sS -o /tmp/o.html -w "%{http_code}" --max-time 20 "https://$H")
             TITLE=$(grep -o "<title>[^<]*</title>" /tmp/o.html | head -1)
