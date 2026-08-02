@@ -10,8 +10,8 @@ function LegalLayout() {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
-      <main className="pt-[120px] max-w-[820px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-lg">
-        <article className="prose-old-iron space-y-stack-md text-on-surface-variant leading-relaxed">
+      <main className="pt-[120px] pb-[80px] max-w-[820px] mx-auto px-[20px] md:px-[40px]">
+        <article className="space-y-6 text-on-surface-variant leading-relaxed text-[15px] tracking-[-0.02em]">
           <Outlet />
         </article>
       </main>

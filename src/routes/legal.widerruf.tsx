@@ -3,9 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/legal/widerruf")({
   head: () => ({
     meta: [
-      { title: "Widerrufsbelehrung — OLD IRON" },
-      { name: "description", content: "14-tägiges Widerrufsrecht für Verbraucher." },
-      { property: "og:title", content: "Widerrufsbelehrung — OLD IRON" },
+      { title: "İade & Cayma — OLD IRON" },
+      { name: "description", content: "Tüketiciler için 14 günlük cayma hakkı bilgilendirmesi." },
+      { property: "og:title", content: "İade & Cayma — OLD IRON" },
       { property: "og:url", content: "https://oldironofficial.com/legal/widerruf" },
     ],
     links: [{ rel: "canonical", href: "https://oldironofficial.com/legal/widerruf" }],
@@ -13,52 +13,54 @@ export const Route = createFileRoute("/legal/widerruf")({
   component: Widerruf,
 });
 
+function H2({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-[20px] font-bold tracking-[-0.03em] text-foreground mt-8 mb-2">{children}</h2>;
+}
+
 function Widerruf() {
   return (
     <>
-      <h1 className="font-display text-[48px] uppercase tracking-tight text-primary leading-none">Widerrufsbelehrung</h1>
+      <h1 className="text-[40px] md:text-[48px] font-bold tracking-[-0.04em] text-foreground leading-none">İade &amp; Cayma</h1>
+      <p className="text-[14px] text-secondary">Cayma hakkı bilgilendirmesi</p>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">Widerrufsrecht</h2>
+        <H2>Cayma Hakkı</H2>
         <p>
-          Sie haben das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen.
-          Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag, an dem Sie oder ein von Ihnen benannter Dritter,
-          der nicht der Beförderer ist, die Waren in Besitz genommen haben bzw. hat.
+          Herhangi bir gerekçe göstermeksizin on dört gün içinde bu sözleşmeden cayma hakkına sahipsiniz.
+          Cayma süresi, sizin veya belirlediğiniz üçüncü bir kişinin (taşıyıcı hariç) ürünleri teslim aldığı
+          günden itibaren on dört gündür.
         </p>
         <p>
-          Um Ihr Widerrufsrecht auszuüben, müssen Sie uns mittels einer eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder E-Mail)
-          über Ihren Entschluss informieren:
+          Cayma hakkınızı kullanmak için kararınızı açık bir beyanla (ör. posta veya e-posta ile) bize bildirmeniz yeterlidir:
         </p>
-        <p className="border-l-2 border-primary pl-4">
-          [TODO: Firmenname]<br />
-          [TODO: Anschrift]<br />
-          E-Mail: <a href="mailto:widerruf@oldironofficial.com" className="text-primary hover:underline">widerruf@oldironofficial.com</a>
+        <p className="border-l-2 border-cobalt pl-4">
+          OLD IRON<br />
+          E-posta:{" "}
+          <a href="mailto:widerruf@oldironofficial.com" className="text-cobalt hover:underline">
+            widerruf@oldironofficial.com
+          </a>
         </p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">Folgen des Widerrufs</h2>
+        <H2>Caymanın Sonuçları</H2>
         <p>
-          Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen, die wir von Ihnen erhalten haben, einschließlich der Lieferkosten
-          (mit Ausnahme der zusätzlichen Kosten, die sich daraus ergeben, dass Sie eine andere Art der Lieferung als die von uns angebotene,
-          günstigste Standardlieferung gewählt haben), unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen,
-          an dem die Mitteilung über Ihren Widerruf dieses Vertrags bei uns eingegangen ist.
+          Bu sözleşmeden caymanız halinde, sizden aldığımız tüm ödemeleri — teslimat masrafları dahil
+          (tarafımızca sunulan en uygun standart teslimat dışında bir teslimat türü seçmenizden doğan ek
+          masraflar hariç) — cayma bildiriminizin bize ulaştığı günden itibaren en geç on dört gün içinde iade ederiz.
         </p>
         <p>
-          Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das Sie bei der ursprünglichen Transaktion eingesetzt haben, es sei denn,
-          mit Ihnen wurde ausdrücklich etwas anderes vereinbart. Wir können die Rückzahlung verweigern, bis wir die Waren wieder zurückerhalten haben
-          oder bis Sie den Nachweis erbracht haben, dass Sie die Waren zurückgesandt haben.
+          İade, aksi açıkça kararlaştırılmadıkça, ilk işlemde kullandığınız ödeme yöntemiyle yapılır.
+          Ürünler bize ulaşana veya ürünleri geri gönderdiğinizi belgeleyene kadar iadeyi bekletebiliriz.
         </p>
-        <p>
-          Sie tragen die unmittelbaren Kosten der Rücksendung der Waren.
-        </p>
+        <p>Ürünlerin geri gönderim masrafları alıcıya aittir.</p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">Ausschluss des Widerrufsrechts</h2>
+        <H2>Cayma Hakkının İstisnaları</H2>
         <p>
-          Das Widerrufsrecht besteht nicht bei Verträgen zur Lieferung versiegelter Waren, die aus Gründen des Gesundheitsschutzes oder der Hygiene
-          nicht zur Rückgabe geeignet sind, wenn ihre Versiegelung nach der Lieferung entfernt wurde.
+          Sağlık ve hijyen açısından iadeye uygun olmayan, teslimattan sonra ambalajı açılmış mühürlü
+          ürünlerde (ör. açılmış supplement ambalajları) cayma hakkı bulunmamaktadır.
         </p>
       </section>
     </>

@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/legal/versand")({
   head: () => ({
     meta: [
-      { title: "Versand & Zahlung — OLD IRON" },
-      { name: "description", content: "Informationen zu Versandkosten, Lieferzeiten und Zahlungsmethoden." },
-      { property: "og:title", content: "Versand & Zahlung — OLD IRON" },
+      { title: "Kargo & Ödeme — OLD IRON" },
+      { name: "description", content: "Kargo ücretleri, teslimat süreleri ve ödeme yöntemleri hakkında bilgiler." },
+      { property: "og:title", content: "Kargo & Ödeme — OLD IRON" },
       { property: "og:url", content: "https://oldironofficial.com/legal/versand" },
     ],
     links: [{ rel: "canonical", href: "https://oldironofficial.com/legal/versand" }],
@@ -13,63 +13,66 @@ export const Route = createFileRoute("/legal/versand")({
   component: Versand,
 });
 
+function H2({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-[20px] font-bold tracking-[-0.03em] text-foreground mt-8 mb-2">{children}</h2>;
+}
+
 function Versand() {
   return (
     <>
-      <h1 className="font-display text-[48px] uppercase tracking-tight text-primary leading-none">Versand & Zahlung</h1>
+      <h1 className="text-[40px] md:text-[48px] font-bold tracking-[-0.04em] text-foreground leading-none">Kargo &amp; Ödeme</h1>
+      <p className="text-[14px] text-secondary">Teslimat süreleri, kargo ücretleri ve ödeme yöntemleri</p>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">Versandkosten & Lieferzeiten</h2>
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b border-outline-variant/30">
-              <th className="text-left py-3 text-[14px] uppercase tracking-widest text-secondary">Region</th>
-              <th className="text-left py-3 text-[14px] uppercase tracking-widest text-secondary">Kosten</th>
-              <th className="text-left py-3 text-[14px] uppercase tracking-widest text-secondary">Dauer</th>
-            </tr>
-          </thead>
-          <tbody className="text-[16px]">
-            <tr className="border-b border-outline-variant/20">
-              <td className="py-3">Deutschland</td>
-              <td>[TODO: z. B. 4,90 €]</td>
-              <td>2–4 Werktage</td>
-            </tr>
-            <tr className="border-b border-outline-variant/20">
-              <td className="py-3">EU</td>
-              <td>[TODO: z. B. 9,90 €]</td>
-              <td>4–7 Werktage</td>
-            </tr>
-            <tr>
-              <td className="py-3">Schweiz / UK</td>
-              <td>[TODO]</td>
-              <td>5–10 Werktage</td>
-            </tr>
-          </tbody>
-        </table>
-        <p className="text-[14px] text-outline mt-2">Ab einem Bestellwert von [TODO: z. B. 99 €] versenden wir innerhalb Deutschlands versandkostenfrei.</p>
+        <H2>Kargo Ücretleri &amp; Teslimat Süreleri</H2>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b border-outline-variant">
+                <th className="text-left py-3 text-[12px] uppercase tracking-[0.12em] text-secondary">Bölge</th>
+                <th className="text-left py-3 text-[12px] uppercase tracking-[0.12em] text-secondary">Ücret</th>
+                <th className="text-left py-3 text-[12px] uppercase tracking-[0.12em] text-secondary">Süre</th>
+              </tr>
+            </thead>
+            <tbody className="text-[15px]">
+              <tr className="border-b border-outline-variant/60">
+                <td className="py-3">Türkiye</td>
+                <td className="font-mono">₺140,00</td>
+                <td>3–7 iş günü</td>
+              </tr>
+              <tr>
+                <td className="py-3">1500₺ ve üzeri siparişler</td>
+                <td className="font-mono">Ücretsiz</td>
+                <td>3–7 iş günü</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[13px] text-secondary mt-2">1500₺ ve üzeri sipariş tutarında kargo ücretsizdir.</p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">Versandpartner</h2>
-        <p>Der Versand erfolgt über [TODO: z. B. DHL]. Nach Versand erhalten Sie eine Sendungsnummer per E-Mail.</p>
+        <H2>Kargo Takibi</H2>
+        <p>Siparişiniz kargoya verildiğinde takip numaranız e-posta ile iletilir.</p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">Zahlungsmethoden</h2>
+        <H2>Ödeme Yöntemleri</H2>
         <ul className="list-disc pl-6 space-y-1">
-          <li>Kreditkarte (Visa, Mastercard, American Express)</li>
+          <li>Kredi kartı (Visa, Mastercard, American Express)</li>
           <li>Apple Pay / Google Pay</li>
-          <li>SEPA-Lastschrift</li>
-          <li>Klarna (Sofortüberweisung, Rechnung — sofern angeboten)</li>
+          <li>Sipariş sırasında gösterilen diğer yöntemler</li>
         </ul>
-        <p className="text-[14px] text-outline mt-2">Alle Zahlungen werden sicher über Stripe abgewickelt. Wir speichern keine Kartendaten auf unseren Servern.</p>
+        <p className="text-[13px] text-secondary mt-2">
+          Tüm ödemeler Stripe üzerinden güvenle işlenir. Kart bilgileriniz sunucularımızda saklanmaz.
+        </p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">Rückgabe</h2>
+        <H2>İade</H2>
         <p>
-          Sie haben ein 14-tägiges Widerrufsrecht. Details finden Sie in der{" "}
-          <a href="/legal/widerruf" className="text-primary hover:underline">Widerrufsbelehrung</a>.
+          14 günlük cayma hakkınız bulunmaktadır. Ayrıntılar için{" "}
+          <Link to="/legal/widerruf" className="text-cobalt hover:underline">İade &amp; Cayma</Link> sayfasına bakınız.
         </p>
       </section>
     </>

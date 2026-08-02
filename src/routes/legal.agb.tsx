@@ -1,11 +1,11 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/legal/agb")({
   head: () => ({
     meta: [
-      { title: "AGB — OLD IRON" },
-      { name: "description", content: "Allgemeine Geschäftsbedingungen von OLD IRON." },
-      { property: "og:title", content: "AGB — OLD IRON" },
+      { title: "Kullanım Koşulları — OLD IRON" },
+      { name: "description", content: "OLD IRON online mağazası satış ve kullanım koşulları." },
+      { property: "og:title", content: "Kullanım Koşulları — OLD IRON" },
       { property: "og:url", content: "https://oldironofficial.com/legal/agb" },
     ],
     links: [{ rel: "canonical", href: "https://oldironofficial.com/legal/agb" }],
@@ -13,76 +13,74 @@ export const Route = createFileRoute("/legal/agb")({
   component: AGB,
 });
 
+function H2({ children }: { children: React.ReactNode }) {
+  return <h2 className="text-[20px] font-bold tracking-[-0.03em] text-foreground mt-8 mb-2">{children}</h2>;
+}
+
 function AGB() {
   return (
     <>
-      <h1 className="font-display text-[48px] uppercase tracking-tight text-primary leading-none">AGB</h1>
-      <p className="text-[14px] text-outline">Allgemeine Geschäftsbedingungen</p>
+      <h1 className="text-[40px] md:text-[48px] font-bold tracking-[-0.04em] text-foreground leading-none">Kullanım Koşulları</h1>
+      <p className="text-[14px] text-secondary">Genel satış ve kullanım koşulları</p>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 1 Geltungsbereich</h2>
+        <H2>1. Kapsam</H2>
+        <p>Bu koşullar, OLD IRON (bundan böyle "Satıcı") online mağazası üzerinden verilen tüm siparişler için geçerlidir.</p>
+      </section>
+
+      <section>
+        <H2>2. Sözleşmenin Kurulması</H2>
         <p>
-          Diese Allgemeinen Geschäftsbedingungen (AGB) gelten für alle Bestellungen, die Verbraucher und Unternehmer über den Online-Shop von OLD IRON
-          (im Folgenden „Verkäufer") aufgeben.
+          Ürünlerin online mağazada sergilenmesi hukuken bağlayıcı bir teklif değil, sipariş vermeye davettir.
+          "Güvenli Ödemeye Geç" butonuna tıklayarak sepetinizdeki ürünler için bağlayıcı bir sipariş verirsiniz.
+          Siparişin alındığına dair onay, siparişin kabulüyle birlikte e-posta yoluyla iletilir.
         </p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 2 Vertragsschluss</h2>
+        <H2>3. Fiyatlar ve Kargo Ücretleri</H2>
         <p>
-          Die Darstellung der Produkte im Online-Shop stellt kein rechtlich bindendes Angebot, sondern eine Aufforderung zur Bestellung dar.
-          Mit dem Klick auf den Button „Jetzt kaufen" geben Sie eine verbindliche Bestellung der im Warenkorb enthaltenen Waren ab.
-          Die Bestätigung des Eingangs der Bestellung erfolgt zusammen mit der Annahme der Bestellung unmittelbar nach dem Absenden per E-Mail.
+          Tüm fiyatlar yasal KDV dahil nihai fiyatlardır. Belirtilen fiyatlara ek olarak, sipariş sürecinde ayrıca
+          gösterilen kargo ücretleri uygulanabilir. 1500₺ ve üzeri siparişlerde kargo ücretsizdir.
         </p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 3 Preise und Versandkosten</h2>
+        <H2>4. Teslimat</H2>
+        <p>Teslimat, ödemenin alınmasından itibaren 3–7 iş günü içinde Türkiye geneline yapılır.</p>
+      </section>
+
+      <section>
+        <H2>5. Ödeme</H2>
         <p>
-          Alle Preise sind Endpreise inklusive der gesetzlichen Mehrwertsteuer. Zusätzlich zu den angegebenen Preisen können Versandkosten anfallen,
-          die im Bestellprozess gesondert ausgewiesen werden.
+          Ödeme; kredi kartı, Apple Pay, Google Pay veya sipariş sırasında gösterilen diğer ödeme yöntemleriyle yapılabilir.
+          Ödemeler, ödeme hizmet sağlayıcımız Stripe üzerinden güvenle işlenir.
         </p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 4 Lieferung</h2>
+        <H2>6. Mülkiyetin Saklı Tutulması</H2>
+        <p>Ürünler, bedeli tamamen ödenene kadar Satıcı'nın mülkiyetinde kalır.</p>
+      </section>
+
+      <section>
+        <H2>7. Cayma Hakkı</H2>
         <p>
-          Die Lieferung erfolgt innerhalb Deutschlands sowie in die [TODO: Lieferländer auflisten] innerhalb von 3–7 Werktagen nach Zahlungseingang.
+          Tüketiciler 14 günlük cayma hakkına sahiptir. Ayrıntılar{" "}
+          <Link to="/legal/widerruf" className="text-cobalt hover:underline">İade &amp; Cayma</Link> sayfasında yer alır.
         </p>
       </section>
 
       <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 5 Zahlung</h2>
+        <H2>8. Ayıplı Mal Sorumluluğu</H2>
+        <p>Yasal ayıplı mal sorumluluğu hükümleri geçerlidir.</p>
+      </section>
+
+      <section>
+        <H2>9. Uygulanacak Hukuk</H2>
         <p>
-          Die Bezahlung erfolgt wahlweise über Kreditkarte, Apple Pay, Google Pay oder weitere bei der Bestellung angezeigte Zahlungsarten.
-          Die Abwicklung der Zahlung erfolgt über unseren Zahlungsdienstleister Stripe.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 6 Eigentumsvorbehalt</h2>
-        <p>Die Ware bleibt bis zur vollständigen Bezahlung Eigentum des Verkäufers.</p>
-      </section>
-
-      <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 7 Widerrufsrecht</h2>
-        <p>
-          Verbrauchern steht ein 14-tägiges Widerrufsrecht zu. Einzelheiten ergeben sich aus der{" "}
-          <a href="/legal/widerruf" className="text-primary hover:underline">Widerrufsbelehrung</a>.
-        </p>
-      </section>
-
-      <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 8 Gewährleistung</h2>
-        <p>Es gelten die gesetzlichen Mängelhaftungsrechte.</p>
-      </section>
-
-      <section>
-        <h2 className="font-headline text-[20px] text-primary uppercase mt-stack-md mb-2">§ 9 Anwendbares Recht</h2>
-        <p>
-          Es gilt das Recht der Bundesrepublik Deutschland unter Ausschluss des UN-Kaufrechts.
-          Bei Verbrauchern gilt diese Rechtswahl nur insoweit, als nicht der gewährte Schutz durch zwingende Bestimmungen des Rechts des Staates,
-          in dem der Verbraucher seinen gewöhnlichen Aufenthalt hat, entzogen wird.
+          Tüketicinin mutad meskeninin bulunduğu ülkenin emredici hükümleri saklı kalmak kaydıyla,
+          bu koşullara Satıcı'nın yerleşik olduğu ülke hukuku uygulanır.
         </p>
       </section>
     </>
