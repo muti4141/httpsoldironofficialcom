@@ -151,6 +151,34 @@ function Home() {
   const [size, setSize] = useState("L");
   const [added, setAdded] = useState(false);
 
+  /* Hero açılışı: logo → yazı devri, scroll'a bağlı */
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [hp, setHp] = useState(0);
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setHp(1); return; }
+    let raf = 0;
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      const total = el.offsetHeight - window.innerHeight;
+      setHp(total > 0 ? Math.min(1, Math.max(0, -rect.top / total)) : 0);
+      raf = 0;
+    };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(update); };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (raf) cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const logoOut = Math.min(1, Math.max(0, hp / 0.42));           // logo çıkışı
+  const textIn  = Math.min(1, Math.max(0, (hp - 0.30) / 0.30));  // yazı girişi
+
   const rankedRef = useRef<HTMLDivElement>(null);
   const scrollRanked = (dir: 1 | -1) => {
     const el = rankedRef.current;
@@ -179,12 +207,15 @@ function Home() {
       {/* ════════════════════════════════════════════════
           1 — HERO: ne satıyoruz + net CTA
       ════════════════════════════════════════════════ */}
-      <section style={{ position: "relative", minHeight: "100vh", overflow: "hidden", background: "#111111" }}>
+      <div ref={heroRef} style={{ position: "relative", height: "200vh" }}>
+      <section style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden", background: "#111111" }}>
         <video
           src="/videos/hero.mp4"
           autoPlay muted loop playsInline
-          data-parallax="0.12"
-          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          style={{
+            position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover",
+            transform: `scale(${1 + hp * 0.08})`,
+          }}
         />
         <div
           aria-hidden
@@ -194,8 +225,35 @@ function Home() {
           }}
         />
 
-        <div style={{ position: "absolute", left: "clamp(20px, 4vw, 52px)", bottom: "clamp(36px, 7vh, 72px)", zIndex: 5, maxWidth: "780px" }}>
-          <span className="badge badge-new anim-1" style={{ display: "inline-flex", marginBottom: "20px" }}>
+        {/* ── Açılış: LOGO ── */}
+        <div
+          aria-hidden={logoOut > 0.9}
+          style={{
+            position: "absolute", inset: 0, zIndex: 6,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            pointerEvents: "none",
+            opacity: 1 - logoOut,
+            transform: `scale(${1 - logoOut * 0.12}) translateY(${-logoOut * 40}px)`,
+          }}
+        >
+          <img
+            src="/images/logo.png"
+            alt="OLD IRON"
+            style={{
+              width: "min(62vw, 620px)", maxHeight: "58vh", objectFit: "contain",
+              filter: "drop-shadow(0 8px 40px rgba(0,0,0,.55))",
+            }}
+          />
+        </div>
+
+        {/* ── Devir: YAZI ── */}
+        <div style={{
+          position: "absolute", left: "clamp(20px, 4vw, 52px)", bottom: "clamp(36px, 7vh, 72px)",
+          zIndex: 5, maxWidth: "780px",
+          opacity: textIn,
+          transform: `translateY(${(1 - textIn) * 40}px)`,
+        }}>
+          <span className="badge badge-new" style={{ display: "inline-flex", marginBottom: "20px" }}>
             LANSMAN
           </span>
 
@@ -203,11 +261,11 @@ function Home() {
             fontSize: "clamp(56px, 8.5vw, 116px)", fontWeight: 700, letterSpacing: "-0.04em",
             lineHeight: 1.0, color: "#ffffff", textTransform: "lowercase",
           }}>
-            <span className="line-rise" style={{ display: "block", animationDelay: "0.12s" }}>disiplinden</span>
-            <span className="line-rise" style={{ display: "block", animationDelay: "0.28s" }}>dövülmüş.</span>
+            <span style={{ display: "block" }}>disiplinden</span>
+            <span style={{ display: "block" }}>dövülmüş.</span>
           </h1>
 
-          <p className="anim-4" style={{
+          <p style={{
             fontSize: "17px", color: "rgba(255,255,255,0.85)", letterSpacing: "-0.04em",
             marginTop: "18px", lineHeight: 1.4, maxWidth: "440px",
           }}>
@@ -216,7 +274,7 @@ function Home() {
           </p>
 
           {/* CTA — hunideki ilk kapı */}
-          <div className="anim-5" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px", marginTop: "28px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: "12px", marginTop: "28px" }}>
             <Link
               to="/shop"
               style={{
@@ -234,13 +292,34 @@ function Home() {
           </div>
         </div>
 
+        {/* Kaydırma ipucu — logo aşamasında */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute", left: "50%", bottom: "32px", transform: "translateX(-50%)",
+            zIndex: 6, opacity: (1 - logoOut) * 0.8,
+            display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
+            pointerEvents: "none",
+          }}
+        >
+          <span style={{
+            fontFamily: "var(--font-mono)", fontSize: "10px", letterSpacing: ".2em",
+            textTransform: "uppercase", color: "rgba(255,255,255,.7)",
+          }}>
+            Kaydır
+          </span>
+          <span className="material-symbols-outlined animate-bounce-slow"
+            style={{ fontSize: 20, color: "rgba(255,255,255,.7)" }}>expand_more</span>
+        </div>
+
         {/* Yüzen ürün kartı — gerçek ürün, gerçek fiyat */}
         <div
-          className="anim-5"
           style={{
             position: "absolute", right: "clamp(20px, 4vw, 52px)", bottom: "clamp(36px, 7vh, 72px)",
             zIndex: 5, width: "280px", background: "#ffffff", borderRadius: "14.4px", padding: "20px",
             boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+            opacity: textIn,
+            transform: `translateY(${(1 - textIn) * 40}px)`,
           }}
         >
           <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "16px" }}>
@@ -276,6 +355,7 @@ function Home() {
           </Link>
         </div>
       </section>
+      </div>
 
       {/* ════════════════════════════════════════════════
           2 — GÜVEN ŞERİDİ: itirazları hemen kapat
