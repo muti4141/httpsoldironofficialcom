@@ -3,9 +3,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { useCart } from "@/stores/cart";
+import { useCart, type CartItem } from "@/stores/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { StripeCartCheckout } from "@/components/StripeCartCheckout";
+import { products, type Product } from "@/data/products";
+
+const FREE_SHIPPING_THRESHOLD = 1500;
+const SHIPPING_FEE = 140;
 
 export const Route = createFileRoute("/cart")({
   head: () => ({
@@ -17,11 +21,73 @@ export const Route = createFileRoute("/cart")({
   component: CartPage,
 });
 
+/* ── Yardımcılar ─────────────────────────────────────────────────────────── */
+
+function tl(n: number) {
+  const safe = Number.isFinite(n) ? n : 0;
+  return `₺${safe.toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+/** localStorage'dan gelen eksik alanlı kayıtlara karşı koruma. */
+function safeItem(raw: CartItem): CartItem {
+  return {
+    id: raw?.id ?? `${raw?.productId ?? "urun"}-${raw?.size ?? "std"}`,
+    productId: raw?.productId ?? "",
+    name: raw?.name ?? "Ürün",
+    size: raw?.size ?? "Standart",
+    price: Number.isFinite(raw?.price) ? raw.price : 0,
+    image: raw?.image ?? "/images/logo.png",
+    categoryLabel: raw?.categoryLabel ?? "",
+    qty: Number.isFinite(raw?.qty) && raw.qty > 0 ? Math.floor(raw.qty) : 1,
+  };
+}
+
+function isSupplementItem(size: string) {
+  return !["S", "M", "L", "XL", "XXL"].includes(size);
+}
+
+function defaultVariant(p: Product) {
+  if (p.type === "supplement") return p.flavors?.[0] ?? p.weights?.[0] ?? "Standart";
+  return "M";
+}
+
+function fallbackImg(e: React.SyntheticEvent<HTMLImageElement>) {
+  const img = e.currentTarget;
+  img.onerror = null;
+  img.src = "/images/logo.png";
+  img.style.objectFit = "contain";
+  img.style.padding = "10px";
+  img.style.filter = "invert(1) brightness(0.25)";
+}
+
+/* ── İkonlar (ince çizgi, tek renk) ──────────────────────────────────────── */
+
+const iconProps = {
+  width: 16, height: 16, viewBox: "0 0 24 24", fill: "none",
+  stroke: "currentColor", strokeWidth: 1.5, strokeLinecap: "round" as const, strokeLinejoin: "round" as const,
+};
+
+const LockIcon = () => (
+  <svg {...iconProps} aria-hidden><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 1 1 8 0v3" /></svg>
+);
+const ReturnIcon = () => (
+  <svg {...iconProps} aria-hidden><path d="M3 10h11a5 5 0 0 1 0 10h-4" /><path d="M7 6 3 10l4 4" /></svg>
+);
+const TruckIcon = () => (
+  <svg {...iconProps} aria-hidden><path d="M2 7h11v10H2z" /><path d="M13 10h4l4 4v3h-8z" /><circle cx="7" cy="18" r="1.6" /><circle cx="17" cy="18" r="1.6" /></svg>
+);
+const CheckIcon = () => (
+  <svg {...iconProps} width={14} height={14} aria-hidden><path d="m4 12 5 5L20 6" /></svg>
+);
+
+/* ── Sayfa ───────────────────────────────────────────────────────────────── */
+
 function CartPage() {
-  const items      = useCart((s) => s.items);
+  const rawItems   = useCart((s) => s.items);
   const updateQty  = useCart((s) => s.updateQty);
   const remove     = useCart((s) => s.remove);
   const clear      = useCart((s) => s.clear);
+  const add        = useCart((s) => s.add);
   const navigate   = useNavigate();
   const [terms, setTerms]     = useState(false);
   const [placing, setPlacing] = useState(false);
@@ -32,10 +98,41 @@ function CartPage() {
     returnUrl: string;
   }>(null);
 
+  const items = (Array.isArray(rawItems) ? rawItems : []).map(safeItem);
+
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const kdv      = subtotal * 0.20;
-  const shipping = subtotal >= 1500 ? 0 : 140;
+  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
   const total    = subtotal + shipping;
+  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
+  const progress  = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
+
+  const inCart = new Set(items.map((i) => i.productId));
+  const crossSell = products.filter((p) => !inCart.has(p.id)).slice(0, 3);
+
+  const handleAdd = (p: Product) => {
+    add(p, defaultVariant(p));
+    toast.success(`${p.name} sepete eklendi`);
+  };
+
+  const handleRemove = (item: CartItem) => {
+    remove(item.id);
+    toast("Ürün kaldırıldı", {
+      action: {
+        label: "Geri al",
+        onClick: () => {
+          useCart.setState((s) =>
+            s.items.some((i) => i.id === item.id) ? s : { items: [...s.items, item] }
+          );
+        },
+      },
+    });
+  };
+
+  const handleDec = (item: CartItem) => {
+    if (item.qty <= 1) handleRemove(item);
+    else updateQty(item.id, -1);
+  };
 
   const checkout = async () => {
     setPlacing(true);
@@ -111,13 +208,109 @@ function CartPage() {
     }
   };
 
+  const tryCheckout = () => {
+    if (!terms) {
+      toast.error("Devam etmek için koşulları onayla.");
+      document.getElementById("siparis-ozeti")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      return;
+    }
+    void checkout();
+  };
+
+  /* ── Alt bileşenler ──────────────────────────────────────────────────── */
+
+  const CrossSell = ({ list, title }: { list: Product[]; title: string }) => {
+    if (!list.length) return null;
+    return (
+      <section className="mt-8">
+        <h2 className="text-eyebrow mb-3" style={{ color: "#111111" }}>{title}</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {list.map((p) => (
+            <div key={p.id}
+              className="flex items-center gap-3 bg-plaster rounded-[10px] p-3"
+              style={{ letterSpacing: "-0.04em" }}>
+              <Link to="/product/$id" params={{ id: p.id }}
+                className="shrink-0 w-[56px] h-[56px] rounded-[10px] overflow-hidden bg-white block">
+                <img src={p.gallery?.[0] ?? p.image} alt={p.name} loading="lazy"
+                  className="w-full h-full object-cover" onError={fallbackImg} />
+              </Link>
+              <div className="min-w-0 flex-1">
+                <Link to="/product/$id" params={{ id: p.id }}
+                  className="block truncate text-[14px] font-semibold text-ink hover:text-cobalt transition-colors">
+                  {p.name}
+                </Link>
+                <span className="text-price">{tl(p.price)}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleAdd(p)}
+                className="shrink-0 rounded-[30px] px-3 h-[32px] text-[12px] font-medium cursor-pointer transition-colors"
+                style={{ border: "1px solid #000aff", color: "#000aff", letterSpacing: "-0.04em" }}
+              >
+                Ekle
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  };
+
+  const TrustRow = () => (
+    <div className="pt-4 space-y-3">
+      <div className="flex flex-wrap gap-x-4 gap-y-2">
+        {[
+          { icon: <LockIcon />, label: "Güvenli ödeme" },
+          { icon: <ReturnIcon />, label: "14 gün iade" },
+          { icon: <TruckIcon />, label: "1–3 iş günü kargo" },
+        ].map(({ icon, label }) => (
+          <span key={label} className="flex items-center gap-1.5 text-[12px]"
+            style={{ color: "#737780", letterSpacing: "-0.04em" }}>
+            {icon}{label}
+          </span>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {["Visa", "Mastercard", "Troy"].map((m) => (
+          <span key={m} className="rounded-[30px] px-2.5 py-1 text-[11px]"
+            style={{ border: "1px solid #d7d7d7", color: "#737780", letterSpacing: "-0.04em" }}>
+            {m}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+
+  const ShippingProgress = () => (
+    <div className="bg-plaster rounded-[10px] p-4 md:p-5 mb-6" style={{ letterSpacing: "-0.04em" }}>
+      {remaining > 0 ? (
+        <>
+          <p className="text-[13px] text-ink mb-2">
+            Ücretsiz kargoya <span className="text-price" style={{ fontSize: 13 }}>{tl(remaining)}</span> kaldı
+          </p>
+          <div className="h-[3px] w-full rounded-full" style={{ background: "#d7d7d7" }}>
+            <div className="h-[3px] rounded-full transition-all duration-500"
+              style={{ width: `${progress}%`, background: "#000aff" }} />
+          </div>
+        </>
+      ) : (
+        <p className="flex items-center gap-2 text-[13px] font-medium" style={{ color: "#000aff" }}>
+          <CheckIcon /> Kargo bedava
+        </p>
+      )}
+    </div>
+  );
+
+  /* ── Render ──────────────────────────────────────────────────────────── */
+
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
-      <main className="pt-[120px] pb-[80px] px-[20px] md:px-[72px] max-w-[1440px] mx-auto">
+      <main className="pt-[120px] pb-[80px] px-[20px] md:px-[72px] max-w-[1440px] mx-auto"
+        style={{ paddingBottom: items.length && !checkoutData ? "120px" : undefined }}>
         <header className="mb-stack-md pt-8">
           <h1 className="text-[40px] md:text-[48px] font-bold tracking-[-0.04em] text-foreground leading-none">Sepetim</h1>
-          <p className="text-[13px] text-secondary mt-2 tracking-[-0.02em]">Her dikişte hassasiyet.</p>
+          <p className="text-[13px] mt-2" style={{ color: "#737780", letterSpacing: "-0.04em" }}>Her dikişte hassasiyet.</p>
         </header>
 
         {checkoutData ? (
@@ -125,100 +318,139 @@ function CartPage() {
             <StripeCartCheckout {...checkoutData} />
           </div>
         ) : items.length === 0 ? (
-          <div className="bg-plaster rounded-[10px] p-12 text-center">
-            <span className="material-symbols-outlined text-[48px] text-outline/40 mb-4 block">shopping_cart</span>
-            <p className="text-[18px] text-secondary mb-6">Sepetiniz boş.</p>
-            <Link to="/shop" className="inline-flex btn-primary text-[14px] px-8 py-3 cursor-pointer">
-              Alışverişe Devam Et
-            </Link>
+          <div>
+            <div className="bg-plaster rounded-[10px] p-10 md:p-12" style={{ letterSpacing: "-0.04em" }}>
+              <h2 className="text-[32px] md:text-[40px] font-bold lowercase leading-none text-ink">sepetin boş</h2>
+              <p className="text-[14px] mt-3 max-w-[420px]" style={{ color: "#737780" }}>
+                Henüz bir şey eklemedin. Koleksiyonda seni bekleyen parçalar var.
+              </p>
+              <Link to="/shop"
+                className="inline-flex items-center justify-center mt-6 rounded-[30px] px-8 h-[48px] text-[14px] font-medium cursor-pointer"
+                style={{ background: "#000aff", color: "#ffffff", letterSpacing: "-0.04em" }}>
+                Koleksiyonu Keşfet
+              </Link>
+            </div>
+            <CrossSell list={products.slice(0, 3)} title="Öne çıkanlar" />
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-md">
-            <div className="lg:col-span-8 space-y-gutter">
-              {items.map((item) => (
-                <div key={item.id} className="bg-plaster rounded-[10px] p-6 flex flex-col sm:flex-row gap-6 items-center">
-                  <Link to="/product/$id" params={{ id: item.productId }} className="w-32 h-40 bg-white rounded-[10px] overflow-hidden shrink-0">
-                    <img src={item.image} alt={item.name} className="w-full h-full object-cover transition-all"
-                      onError={(e) => { const img = e.currentTarget; img.onerror = null; img.src = "/images/logo.png"; img.style.objectFit = "contain"; img.style.padding = "16px"; img.style.filter = "invert(1) brightness(0.25)"; }} />
-                  </Link>
-                  <div className="flex-grow flex flex-col justify-between h-full py-2 w-full">
-                    <div>
-                      <div className="flex justify-between items-start gap-4">
-                        <Link to="/product/$id" params={{ id: item.productId }} className="text-[18px] font-bold tracking-[-0.02em] text-foreground hover:text-cobalt transition-colors">{item.name}</Link>
-                        <span className="font-mono text-[16px] font-bold text-foreground whitespace-nowrap">₺{(item.price * item.qty).toFixed(2)}</span>
-                      </div>
-                      <p className="text-secondary text-[12px] mt-1 tracking-[-0.02em]">{item.categoryLabel}</p>
-                      <div className="flex gap-4 mt-4 items-center flex-wrap">
-                        <div className="bg-white rounded-[30px] px-3 py-1 text-[12px]">{isSupplementItem(item.size) ? item.size : `Beden: ${item.size}`}</div>
-                        <div className="flex items-center gap-3 bg-white rounded-[30px] px-3 py-1">
-                          <button onClick={() => updateQty(item.id, -1)} className="text-outline hover:text-primary cursor-pointer" aria-label="Azalt">−</button>
-                          <span className="text-[14px] font-semibold w-4 text-center">{item.qty}</span>
-                          <button onClick={() => updateQty(item.id, 1)} className="text-outline hover:text-primary cursor-pointer" aria-label="Artır">+</button>
+          <>
+            <ShippingProgress />
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-stack-md">
+              {/* Ürünler */}
+              <div className="lg:col-span-8">
+                <div className="space-y-gutter">
+                  {items.map((item) => (
+                    <div key={item.id}
+                      className="bg-plaster rounded-[10px] p-4 md:p-5 flex gap-4"
+                      style={{ letterSpacing: "-0.04em" }}>
+                      <Link to="/product/$id" params={{ id: item.productId }}
+                        className="w-[88px] h-[110px] md:w-[104px] md:h-[130px] bg-white rounded-[10px] overflow-hidden shrink-0">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" onError={fallbackImg} />
+                      </Link>
+
+                      <div className="flex-1 min-w-0 flex flex-col">
+                        <div className="flex justify-between items-start gap-3">
+                          <div className="min-w-0">
+                            <Link to="/product/$id" params={{ id: item.productId }}
+                              className="block text-[16px] font-semibold text-ink hover:text-cobalt transition-colors">
+                              {item.name}
+                            </Link>
+                            <p className="text-[13px] mt-1" style={{ color: "#737780" }}>
+                              {isSupplementItem(item.size) ? item.size : `Beden: ${item.size}`}
+                            </p>
+                            <p className="text-price mt-1" style={{ color: "#737780" }}>
+                              {tl(item.price)} / adet
+                            </p>
+                          </div>
+                          <span className="text-price-lg whitespace-nowrap">{tl(item.price * item.qty)}</span>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-3 mt-auto pt-4">
+                          <div className="flex items-center gap-2">
+                            <button type="button" onClick={() => handleDec(item)} aria-label="Azalt"
+                              className="w-[36px] h-[36px] rounded-[10px] bg-white flex items-center justify-center text-[16px] cursor-pointer"
+                              style={{ border: "1px solid #d7d7d7", color: "#111111" }}>−</button>
+                            <span className="text-price-lg w-[28px] text-center">{item.qty}</span>
+                            <button type="button" onClick={() => updateQty(item.id, 1)} aria-label="Artır"
+                              className="w-[36px] h-[36px] rounded-[10px] bg-white flex items-center justify-center text-[16px] cursor-pointer"
+                              style={{ border: "1px solid #d7d7d7", color: "#111111" }}>+</button>
+                          </div>
+                          <button type="button" onClick={() => handleRemove(item)}
+                            className="text-[13px] cursor-pointer transition-colors hover:text-ink"
+                            style={{ color: "#737780" }}>
+                            Kaldır
+                          </button>
                         </div>
                       </div>
                     </div>
-                    <button onClick={() => remove(item.id)} className="mt-4 self-start flex items-center gap-2 text-secondary hover:text-error transition-colors text-[12px] cursor-pointer">
-                      <span className="material-symbols-outlined text-[18px]">delete</span>
-                      Kaldır
-                    </button>
-                  </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <div className="lg:col-span-4 space-y-gutter">
-              <div className="bg-plaster rounded-[10px] p-6 space-y-6">
-                <h2 className="text-[18px] font-bold tracking-[-0.02em] text-foreground">Sipariş Özeti</h2>
-                <div className="space-y-3 text-[15px] text-secondary border-b border-outline-variant/30 pb-6">
-                  <div className="flex justify-between"><span>Ara Toplam</span><span>₺{subtotal.toFixed(2)}</span></div>
-                  <div className="flex justify-between"><span>Kargo</span><span>{shipping === 0 ? "Ücretsiz" : `₺${shipping.toFixed(2)}`}</span></div>
-                  {subtotal < 1500 && (
-                    <p className="text-[12px] text-cobalt">₺{(1500 - subtotal).toFixed(2)} daha ekle, ücretsiz kargo kazan!</p>
-                  )}
-                  <div className="flex justify-between pt-4 text-foreground font-bold">
-                    <span className="tracking-[-0.02em]">Toplam</span>
-                    <span className="text-xl font-mono">₺{total.toFixed(2)}</span>
-                  </div>
-                  <p className="text-[11px] text-secondary">KDV dahil (₺{kdv.toFixed(2)})</p>
-                </div>
-                <div className="space-y-4 pt-2">
-                  <label className="flex items-start gap-3 cursor-pointer">
-                    <input checked={terms} onChange={(e) => setTerms(e.target.checked)} type="checkbox"
-                      className="mt-1 accent-[#000aff] h-4 w-4 cursor-pointer" />
-                    <span className="text-[12px] text-secondary leading-tight">
-                      <Link className="underline hover:text-foreground" to="/legal/agb">Kullanım Koşulları</Link>'nı ve{" "}
-                      <Link className="underline hover:text-foreground" to="/legal/datenschutz">Gizlilik Politikası</Link>'nı okudum ve kabul ediyorum.
-                    </span>
-                  </label>
-                  <button onClick={checkout} disabled={!terms || placing}
-                    className="w-full btn-primary text-[15px] py-4 disabled:opacity-40 disabled:cursor-not-allowed">
-                    {placing ? "İşleniyor..." : "Güvenli Ödemeye Geç"}
-                  </button>
-                </div>
+                <CrossSell list={crossSell} title="Bunları da ekleyebilirsin" />
               </div>
 
-              <div className="bg-plaster rounded-[10px] p-6 grid grid-cols-2 gap-4">
-                {[
-                  ["verified_user",    "Güvenli Ödeme"],
-                  ["local_shipping",   "Hızlı Kargo"],
-                  ["workspace_premium","Almanya'da Üretildi"],
-                  ["keyboard_return",  "14 Gün İade"],
-                ].map(([icon, label]) => (
-                  <div key={label} className="flex flex-col items-center text-center gap-2">
-                    <span className="material-symbols-outlined text-cobalt text-3xl">{icon}</span>
-                    <p className="text-[10px] uppercase text-secondary tracking-[0.12em]">{label}</p>
+              {/* Özet */}
+              <div className="lg:col-span-4">
+                <div className="lg:sticky lg:top-[120px] space-y-gutter">
+                  <div id="siparis-ozeti" className="bg-plaster rounded-[10px] p-6" style={{ letterSpacing: "-0.04em" }}>
+                    <h2 className="text-[18px] font-semibold text-ink mb-5">Sipariş Özeti</h2>
+
+                    <div className="space-y-3">
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-[14px]" style={{ color: "#737780" }}>Ara Toplam</span>
+                        <span className="text-price-lg text-right">{tl(subtotal)}</span>
+                      </div>
+                      <div className="flex justify-between items-baseline">
+                        <span className="text-[14px]" style={{ color: "#737780" }}>Kargo</span>
+                        <span className="text-price-lg text-right" style={shipping === 0 ? { color: "#000aff" } : undefined}>
+                          {shipping === 0 ? "Ücretsiz" : tl(shipping)}
+                        </span>
+                      </div>
+                      <div className="pt-3 flex justify-between items-baseline" style={{ borderTop: "1px solid #d7d7d7" }}>
+                        <span className="text-[16px] font-semibold text-ink">Toplam</span>
+                        <span className="text-price-lg text-right" style={{ fontSize: 20 }}>{tl(total)}</span>
+                      </div>
+                      <p className="text-[12px]" style={{ color: "#737780" }}>KDV dahil ({tl(kdv)})</p>
+                    </div>
+
+                    <div className="space-y-4 pt-6">
+                      <label className="flex items-start gap-3 cursor-pointer">
+                        <input checked={terms} onChange={(e) => setTerms(e.target.checked)} type="checkbox"
+                          className="mt-1 accent-[#000aff] h-4 w-4 cursor-pointer" />
+                        <span className="text-[12px] leading-tight" style={{ color: "#737780" }}>
+                          <Link className="underline hover:text-ink" to="/legal/agb">Kullanım Koşulları</Link>'nı ve{" "}
+                          <Link className="underline hover:text-ink" to="/legal/datenschutz">Gizlilik Politikası</Link>'nı okudum ve kabul ediyorum.
+                        </span>
+                      </label>
+                      <button onClick={checkout} disabled={!terms || placing}
+                        className="w-full btn-primary text-[15px] py-4 disabled:opacity-40 disabled:cursor-not-allowed">
+                        {placing ? "İşleniyor..." : "Güvenli Ödemeye Geç"}
+                      </button>
+                      <TrustRow />
+                    </div>
                   </div>
-                ))}
+                </div>
               </div>
             </div>
-          </div>
+
+            {/* Mobil sabit ödeme çubuğu */}
+            <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 px-4 py-3 flex items-center justify-between gap-3"
+              style={{ background: "#ffffff", borderTop: "1px solid #d7d7d7", letterSpacing: "-0.04em" }}>
+              <div className="leading-tight">
+                <p className="text-[11px]" style={{ color: "#737780" }}>Toplam</p>
+                <span className="text-price-lg" style={{ fontSize: 16 }}>{tl(total)}</span>
+              </div>
+              <button type="button" onClick={tryCheckout} disabled={placing}
+                className="rounded-[30px] px-6 h-[48px] text-[14px] font-medium cursor-pointer disabled:opacity-40"
+                style={{ background: "#000aff", color: "#ffffff", letterSpacing: "-0.04em" }}>
+                {placing ? "İşleniyor..." : "Ödemeye Geç"}
+              </button>
+            </div>
+          </>
         )}
       </main>
       <Footer />
     </div>
   );
-}
-
-function isSupplementItem(size: string) {
-  return !["S", "M", "L", "XL", "XXL"].includes(size);
 }

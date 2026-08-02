@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
@@ -40,6 +40,21 @@ const TR: Record<string, string> = {
   "New": "YENİ",
 };
 const tr = (v: string) => TR[v] ?? v;
+
+/* ── Fiyat formatı: ₺500,00 ─────────────────────────────────────────── */
+const fmt = (n: number) => `₺${n.toFixed(2).replace(".", ",")}`;
+
+/* ── Ücretsiz kargo eşiği ───────────────────────────────────────────── */
+const FREE_SHIPPING = 1500;
+
+/* ── Beden tablosu (oversize kesim) ─────────────────────────────────── */
+const SIZE_TABLE: Array<[string, string, string]> = [
+  ["S", "104", "68"],
+  ["M", "110", "70"],
+  ["L", "116", "72"],
+  ["XL", "122", "74"],
+  ["XXL", "128", "76"],
+];
 
 function badgeLabel(badge?: string) {
   if (!badge) return null;
@@ -105,18 +120,77 @@ function ProductPage() {
   const [weight, setWeight] = useState(WEIGHTS?.[0] ?? "");
 
   const addToCart = useCart((s) => s.add);
+  const cartTotal = useCart((s) =>
+    s.items.reduce((sum, i) => sum + i.price * i.qty, 0)
+  );
   const related   = products.filter((p) => p.id !== product.id).slice(0, 4);
+
+  /* Post-add geri bildirimi */
+  const [added, setAdded] = useState(false);
+  /* Beden tablosu paneli */
+  const [guideOpen, setGuideOpen] = useState(false);
+  /* Sticky satın alma barı */
+  const ctaRef = useRef<HTMLButtonElement | null>(null);
+  const [showSticky, setShowSticky] = useState(false);
 
   useReveal([product.id]);
   useParallax();
 
+  useEffect(() => {
+    const el = ctaRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setShowSticky(!entry.isIntersecting && entry.boundingClientRect.top < 0),
+      { threshold: 0 }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [product.id]);
+
+  useEffect(() => {
+    if (!added) return;
+    const t = setTimeout(() => setAdded(false), 2000);
+    return () => clearTimeout(t);
+  }, [added]);
+
+  const variantLabel = isSupp
+    ? [weight, flavor].filter(Boolean).join(" / ") || "Standart"
+    : size;
+
   const handleAdd = () => {
-    const variant = isSupp
-      ? [weight, flavor].filter(Boolean).join(" / ") || "Standart"
-      : size;
-    addToCart(product, variant);
+    addToCart(product, variantLabel);
     toast.success(`${product.name} sepete eklendi`);
+    setAdded(true);
   };
+
+  /* ── Paket önerisi: giyim ↔ supplement ─────────────────────────── */
+  const bundlePartner = useMemo(
+    () =>
+      products.find(
+        (p) => p.id !== product.id && (isSupp ? p.type === "apparel" : p.type === "supplement")
+      ) ?? null,
+    [product.id, isSupp]
+  );
+
+  const bundleTotal = bundlePartner ? product.price + bundlePartner.price : 0;
+
+  const handleBundleAdd = () => {
+    if (!bundlePartner) return;
+    addToCart(product, variantLabel);
+    addToCart(
+      bundlePartner,
+      bundlePartner.type === "apparel"
+        ? "L"
+        : [bundlePartner.weights?.[0], bundlePartner.flavors?.[0]].filter(Boolean).join(" / ") ||
+            "Standart"
+    );
+    toast.success("İki ürün de sepete eklendi");
+    setAdded(true);
+  };
+
+  /* ── Ücretsiz kargo ilerlemesi ─────────────────────────────────── */
+  const remaining = Math.max(0, FREE_SHIPPING - cartTotal);
+  const progressPct = Math.min(100, (cartTotal / FREE_SHIPPING) * 100);
 
   const discountPct = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
@@ -306,6 +380,26 @@ function ProductPage() {
                   <p className="text-eyebrow" style={{ marginBottom: "10px" }}>
                     {isSupp ? "Supplement Koleksiyonu" : "Giyim Koleksiyonu"}
                   </p>
+
+                  {product.badge && (
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        background: "#e5e7ff",
+                        color: "#000aff",
+                        borderRadius: "30px",
+                        padding: "6px 14px",
+                        fontSize: "11px",
+                        fontWeight: 600,
+                        letterSpacing: "-0.04em",
+                        textTransform: "uppercase",
+                        marginBottom: "12px",
+                      }}
+                    >
+                      Lansman Fiyatı
+                    </span>
+                  )}
                   <RevealText
                     as="h1"
                     text={product.name}
@@ -332,10 +426,10 @@ function ProductPage() {
                   </p>
 
                   <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "18px", flexWrap: "wrap" }}>
-                    <span className="text-price-lg">₺{product.price.toFixed(2)}</span>
+                    <span className="text-price-lg">{fmt(product.price)}</span>
                     {product.originalPrice && (
                       <>
-                        <span className="text-price-strike">₺{product.originalPrice.toFixed(2)}</span>
+                        <span className="text-price-strike">{fmt(product.originalPrice)}</span>
                         <span className="badge badge-new-color">-%{discountPct}</span>
                       </>
                     )}
@@ -367,7 +461,21 @@ function ProductPage() {
                       }}
                     >
                       <span className="text-eyebrow">Beden Seç</span>
-                      <span className="text-brand-credit">Beden Tablosu</span>
+                      <button
+                        onClick={() => setGuideOpen((o) => !o)}
+                        aria-expanded={guideOpen}
+                        className="text-brand-credit"
+                        style={{
+                          background: "none",
+                          border: "none",
+                          padding: 0,
+                          cursor: "pointer",
+                          textDecoration: "underline",
+                          textUnderlineOffset: "3px",
+                        }}
+                      >
+                        Beden Tablosu
+                      </button>
                     </div>
                     <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                       {SIZES.map((s, i) => {
@@ -377,12 +485,75 @@ function ProductPage() {
                             key={s}
                             disabled={disabled}
                             onClick={() => setSize(s)}
+                            title={disabled ? "Tükendi" : undefined}
                             style={optionPill(s === size && !disabled, disabled)}
                           >
                             {s}
                           </button>
                         );
                       })}
+                    </div>
+
+                    {/* Beden tablosu — satır içi açılır panel */}
+                    <div
+                      style={{
+                        display: "grid",
+                        gridTemplateRows: guideOpen ? "1fr" : "0fr",
+                        transition: "grid-template-rows 0.4s cubic-bezier(0.22,1,0.36,1)",
+                      }}
+                    >
+                      <div style={{ overflow: "hidden" }}>
+                        <div
+                          style={{
+                            marginTop: guideOpen ? "14px" : 0,
+                            background: "#ecedee",
+                            borderRadius: "10px",
+                            padding: "14px 16px",
+                            overflowX: "auto",
+                          }}
+                        >
+                          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "260px" }}>
+                            <thead>
+                              <tr>
+                                {["Beden", "Göğüs (cm)", "Boy (cm)"].map((h) => (
+                                  <th
+                                    key={h}
+                                    style={{
+                                      textAlign: "left",
+                                      fontSize: "11px",
+                                      fontWeight: 600,
+                                      textTransform: "uppercase",
+                                      letterSpacing: "-0.04em",
+                                      color: "#737780",
+                                      padding: "0 0 8px",
+                                    }}
+                                  >
+                                    {h}
+                                  </th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {SIZE_TABLE.map(([b, g, boy]) => (
+                                <tr key={b} style={{ borderTop: "1px solid #d7d7d7" }}>
+                                  <td style={{ padding: "8px 0", fontSize: "13px", letterSpacing: "-0.04em", color: "#111111" }}>
+                                    {b}
+                                  </td>
+                                  <td style={{ padding: "8px 0" }}>
+                                    <span className="text-price">{g}</span>
+                                  </td>
+                                  <td style={{ padding: "8px 0" }}>
+                                    <span className="text-price">{boy}</span>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                          <p style={{ marginTop: "10px", fontSize: "13px", color: "#737780", letterSpacing: "-0.04em" }}>
+                            Oversize kesim. Normal fit tercih edenler bir beden küçük alabilir.
+                          </p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -436,7 +607,48 @@ function ProductPage() {
 
                 {/* CTA */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                  {/* Ücretsiz kargo ilerlemesi */}
+                  <div
+                    style={{
+                      background: "#ecedee",
+                      borderRadius: "10px",
+                      padding: "14px 18px",
+                      letterSpacing: "-0.04em",
+                    }}
+                  >
+                    {remaining > 0 ? (
+                      <>
+                        <p style={{ fontSize: "13px", color: "#111111", marginBottom: "10px" }}>
+                          Ücretsiz kargoya{" "}
+                          <span className="text-price">{fmt(remaining)}</span> kaldı
+                        </p>
+                        <div
+                          style={{
+                            height: "3px",
+                            background: "#d7d7d7",
+                            borderRadius: "30px",
+                            overflow: "hidden",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: `${progressPct}%`,
+                              height: "100%",
+                              background: "#000aff",
+                              transition: "width 0.4s cubic-bezier(0.22,1,0.36,1)",
+                            }}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <p style={{ fontSize: "13px", color: "#000aff", fontWeight: 500 }}>
+                        Kargo bedava ✓
+                      </p>
+                    )}
+                  </div>
+
                   <button
+                    ref={ctaRef}
                     onClick={handleAdd}
                     className="btn-sweep"
                     style={{
@@ -447,13 +659,117 @@ function ProductPage() {
                       fontWeight: 600,
                       letterSpacing: "-0.04em",
                       padding: "16px 24px",
+                      minHeight: "48px",
                       borderRadius: "10px",
                       border: "none",
                       cursor: "pointer",
                     }}
                   >
-                    Sepete Ekle
+                    {added ? "Sepete eklendi ✓" : "Sepete Ekle"}
                   </button>
+
+                  {/* Güven satırı */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: "10px 20px",
+                      paddingTop: "2px",
+                    }}
+                  >
+                    {[
+                      ["local_shipping", "1500₺ üzeri ücretsiz kargo"],
+                      ["restart_alt", "14 gün içinde iade"],
+                      ["lock", "Güvenli ödeme"],
+                    ].map(([icon, text]) => (
+                      <span
+                        key={text}
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "6px",
+                          fontSize: "13px",
+                          color: "#737780",
+                          letterSpacing: "-0.04em",
+                        }}
+                      >
+                        <span
+                          className="material-symbols-outlined"
+                          aria-hidden
+                          style={{
+                            fontSize: "18px",
+                            color: "#111111",
+                            fontVariationSettings: "'FILL' 0, 'wght' 300",
+                          }}
+                        >
+                          {icon}
+                        </span>
+                        {text}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Sık birlikte alınanlar */}
+                  {bundlePartner && (
+                    <div
+                      style={{
+                        background: "#ecedee",
+                        borderRadius: "10px",
+                        padding: "16px 18px",
+                        letterSpacing: "-0.04em",
+                      }}
+                    >
+                      <p className="text-eyebrow" style={{ marginBottom: "14px" }}>
+                        Sık birlikte alınanlar
+                      </p>
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "12px",
+                          flexWrap: "wrap",
+                          marginBottom: "14px",
+                        }}
+                      >
+                        <BundleThumb product={product} />
+                        <span style={{ fontSize: "18px", color: "#737780", lineHeight: 1 }}>+</span>
+                        <BundleThumb product={bundlePartner} />
+                        <div style={{ minWidth: 0, flex: "1 1 120px" }}>
+                          <p
+                            style={{
+                              fontSize: "13px",
+                              color: "#111111",
+                              lineHeight: 1.35,
+                              letterSpacing: "-0.04em",
+                            }}
+                          >
+                            {product.name} + {bundlePartner.name}
+                          </p>
+                          <p style={{ marginTop: "4px", fontSize: "13px", color: "#737780" }}>
+                            Toplam <span className="text-price">{fmt(bundleTotal)}</span>
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={handleBundleAdd}
+                        style={{
+                          width: "100%",
+                          background: "transparent",
+                          color: "#000aff",
+                          border: "1px solid #000aff",
+                          borderRadius: "10px",
+                          padding: "14px 18px",
+                          minHeight: "48px",
+                          fontSize: "13px",
+                          fontWeight: 600,
+                          letterSpacing: "-0.04em",
+                          cursor: "pointer",
+                        }}
+                      >
+                        İkisini de sepete ekle ({fmt(bundleTotal)})
+                      </button>
+                    </div>
+                  )}
 
                   <div
                     style={{
@@ -468,37 +784,6 @@ function ProductPage() {
                   >
                     <span style={{ fontWeight: 500 }}>1500₺ üzeri kargo ücretsiz.</span>{" "}
                     <span style={{ color: "#737780" }}>Altındaki siparişlerde kargo ücreti 140₺.</span>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-                      gap: "8px",
-                    }}
-                  >
-                    {[
-                      "1500₺ üzeri ücretsiz kargo",
-                      "14 gün iade hakkı",
-                      "Güvenli ödeme",
-                      "Almanya'da üretildi",
-                    ].map((t, i) => (
-                      <div
-                        key={t}
-                        className="reveal-blur"
-                        style={{
-                          background: "#ecedee",
-                          borderRadius: "10px",
-                          padding: "12px 14px",
-                          fontSize: "13px",
-                          color: "#737780",
-                          letterSpacing: "-0.04em",
-                          transitionDelay: `${i * 60}ms`,
-                        }}
-                      >
-                        {t}
-                      </div>
-                    ))}
                   </div>
                 </div>
 
@@ -616,6 +901,88 @@ function ProductPage() {
         </section>
       </main>
 
+      {/* ══ Sabit satın alma barı ══════════════════════════════════ */}
+      <div
+        aria-hidden={!showSticky}
+        style={{
+          position: "fixed",
+          left: 0,
+          right: 0,
+          bottom: 0,
+          zIndex: 60,
+          background: "#ffffff",
+          borderTop: "1px solid #ecedee",
+          boxShadow: "0 -4px 24px rgba(17,17,17,0.06)",
+          padding: "10px 16px calc(10px + env(safe-area-inset-bottom))",
+          transform: showSticky ? "translateY(0)" : "translateY(110%)",
+          opacity: showSticky ? 1 : 0,
+          pointerEvents: showSticky ? "auto" : "none",
+          transition: "transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1440px",
+            margin: "0 auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
+            <div
+              style={{
+                width: "40px",
+                height: "40px",
+                flexShrink: 0,
+                borderRadius: "10px",
+                overflow: "hidden",
+                background: "#ecedee",
+              }}
+            >
+              <ProductPlate product={product} ratio="1 / 1" />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <p
+                style={{
+                  fontSize: "13px",
+                  fontWeight: 500,
+                  color: "#111111",
+                  letterSpacing: "-0.04em",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: "38vw",
+                }}
+              >
+                {product.name}
+              </p>
+              <span className="text-price">{fmt(product.price)}</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handleAdd}
+            style={{
+              flexShrink: 0,
+              background: "#000aff",
+              color: "#ffffff",
+              border: "none",
+              borderRadius: "10px",
+              padding: "14px 22px",
+              minHeight: "48px",
+              fontSize: "14px",
+              fontWeight: 600,
+              letterSpacing: "-0.04em",
+              cursor: "pointer",
+            }}
+          >
+            {added ? "Eklendi ✓" : "Sepete Ekle"}
+          </button>
+        </div>
+      </div>
+
       <style>{`
         .pdp-grid {
           display: grid;
@@ -632,6 +999,24 @@ function ProductPage() {
       `}</style>
 
       <Footer />
+    </div>
+  );
+}
+
+/* ── Paket küçük görseli ────────────────────────────────────────────── */
+function BundleThumb({ product: p }: { product: typeof products[number] }) {
+  return (
+    <div
+      style={{
+        width: "56px",
+        height: "56px",
+        flexShrink: 0,
+        borderRadius: "10px",
+        overflow: "hidden",
+        background: "#ffffff",
+      }}
+    >
+      <ProductPlate product={p} ratio="1 / 1" />
     </div>
   );
 }
@@ -658,8 +1043,8 @@ function RelatedCard({ product: p, index }: { product: typeof products[number]; 
         </p>
         <p className="text-brand-credit" style={{ marginTop: "4px" }}>By OLD IRON</p>
         <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "6px" }}>
-          <span className="text-price">₺{p.price.toFixed(2)}</span>
-          {p.originalPrice && <span className="text-price-strike">₺{p.originalPrice.toFixed(2)}</span>}
+          <span className="text-price">{fmt(p.price)}</span>
+          {p.originalPrice && <span className="text-price-strike">{fmt(p.originalPrice)}</span>}
         </div>
       </div>
       <button
