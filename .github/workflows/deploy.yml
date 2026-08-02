@@ -25,6 +25,12 @@ jobs:
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ secrets.VITE_SUPABASE_PUBLISHABLE_KEY }}
           VITE_PAYMENTS_CLIENT_TOKEN: ${{ secrets.VITE_PAYMENTS_CLIENT_TOKEN }}
 
+      - name: Show build output
+        run: |
+          echo "=== dist/ ===" && ls -la dist/ 2>/dev/null || echo "no dist/"
+          echo "=== .worker-build/ ===" && ls -la .worker-build/ 2>/dev/null || echo "no .worker-build/"
+          echo "=== dist/client/ ===" && ls -la dist/client/ 2>/dev/null || echo "no dist/client/"
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
