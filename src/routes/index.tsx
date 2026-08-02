@@ -33,8 +33,12 @@ const beats = [
 function Home() {
   const filmRef  = useRef<HTMLVideoElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const [ready, setReady]   = useState(false);
-  const [prog, setProg]     = useState(0);
+  const pctRef   = useRef<HTMLSpanElement>(null);
+  const railRef  = useRef<HTMLDivElement>(null);
+  const logoRef  = useRef<HTMLDivElement>(null);
+  const ctaRef   = useRef<HTMLDivElement>(null);
+  const beatRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const [ready, setReady] = useState(false);
 
   /* Video: blob olarak çek — bazı sunucular byte-range vermez, seek donar */
   useEffect(() => {
@@ -63,14 +67,43 @@ function Home() {
     return () => { alive = false; clearTimeout(t); if (url) URL.revokeObjectURL(url); };
   }, []);
 
-  /* Scrub döngüsü */
+  /* Scrub döngüsü — her karede React değil, doğrudan DOM güncellenir */
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setProg(0.5);
-      return;
-    }
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const paint = (p: number) => {
+      if (pctRef.current) {
+        const v = Math.round(p * 100);
+        pctRef.current.textContent = v < 10 ? `0${v}` : String(v);
+      }
+      if (railRef.current) railRef.current.style.width = `${p * 100}%`;
+
+      const logoOut = Math.min(1, Math.max(0, p / 0.13));
+      if (logoRef.current) {
+        logoRef.current.style.opacity = String(1 - logoOut);
+        logoRef.current.style.transform = `scale(${1 - logoOut * 0.1}) translateY(${-logoOut * 40}px)`;
+      }
+
+      const ctaIn = Math.min(1, Math.max(0, (p - 0.88) / 0.08));
+      if (ctaRef.current) {
+        ctaRef.current.style.opacity = String(ctaIn);
+        ctaRef.current.style.pointerEvents = ctaIn > 0.5 ? "auto" : "none";
+        ctaRef.current.style.transform = `translateY(${(1 - ctaIn) * 24}px)`;
+      }
+
+      beats.forEach((b, i) => {
+        const el = beatRefs.current[i];
+        if (!el) return;
+        const on = p >= b.from && p <= b.to;
+        el.style.opacity = on ? "1" : "0";
+        el.style.transform = on ? "translateY(0)" : "translateY(18px)";
+      });
+    };
+
+    if (reduced) { paint(0.5); return; }
 
     let raf = 0;
     let current = 0;
@@ -82,7 +115,7 @@ function Home() {
 
       /* Süzülmeyi veren satır */
       current += (target - current) * 0.12;
-      setProg(current);
+      paint(current);
 
       const film = filmRef.current;
       if (film && film.duration) {
@@ -96,11 +129,6 @@ function Home() {
     raf = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(raf);
   }, []);
-
-  /* Logo açılışı → yazı devri */
-  const logoOut = Math.min(1, Math.max(0, prog / 0.13));
-  const ctaIn   = Math.min(1, Math.max(0, (prog - 0.88) / 0.08));
-  const pct     = Math.round(prog * 100);
 
   return (
     <div style={{ background: "#080808", color: "#f4f4f4", fontFamily: "'Inter Tight', Inter, sans-serif" }}>
@@ -145,14 +173,14 @@ function Home() {
         position: "fixed", left: "clamp(20px, 4vw, 48px)", bottom: "28px", zIndex: 50,
         display: "flex", alignItems: "center", gap: "14px",
       }}>
-        <span style={{
+        <span ref={pctRef} style={{
           fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
           color: "rgba(255,255,255,.65)", minWidth: "26px",
         }}>
-          {pct < 10 ? `0${pct}` : pct}
+          00
         </span>
         <div style={{ width: "120px", height: "1px", background: "rgba(255,255,255,.12)", position: "relative" }}>
-          <div style={{ position: "absolute", inset: "0 auto 0 0", width: `${prog * 100}%`, background: "#dcdcdc" }} />
+          <div ref={railRef} style={{ position: "absolute", inset: "0 auto 0 0", width: "0%", background: "#dcdcdc" }} />
         </div>
       </div>
 
@@ -198,12 +226,11 @@ function Home() {
           </div>
 
           {/* ── AÇILIŞ: LOGO ── */}
-          <div aria-hidden={logoOut > 0.9} style={{
+          <div ref={logoRef} aria-hidden style={{
             position: "absolute", inset: 0, zIndex: 12,
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
             gap: "28px", pointerEvents: "none",
-            opacity: 1 - logoOut,
-            transform: `scale(${1 - logoOut * 0.1}) translateY(${-logoOut * 40}px)`,
+            opacity: 1, willChange: "opacity, transform",
           }}>
             <img
               src="/images/logo.png"
@@ -222,11 +249,11 @@ function Home() {
           </div>
 
           {/* ── CAPTION BEATS ── */}
-          {beats.map((b) => {
-            const on = prog >= b.from && prog <= b.to;
+          {beats.map((b, i) => {
             return (
               <p
                 key={b.text}
+                ref={(el) => { beatRefs.current[i] = el; }}
                 style={{
                   position: "absolute",
                   left: "clamp(20px, 5vw, 64px)", right: "clamp(20px, 5vw, 64px)",
@@ -235,10 +262,10 @@ function Home() {
                   fontSize: "clamp(30px, 4.6vw, 64px)", fontWeight: 500,
                   letterSpacing: "-.035em", lineHeight: 1.05, color: "#f4f4f4",
                   textShadow: "0 2px 30px rgba(0,0,0,.9), 0 0 80px rgba(0,0,0,.7)",
-                  opacity: on ? 1 : 0,
-                  transform: on ? "translateY(0)" : "translateY(18px)",
+                  opacity: 0,
+                  transform: "translateY(18px)",
                   transition: "opacity .7s ease, transform .7s ease",
-                  pointerEvents: "none",
+                  pointerEvents: "none", willChange: "opacity, transform",
                 }}
               >
                 {b.text}
@@ -247,13 +274,13 @@ function Home() {
           })}
 
           {/* ── BÜYÜK CTA — sahne biterken ── */}
-          <div style={{
+          <div ref={ctaRef} style={{
             position: "absolute", inset: 0, zIndex: 9,
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
             gap: "24px", padding: "0 20px", textAlign: "center",
-            opacity: ctaIn, pointerEvents: ctaIn > 0.5 ? "auto" : "none",
-            transform: `translateY(${(1 - ctaIn) * 24}px)`,
-            transition: "opacity .4s ease",
+            opacity: 0, pointerEvents: "none",
+            transform: "translateY(24px)",
+            transition: "opacity .4s ease", willChange: "opacity, transform",
           }}>
             <p style={{
               fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
