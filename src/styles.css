@@ -1380,3 +1380,18 @@ html.lenis, html.lenis body { height: auto; }
 @media (max-width: 768px) {
   .oi-card { padding: 12px; }
 }
+
+/* Galeri yana kaydırma okları */
+.oi-gnav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  z-index: 4; width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 999px; cursor: pointer;
+  color: #f4f4f4;
+  background: rgba(8, 8, 8, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  transition: background .25s, border-color .25s, transform .25s;
+}
+.oi-gnav:hover  { background: rgba(8,8,8,.85); border-color: rgba(255,255,255,.45); }
+.oi-gnav:active { transform: translateY(-50%) scale(.94); }

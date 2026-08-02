@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { useParallax } from "@/components/SmoothScroll";
-import { products, type Product } from "@/data/products";
+import { products, usableVideo, type Product } from "@/data/products";
 import { useCart } from "@/stores/cart";
 
 export const Route = createFileRoute("/shop")({
@@ -44,9 +44,17 @@ function badgeLabel(badge?: string) {
 
 /* ── Ürün görseli — koyu sahne ─────────────────────────────────────── */
 function Visual({ p }: { p: Product }) {
+  const video = usableVideo(p);
   return (
     <div className="oi-stage" style={{ background: "#101010" }}>
-      {p.gallery?.length ? (
+      {video ? (
+        <video
+          src={video}
+          poster={p.gallery?.[0]}
+          autoPlay muted loop playsInline preload="metadata"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : p.gallery?.length ? (
         <img
           src={p.gallery[0]}
           alt={p.name}

@@ -230,3 +230,8 @@ export const products: Product[] = [
 ];
 
 export const findProduct = (id: string) => products.find((p) => p.id === id);
+
+/** Yalnızca sunucuda gerçekten bulunan yerel videoları döndürür.
+ *  Eski Lovable yolları (/__l5e/...) sunucuda yok, oynatılmamalı. */
+export const usableVideo = (p: Product): string | undefined =>
+  p.video && p.video.startsWith("/videos/") ? p.video : undefined;

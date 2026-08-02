@@ -7,7 +7,7 @@ import { ProductPlate } from "@/components/ProductPlate";
 import { Icon, type IconName } from "@/components/Icon";
 import { RevealText } from "@/components/RevealText";
 import { useParallax } from "@/components/SmoothScroll";
-import { findProduct, products } from "@/data/products";
+import { findProduct, products, usableVideo } from "@/data/products";
 import { useCart } from "@/stores/cart";
 
 export const Route = createFileRoute("/product/$id")({
@@ -186,7 +186,17 @@ function ProductPage() {
   const WEIGHTS = product.weights?.length  ? product.weights  : null;
 
   const [size,   setSize]   = useState(isSupp ? "" : "L");
-  const [galleryIdx, setGalleryIdx] = useState(0);
+  const vid = usableVideo(product);
+  const [galleryIdx, setGalleryIdx] = useState(vid ? -1 : 0);
+
+  /* Galeri sırası: video (varsa) + tüm açılar */
+  const slides: number[] = [...(vid ? [-1] : []), ...((product.gallery ?? []).map((_, i) => i))];
+  const goSlide = (dir: 1 | -1) => {
+    if (slides.length < 2) return;
+    const cur = slides.indexOf(galleryIdx);
+    const next = (cur + dir + slides.length) % slides.length;
+    setGalleryIdx(slides[next]);
+  };
   const [flavor, setFlavor] = useState(FLAVORS?.[0] ?? "");
   const [weight, setWeight] = useState(WEIGHTS?.[0] ?? "");
 
@@ -347,10 +357,10 @@ function ProductPage() {
                     </span>
                   )}
                   {product.gallery ? (
-                    galleryIdx === -1 && product.video ? (
+                    galleryIdx === -1 && vid ? (
                       <video
                         key="video"
-                        src={product.video}
+                        src={vid}
                         poster={product.videoPoster}
                         autoPlay muted loop playsInline
                         style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block", borderRadius: "10px" }}
@@ -365,6 +375,28 @@ function ProductPage() {
                     )
                   ) : (
                     <ProductPlate product={product} ratio="1 / 1" />
+                  )}
+
+                  {/* Yana kaydırma okları */}
+                  {slides.length > 1 && (
+                    <>
+                      <button
+                        onClick={() => goSlide(-1)}
+                        aria-label="Önceki görsel"
+                        className="oi-gnav"
+                        style={{ left: 12 }}
+                      >
+                        <Icon name="chevron_left" size={20} />
+                      </button>
+                      <button
+                        onClick={() => goSlide(1)}
+                        aria-label="Sonraki görsel"
+                        className="oi-gnav"
+                        style={{ right: 12 }}
+                      >
+                        <Icon name="chevron_right" size={20} />
+                      </button>
+                    </>
                   )}
                 </div>
 
@@ -401,7 +433,7 @@ function ProductPage() {
                         />
                       </button>
                     ))}
-                    {product.video && (
+                    {vid && (
                       <button
                         className="reveal-blur"
                         onClick={() => setGalleryIdx(-1)}
