@@ -23,16 +23,19 @@ const navLinks = [
   { label: "İletişim",   to: "/shop" },
 ];
 
-/* Caption beats — logo devrinden sonra */
+/* Caption beats — son beat logo */
 const beats = [
   /* 1 — marka kimliği */
-  { text: "Disiplinden dövülmüş.",        from: 0.02, to: 0.22, pos: "upper" },
-  /* 2 — giyim: dayanıklılık vaadi */
-  { text: "Kumaşı ağır. Yıllarca formunda.", from: 0.38, to: 0.52, pos: "lower" },
-  /* 3 — supplement: saflık ve güven vaadi */
-  { text: "Formülü saf. Etiketi dürüst.",    from: 0.70, to: 0.86, pos: "lower" },
+  { text: "Disiplinden dövülmüş.",             from: 0.02, to: 0.20, pos: "upper" },
+  /* 2 — giyim: premium vurgusu */
+  { text: "Premium pamuk. Yıllarca ilk günkü gibi.", from: 0.32, to: 0.46, pos: "lower" },
+  /* 3 — tüm ürünler: analiz raporu vurgusu */
+  { text: "Her ürün analiz raporlu.",          from: 0.58, to: 0.72, pos: "lower" },
 ];
 
+/* Logo beat penceresi — yazılardan sonra, CTA'dan önce */
+const LOGO_FROM = 0.80;
+const LOGO_TO   = 0.92;
 function Home() {
   const filmRef  = useRef<HTMLVideoElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -40,6 +43,7 @@ function Home() {
   const railRef  = useRef<HTMLDivElement>(null);
   const ctaRef   = useRef<HTMLDivElement>(null);
   const beatRefs = useRef<(HTMLParagraphElement | null)[]>([]);
+  const logoBeatRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
   /* Video kaynağı */
@@ -85,7 +89,13 @@ function Home() {
       }
       if (railRef.current) railRef.current.style.width = `${p * 100}%`;
 
-      const ctaIn = Math.min(1, Math.max(0, (p - 0.88) / 0.08));
+      if (logoBeatRef.current) {
+        const on = p >= LOGO_FROM && p <= LOGO_TO;
+        logoBeatRef.current.style.opacity = on ? "1" : "0";
+        logoBeatRef.current.style.transform = on ? "translateY(0)" : "translateY(18px)";
+      }
+
+      const ctaIn = Math.min(1, Math.max(0, (p - 0.94) / 0.06));
       if (ctaRef.current) {
         ctaRef.current.style.opacity = String(ctaIn);
         ctaRef.current.style.pointerEvents = ctaIn > 0.5 ? "auto" : "none";
@@ -189,8 +199,8 @@ function Home() {
         fontFamily: "'JetBrains Mono', monospace", fontSize: "11px",
         letterSpacing: ".06em", color: "rgba(255,255,255,.45)", whiteSpace: "nowrap",
       }}>
-        <span><b style={{ color: "rgba(255,255,255,.8)", fontWeight: 500 }}>300</b> gsm pamuk</span>
-        <span><b style={{ color: "rgba(255,255,255,.8)", fontWeight: 500 }}>ISO 17025</b> lab onaylı</span>
+        <span><b style={{ color: "rgba(255,255,255,.8)", fontWeight: 500 }}>300</b> gsm premium pamuk</span>
+        <span><b style={{ color: "rgba(255,255,255,.8)", fontWeight: 500 }}>ISO 17025</b> analiz raporlu</span>
         <span><b style={{ color: "rgba(255,255,255,.8)", fontWeight: 500 }}>0</b> dolgu maddesi</span>
       </div>
 
@@ -247,6 +257,30 @@ function Home() {
               </p>
             );
           })}
+
+          {/* ── SON BEAT: LOGO (yazılarla aynı yerde) ── */}
+          <div
+            ref={logoBeatRef}
+            aria-hidden
+            style={{
+              position: "absolute",
+              left: "clamp(20px, 5vw, 64px)", right: "clamp(20px, 5vw, 64px)",
+              bottom: "18vh", zIndex: 5,
+              display: "flex", justifyContent: "flex-start",
+              opacity: 0, transform: "translateY(18px)",
+              transition: "opacity .7s ease, transform .7s ease",
+              pointerEvents: "none", willChange: "opacity, transform",
+            }}
+          >
+            <img
+              src="/images/logo.png"
+              alt="OLD IRON"
+              style={{
+                width: "min(46vw, 420px)", objectFit: "contain",
+                filter: "drop-shadow(0 4px 30px rgba(0,0,0,.85))",
+              }}
+            />
+          </div>
 
           {/* ── BÜYÜK CTA — sahne biterken ── */}
           <div ref={ctaRef} style={{
