@@ -33,33 +33,33 @@ export function CookieBanner() {
     <div
       role="dialog"
       aria-live="polite"
-      aria-label="Cookie-Hinweis"
-      className="fixed bottom-0 inset-x-0 z-[60] border-t-2 border-primary bg-surface-container-lowest/95 backdrop-blur-md"
+      aria-label="Çerez Bildirimi"
+      className="fixed bottom-0 inset-x-0 z-[60] border-t border-outline-variant bg-white/95 backdrop-blur-md"
     >
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-stack-sm flex flex-col md:flex-row md:items-center gap-stack-sm">
-        <div className="flex-1 text-[14px] text-on-surface-variant leading-relaxed">
+      <div className="max-w-[1440px] mx-auto px-[20px] md:px-[72px] py-4 flex flex-col md:flex-row md:items-center gap-4">
+        <div className="flex-1 text-[13px] text-secondary leading-relaxed">
           <p>
-            Wir verwenden technisch notwendige Cookies, damit der Shop funktioniert.
-            Mit deiner Einwilligung setzen wir zusätzlich Cookies für Analyse und Marketing.
-            Mehr in der{" "}
-            <Link to="/legal/datenschutz" className="text-primary underline hover:no-underline">
-              Datenschutzerklärung
+            Mağazanın çalışması için zorunlu çerezler kullanıyoruz.
+            İzninizle analiz ve pazarlama amaçlı ek çerezler de kullanabiliriz.
+            Detaylar için{" "}
+            <Link to="/legal/datenschutz" className="text-foreground underline hover:no-underline">
+              Gizlilik Politikası
             </Link>
-            .
+            &apos;na bakın.
           </p>
         </div>
         <div className="flex flex-wrap gap-2 shrink-0">
           <button
             onClick={() => decide("essential")}
-            className="px-4 py-2 text-[12px] uppercase tracking-widest border border-outline-variant text-on-surface-variant hover:border-primary hover:text-primary transition-colors"
+            className="px-4 py-2 text-[12px] font-semibold border border-outline-variant text-secondary hover:border-foreground hover:text-foreground transition-colors rounded-[8px]"
           >
-            Nur notwendige
+            Yalnızca Zorunlu
           </button>
           <button
             onClick={() => decide("all")}
-            className="px-4 py-2 text-[12px] uppercase tracking-widest bg-primary text-on-primary hover:brightness-110 transition-all font-semibold"
+            className="px-4 py-2 text-[12px] font-bold bg-cobalt text-white hover:opacity-90 transition-all rounded-[8px]"
           >
-            Alle akzeptieren
+            Tümünü Kabul Et
           </button>
         </div>
       </div>

@@ -5,7 +5,7 @@ const shopLinks = [
   { label: "Spor Giyim",    to: "/shop" },
   { label: "Supplement",    to: "/shop" },
   { label: "Yeni Gelenler", to: "/shop" },
-  { label: "Bestsellers",   to: "/shop" },
+  { label: "En Çok Satanlar", to: "/shop" },
 ];
 
 const infoLinks = [

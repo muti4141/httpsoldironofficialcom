@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/order/$id")({
-  head: () => ({ meta: [{ title: "Bestellung — OLD IRON" }] }),
+  head: () => ({ meta: [{ title: "Sipariş — OLD IRON" }] }),
   beforeLoad: async ({ location }) => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
@@ -60,64 +60,64 @@ function OrderPage() {
     })();
   }, [id]);
 
-  const fmt = (c: number) => `${(c / 100).toFixed(2)} €`;
+  const fmt = (c: number) => `${(c / 100).toFixed(2)} ₺`;
 
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
-      <main className="pt-[120px] pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-3xl mx-auto">
+      <main className="pt-[120px] pb-[80px] px-[20px] md:px-[72px] max-w-3xl mx-auto">
         {loading ? (
-          <p className="text-secondary">Lade...</p>
+          <p className="text-secondary">Yükleniyor...</p>
         ) : !order ? (
-          <div className="bg-surface-container-low p-12 text-center steel-bevel">
-            <p className="text-secondary mb-6">Bestellung nicht gefunden.</p>
-            <Link to="/account" className="underline text-primary">Zum Konto</Link>
+          <div className="bg-plaster rounded-[10px] p-12 text-center">
+            <p className="text-secondary mb-6">Sipariş bulunamadı.</p>
+            <Link to="/account" className="underline text-cobalt font-semibold">Hesabıma Dön</Link>
           </div>
         ) : (
           <>
-            <header className="mb-stack-md">
-              <p className="text-[14px] uppercase tracking-widest text-outline">Bestellung bestätigt</p>
-              <h1 className="font-display text-[48px] md:text-[56px] uppercase tracking-tight text-primary leading-none mt-2">
-                Danke, {order.full_name.split(" ")[0]}.
+            <header className="mb-10">
+              <p className="text-[12px] font-bold uppercase tracking-[0.15em] text-secondary">Sipariş Onaylandı</p>
+              <h1 className="text-[40px] md:text-[52px] font-bold tracking-[-0.04em] text-foreground leading-none mt-2">
+                Teşekkürler, {order.full_name.split(" ")[0]}.
               </h1>
               <p className="text-secondary mt-2">
-                Bestellnummer: <span className="text-primary font-mono">#{order.id.slice(0, 8).toUpperCase()}</span>
+                Sipariş no: <span className="text-foreground font-mono font-bold">#{order.id.slice(0, 8).toUpperCase()}</span>
               </p>
             </header>
 
-            <section className="bg-surface-container-low border border-outline-variant/30 p-gutter mb-stack-sm">
-              <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Artikel</h2>
+            <section className="bg-plaster rounded-[10px] p-6 mb-4">
+              <h2 className="text-[16px] font-bold text-foreground mb-4 tracking-[-0.02em]">Ürünler</h2>
               <div className="space-y-4">
                 {items.map((it) => (
-                  <div key={it.id} className="flex gap-4 items-center border-b border-outline-variant/20 pb-4 last:border-0">
+                  <div key={it.id} className="flex gap-4 items-center border-b border-outline-variant pb-4 last:border-0">
                     {it.product_image && (
-                      <img src={it.product_image} alt={it.product_name} className="w-16 h-20 object-cover grayscale brightness-75" />
+                      <img src={it.product_image} alt={it.product_name} className="w-16 h-20 object-cover rounded-[6px]" />
                     )}
                     <div className="flex-grow">
-                      <p className="text-primary font-headline uppercase">{it.product_name}</p>
-                      <p className="text-[12px] text-outline uppercase tracking-widest">
-                        Größe {it.size} · {it.quantity}×
+                      <p className="text-foreground font-bold text-[15px] tracking-[-0.01em]">{it.product_name}</p>
+                      <p className="text-[12px] text-secondary mt-0.5">
+                        Beden: {it.size} · {it.quantity} adet
                       </p>
                     </div>
-                    <span className="text-primary font-headline">{fmt(it.line_total_cents)}</span>
+                    <span className="text-foreground font-mono font-bold">{fmt(it.line_total_cents)}</span>
                   </div>
                 ))}
               </div>
             </section>
 
-            <section className="bg-surface-container-low border border-outline-variant/30 p-gutter mb-stack-sm space-y-2 text-[14px] text-secondary">
-              <div className="flex justify-between"><span>Zwischensumme</span><span>{fmt(order.subtotal_cents)}</span></div>
-              <div className="flex justify-between"><span>Versand</span><span>{order.shipping_cents === 0 ? "Kostenlos" : fmt(order.shipping_cents)}</span></div>
-              <div className="flex justify-between pt-3 border-t border-outline-variant/30 text-primary font-bold">
-                <span className="uppercase tracking-widest">Gesamt</span>
-                <span className="text-xl">{fmt(order.total_cents)}</span>
+            <section className="bg-plaster rounded-[10px] p-6 mb-4 space-y-2 text-[14px] text-secondary">
+              <div className="flex justify-between"><span>Ara Toplam</span><span>{fmt(order.subtotal_cents)}</span></div>
+              <div className="flex justify-between"><span>Kargo</span><span>{order.shipping_cents === 0 ? "Ücretsiz" : fmt(order.shipping_cents)}</span></div>
+              <div className="flex justify-between pt-3 border-t border-outline-variant text-foreground font-bold">
+                <span className="text-[15px]">Toplam</span>
+                <span className="text-[18px] font-mono">{fmt(order.total_cents)}</span>
               </div>
-              <p className="text-[10px] text-outline italic">Inkl. 19% MwSt. ({fmt(order.tax_cents)})</p>
+              <p className="text-[11px] text-secondary">%20 KDV dahil ({fmt(order.tax_cents)})</p>
             </section>
 
-            <section className="bg-surface-container-low border border-outline-variant/30 p-gutter mb-stack-sm">
-              <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Lieferadresse</h2>
-              <p className="text-secondary leading-relaxed">
+            <section className="bg-plaster rounded-[10px] p-6 mb-6">
+              <h2 className="text-[16px] font-bold text-foreground mb-4 tracking-[-0.02em]">Teslimat Adresi</h2>
+              <p className="text-secondary leading-relaxed text-[14px]">
                 {order.full_name}<br />
                 {order.shipping_address}<br />
                 {order.shipping_zip} {order.shipping_city}<br />
@@ -125,12 +125,12 @@ function OrderPage() {
               </p>
             </section>
 
-            <div className="flex gap-4">
-              <Link to="/account" className="flex-1 text-center bg-surface-container-highest text-primary font-headline text-[18px] py-4 uppercase tracking-widest hover:brightness-110">
-                Mein Konto
+            <div className="flex gap-3">
+              <Link to="/account" className="flex-1 text-center btn-secondary text-[14px] py-4">
+                Hesabım
               </Link>
-              <Link to="/shop" className="flex-1 text-center bg-primary-container text-on-secondary-fixed font-headline text-[18px] py-4 uppercase tracking-widest hover:brightness-110">
-                Weiter Shoppen
+              <Link to="/shop" className="flex-1 text-center btn-primary text-[14px] py-4">
+                Alışverişe Devam
               </Link>
             </div>
           </>

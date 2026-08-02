@@ -17,7 +17,7 @@ type OrderRow = {
 
 export const Route = createFileRoute("/account")({
   head: () => ({
-    meta: [{ title: "Mein Konto — OLD IRON" }],
+    meta: [{ title: "Hesabım — OLD IRON" }],
   }),
   beforeLoad: async ({ location }) => {
     const { data } = await supabase.auth.getSession();
@@ -48,7 +48,7 @@ function AccountPage() {
     shipping_address: "",
     shipping_city: "",
     shipping_zip: "",
-    shipping_country: "DE",
+    shipping_country: "TR",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -87,7 +87,7 @@ function AccountPage() {
       .upsert({ id: userData.user.id, ...profile });
     setSaving(false);
     if (error) toast.error(error.message);
-    else toast.success("Profil gespeichert.");
+    else toast.success("Profil kaydedildi.");
   };
 
   const set = <K extends keyof Profile>(k: K, v: Profile[K]) =>
@@ -96,31 +96,31 @@ function AccountPage() {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Nav />
-      <main className="pt-[120px] pb-stack-lg px-margin-mobile md:px-margin-desktop max-w-2xl mx-auto">
-        <header className="mb-stack-md flex justify-between items-end">
+      <main className="pt-[120px] pb-[80px] px-[20px] md:px-[72px] max-w-2xl mx-auto">
+        <header className="mb-10 flex justify-between items-end">
           <div>
-            <h1 className="font-display text-[48px] md:text-[56px] uppercase tracking-tight text-primary leading-none">
-              Mein Konto
+            <h1 className="text-[40px] md:text-[48px] font-bold tracking-[-0.04em] text-foreground leading-none">
+              Hesabım
             </h1>
-            <p className="text-[14px] text-outline mt-2">{email}</p>
+            <p className="text-[14px] text-secondary mt-2">{email}</p>
           </div>
           <button
             onClick={async () => {
               await signOut();
-              toast.success("Abgemeldet.");
+              toast.success("Çıkış yapıldı.");
             }}
-            className="text-[12px] uppercase tracking-widest text-secondary hover:text-error border border-outline-variant px-4 py-2"
+            className="text-[12px] font-semibold text-secondary hover:text-error border border-outline-variant px-4 py-2 rounded-[8px] transition-colors"
           >
-            Abmelden
+            Çıkış Yap
           </button>
         </header>
 
         {loading ? (
-          <p className="text-secondary">Lade...</p>
+          <p className="text-secondary">Yükleniyor...</p>
         ) : (
-          <form onSubmit={save} className="space-y-stack-sm">
-            <Section title="Persönliche Daten">
-              <Field label="Anzeigename">
+          <form onSubmit={save} className="space-y-4">
+            <Section title="Kişisel Bilgiler">
+              <Field label="Ad Soyad">
                 <Input value={profile.display_name ?? ""} onChange={(v) => set("display_name", v)} />
               </Field>
               <Field label="Telefon">
@@ -128,56 +128,56 @@ function AccountPage() {
               </Field>
             </Section>
 
-            <Section title="Versandadresse">
-              <Field label="Straße & Hausnummer">
+            <Section title="Teslimat Adresi">
+              <Field label="Sokak & Bina No">
                 <Input value={profile.shipping_address ?? ""} onChange={(v) => set("shipping_address", v)} />
               </Field>
               <div className="grid grid-cols-3 gap-4">
-                <Field label="PLZ">
+                <Field label="Posta Kodu">
                   <Input value={profile.shipping_zip ?? ""} onChange={(v) => set("shipping_zip", v)} />
                 </Field>
                 <div className="col-span-2">
-                  <Field label="Stadt">
+                  <Field label="Şehir">
                     <Input value={profile.shipping_city ?? ""} onChange={(v) => set("shipping_city", v)} />
                   </Field>
                 </div>
               </div>
-              <Field label="Land">
-                <Input value={profile.shipping_country ?? "DE"} onChange={(v) => set("shipping_country", v)} />
+              <Field label="Ülke">
+                <Input value={profile.shipping_country ?? "TR"} onChange={(v) => set("shipping_country", v)} />
               </Field>
             </Section>
 
             <button
               type="submit"
               disabled={saving}
-              className="w-full bg-primary-container text-on-secondary-fixed font-headline text-[20px] py-4 uppercase tracking-widest hover:brightness-110 disabled:opacity-50"
+              className="w-full btn-primary text-[15px] py-4 disabled:opacity-50"
             >
-              {saving ? "Speichern..." : "Speichern"}
+              {saving ? "Kaydediliyor..." : "Kaydet"}
             </button>
           </form>
         )}
 
         {!loading && (
-          <section className="mt-stack-md bg-surface-container-low border border-outline-variant/30 p-gutter">
-            <h2 className="font-headline text-[20px] uppercase text-primary mb-4">Bestellungen</h2>
+          <section className="mt-10 bg-plaster rounded-[10px] p-6">
+            <h2 className="text-[18px] font-bold text-foreground mb-4 tracking-[-0.02em]">Siparişlerim</h2>
             {orders.length === 0 ? (
-              <p className="text-secondary text-[14px]">Noch keine Bestellungen.</p>
+              <p className="text-secondary text-[14px]">Henüz sipariş bulunmuyor.</p>
             ) : (
-              <ul className="divide-y divide-outline-variant/20">
+              <ul className="divide-y divide-outline-variant">
                 {orders.map((o) => (
                   <li key={o.id}>
                     <Link
                       to="/order/$id"
                       params={{ id: o.id }}
-                      className="flex items-center justify-between py-4 hover:bg-surface-container/40 px-2 -mx-2 transition-colors"
+                      className="flex items-center justify-between py-4 hover:bg-surface-container-high px-2 -mx-2 transition-colors rounded-[8px]"
                     >
                       <div>
-                        <p className="font-mono text-primary text-[14px]">#{o.id.slice(0, 8).toUpperCase()}</p>
-                        <p className="text-[12px] text-outline uppercase tracking-widest mt-1">
-                          {new Date(o.created_at).toLocaleDateString("de-DE")} · {o.status}
+                        <p className="font-mono text-foreground text-[14px] font-bold">#{o.id.slice(0, 8).toUpperCase()}</p>
+                        <p className="text-[12px] text-secondary mt-1">
+                          {new Date(o.created_at).toLocaleDateString("tr-TR")} · {o.status}
                         </p>
                       </div>
-                      <span className="text-primary font-headline">{(o.total_cents / 100).toFixed(2)} €</span>
+                      <span className="text-foreground font-mono font-bold">{(o.total_cents / 100).toFixed(2)} ₺</span>
                     </Link>
                   </li>
                 ))}
@@ -194,8 +194,8 @@ function AccountPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="bg-surface-container-low border border-outline-variant/30 p-gutter space-y-4">
-      <h2 className="font-headline text-[20px] uppercase text-primary">{title}</h2>
+    <section className="bg-plaster rounded-[10px] p-6 space-y-4">
+      <h2 className="text-[16px] font-bold text-foreground tracking-[-0.02em]">{title}</h2>
       {children}
     </section>
   );
@@ -203,8 +203,8 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block space-y-2">
-      <span className="text-[12px] font-semibold uppercase tracking-widest text-secondary">{label}</span>
+    <label className="block space-y-1.5">
+      <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-secondary">{label}</span>
       {children}
     </label>
   );
@@ -224,7 +224,7 @@ function Input({
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full bg-surface-container border border-outline-variant px-4 py-3 text-[16px] text-primary focus:border-primary focus:outline-none"
+      className="w-full bg-white border border-outline-variant rounded-[8px] px-4 py-3 text-[15px] text-foreground focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/10 transition-colors"
     />
   );
 }

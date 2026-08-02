@@ -14,7 +14,7 @@ export function StripeCartCheckout({ orderId, items, shippingCents, returnUrl }:
     const secret = await createCartCheckout({
       data: { orderId, items, shippingCents, returnUrl, environment: getStripeEnvironment() },
     });
-    if (!secret) throw new Error("Konnte Checkout nicht starten.");
+    if (!secret) throw new Error("Ödeme başlatılamadı. Lütfen tekrar deneyin.");
     return secret;
   };
 

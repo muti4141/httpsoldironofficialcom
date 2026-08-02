@@ -14,6 +14,16 @@ import {
 
 const STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled", "refunded", "expired"] as const;
 
+const STATUS_TR: Record<string, string> = {
+  pending: "Beklemede",
+  paid: "Ödendi",
+  shipped: "Kargoda",
+  delivered: "Teslim Edildi",
+  cancelled: "İptal Edildi",
+  refunded: "İade Edildi",
+  expired: "Süresi Doldu",
+};
+
 type Order = {
   id: string;
   created_at: string;
@@ -29,7 +39,7 @@ type Order = {
 export const Route = createFileRoute("/admin/orders")({
   head: () => ({
     meta: [
-      { title: "Admin — Bestellungen" },
+      { title: "Admin — Siparişler — OLD IRON" },
       { name: "robots", content: "noindex,nofollow" },
     ],
   }),
@@ -42,8 +52,8 @@ export const Route = createFileRoute("/admin/orders")({
   component: AdminOrdersPage,
 });
 
-function fmt(cents: number, currency = "EUR") {
-  return new Intl.NumberFormat("de-DE", { style: "currency", currency }).format(cents / 100);
+function fmt(cents: number, currency = "TRY") {
+  return new Intl.NumberFormat("tr-TR", { style: "currency", currency }).format(cents / 100);
 }
 
 function AdminOrdersPage() {
@@ -68,7 +78,7 @@ function AdminOrdersPage() {
         const { orders } = await list();
         setOrders(orders as Order[]);
       } catch (e: any) {
-        toast.error(e?.message ?? "Fehler beim Laden");
+        toast.error(e?.message ?? "Yüklenirken hata oluştu");
         setAuthorized(false);
       } finally {
         setLoading(false);
@@ -80,9 +90,9 @@ function AdminOrdersPage() {
     try {
       await update({ data: { orderId, status: status as any } });
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status } : o)));
-      toast.success("Status aktualisiert");
+      toast.success("Durum güncellendi");
     } catch (e: any) {
-      toast.error(e?.message ?? "Update fehlgeschlagen");
+      toast.error(e?.message ?? "Güncelleme başarısız");
     }
   };
 
@@ -91,67 +101,67 @@ function AdminOrdersPage() {
       <Nav />
       <main className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-bold">Bestellungen</h1>
+          <h1 className="text-[32px] font-bold tracking-[-0.04em]">Siparişler</h1>
           <Link to="/account">
-            <Button variant="outline" size="sm">Mein Konto</Button>
+            <Button variant="outline" size="sm">Hesabım</Button>
           </Link>
         </div>
 
-        {loading && <p className="text-muted-foreground">Lade…</p>}
+        {loading && <p className="text-secondary">Yükleniyor…</p>}
 
         {!loading && authorized === false && (
-          <div className="border border-border rounded-lg p-8 text-center">
-            <p className="text-lg font-medium mb-2">Kein Zugriff</p>
-            <p className="text-muted-foreground">Du hast keine Admin-Berechtigung.</p>
+          <div className="border border-outline-variant rounded-[10px] p-8 text-center bg-plaster">
+            <p className="text-[16px] font-bold mb-2">Erişim Reddedildi</p>
+            <p className="text-secondary">Admin yetkisine sahip değilsiniz.</p>
           </div>
         )}
 
         {!loading && authorized && orders.length === 0 && (
-          <p className="text-muted-foreground">Noch keine Bestellungen.</p>
+          <p className="text-secondary">Henüz sipariş bulunmuyor.</p>
         )}
 
         {!loading && authorized && orders.length > 0 && (
-          <div className="overflow-x-auto border border-border rounded-lg">
+          <div className="overflow-x-auto border border-outline-variant rounded-[10px]">
             <table className="w-full text-sm">
-              <thead className="bg-muted/40 text-left">
+              <thead className="bg-plaster text-left">
                 <tr>
-                  <th className="px-4 py-3">Datum</th>
-                  <th className="px-4 py-3">Nr.</th>
-                  <th className="px-4 py-3">Kunde</th>
-                  <th className="px-4 py-3">Ort</th>
-                  <th className="px-4 py-3 text-right">Summe</th>
-                  <th className="px-4 py-3">Status</th>
+                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Tarih</th>
+                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">No</th>
+                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Müşteri</th>
+                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Konum</th>
+                  <th className="px-4 py-3 text-right font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Tutar</th>
+                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Durum</th>
                 </tr>
               </thead>
               <tbody>
                 {orders.map((o) => (
-                  <tr key={o.id} className="border-t border-border hover:bg-muted/20">
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      {new Date(o.created_at).toLocaleString("de-DE")}
+                  <tr key={o.id} className="border-t border-outline-variant hover:bg-plaster/50">
+                    <td className="px-4 py-3 whitespace-nowrap text-secondary">
+                      {new Date(o.created_at).toLocaleString("tr-TR")}
                     </td>
                     <td className="px-4 py-3 font-mono text-xs">
-                      <Link to="/order/$id" params={{ id: o.id }} className="hover:underline">
+                      <Link to="/order/$id" params={{ id: o.id }} className="hover:underline text-cobalt font-bold">
                         #{o.id.slice(0, 8)}
                       </Link>
                     </td>
                     <td className="px-4 py-3">
-                      <div className="font-medium">{o.full_name}</div>
-                      <div className="text-xs text-muted-foreground">{o.email}</div>
+                      <div className="font-semibold text-foreground">{o.full_name}</div>
+                      <div className="text-xs text-secondary">{o.email}</div>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 text-secondary">
                       {o.shipping_city}, {o.shipping_country}
                     </td>
-                    <td className="px-4 py-3 text-right font-medium">
+                    <td className="px-4 py-3 text-right font-mono font-bold">
                       {fmt(o.total_cents, o.currency)}
                     </td>
                     <td className="px-4 py-3">
                       <select
                         value={o.status}
                         onChange={(e) => handleStatus(o.id, e.target.value)}
-                        className="bg-background border border-border rounded px-2 py-1 text-sm"
+                        className="bg-white border border-outline-variant rounded-[6px] px-2 py-1 text-sm text-foreground"
                       >
                         {STATUSES.map((s) => (
-                          <option key={s} value={s}>{s}</option>
+                          <option key={s} value={s}>{STATUS_TR[s] ?? s}</option>
                         ))}
                       </select>
                     </td>

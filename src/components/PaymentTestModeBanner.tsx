@@ -3,16 +3,8 @@ const clientToken = import.meta.env.VITE_PAYMENTS_CLIENT_TOKEN;
 export function PaymentTestModeBanner() {
   if (!clientToken?.startsWith("pk_test_")) return null;
   return (
-    <div className="w-full bg-orange-100 border-b border-orange-300 px-4 py-2 text-center text-sm text-orange-800">
-      Alle Zahlungen in der Vorschau sind im Testmodus.{" "}
-      <a
-        href="https://docs.lovable.dev/features/payments#test-and-live-environments"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="underline font-medium"
-      >
-        Mehr erfahren
-      </a>
+    <div className="w-full bg-blue-50 border-b border-blue-200 px-4 py-2 text-center text-sm text-blue-800">
+      Tüm ödemeler şu anda test modunda çalışmaktadır. Gerçek ödeme alınmaz.
     </div>
   );
 }

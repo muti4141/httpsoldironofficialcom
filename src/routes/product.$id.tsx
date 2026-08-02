@@ -290,8 +290,8 @@ function ProductPage() {
                   <Accordion title="Detaylar & Malzeme">
                     <div className="flex flex-col gap-2 text-[14px]">
                       <Row k="Malzeme" v="100% Premium Pamuk" />
-                      <Row k="Gramaj" v="300 g/m² (Heavyweight)" />
-                      <Row k="Kesim" v="Athletic Oversize Fit" />
+                      <Row k="Gramaj" v="300 g/m² (Ağır Gramaj)" />
+                      <Row k="Kesim" v="Atletik Oversize Kesim" />
                     </div>
                   </Accordion>
                   <Accordion title="Yıkama Talimatı">
