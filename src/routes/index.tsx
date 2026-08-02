@@ -571,7 +571,6 @@ function Home() {
                 textDecoration: "none",
                 alignSelf: "flex-start",
               }}
-              className="link-underline"
             >
               Koleksiyonu Keşfet
             </Link>
