@@ -25,7 +25,7 @@ const navLinks = [
 
 /* Caption beats — logo devrinden sonra */
 const beats = [
-  { text: "Disiplinden dövülmüş.",  from: 0.16, to: 0.30, pos: "upper" },
+  { text: "Disiplinden dövülmüş.",  from: 0.02, to: 0.22, pos: "upper" },
   { text: "Ağır pamuk. Gerçek kesim.", from: 0.38, to: 0.52, pos: "lower" },
   { text: "Saf formül. Sıfır dolgu.",  from: 0.70, to: 0.86, pos: "lower" },
 ];
@@ -35,7 +35,6 @@ function Home() {
   const stageRef = useRef<HTMLDivElement>(null);
   const pctRef   = useRef<HTMLSpanElement>(null);
   const railRef  = useRef<HTMLDivElement>(null);
-  const logoRef  = useRef<HTMLDivElement>(null);
   const ctaRef   = useRef<HTMLDivElement>(null);
   const beatRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const [ready, setReady] = useState(false);
@@ -80,12 +79,6 @@ function Home() {
         pctRef.current.textContent = v < 10 ? `0${v}` : String(v);
       }
       if (railRef.current) railRef.current.style.width = `${p * 100}%`;
-
-      const logoOut = Math.min(1, Math.max(0, p / 0.13));
-      if (logoRef.current) {
-        logoRef.current.style.opacity = String(1 - logoOut);
-        logoRef.current.style.transform = `scale(${1 - logoOut * 0.1}) translateY(${-logoOut * 40}px)`;
-      }
 
       const ctaIn = Math.min(1, Math.max(0, (p - 0.88) / 0.08));
       if (ctaRef.current) {
@@ -223,29 +216,6 @@ function Home() {
             transition: "opacity .8s ease",
           }}>
             Yükleniyor
-          </div>
-
-          {/* ── AÇILIŞ: LOGO ── */}
-          <div ref={logoRef} aria-hidden style={{
-            position: "absolute", inset: 0, zIndex: 12,
-            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: "28px", pointerEvents: "none",
-            opacity: 1, willChange: "opacity, transform",
-          }}>
-            <img
-              src="/images/logo.png"
-              alt="OLD IRON"
-              style={{
-                width: "min(58vw, 560px)", maxHeight: "52vh", objectFit: "contain",
-                filter: "drop-shadow(0 8px 44px rgba(0,0,0,.6))",
-              }}
-            />
-            <span style={{
-              fontFamily: "'JetBrains Mono', monospace", fontSize: "10px",
-              letterSpacing: ".28em", textTransform: "uppercase", color: "rgba(255,255,255,.5)",
-            }}>
-              Kaydır
-            </span>
           </div>
 
           {/* ── CAPTION BEATS ── */}
