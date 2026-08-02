@@ -1,6 +1,7 @@
 @import "tailwindcss" source(none);
 @source "../src";
 @import "tw-animate-css";
+@import "./design/variables.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -42,6 +43,18 @@
   --color-fog:                      var(--fog);
   --color-graphite:                 var(--graphite);
   --color-pale-iris:                var(--pale-iris);
+
+  /* Resmi token adları (src/design/theme.css ile birebir) */
+  --color-electric-cobalt:          #000aff;
+  --color-ink-black:                #111111;
+  --color-pure-white:               #ffffff;
+  --color-charcoal:                 #3b3b3b;
+  --font-roobert:                   "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-space-mono:                "Space Mono", ui-monospace, monospace;
+  --radius-lg:                      10px;
+  --radius-xl:                      14.4px;
+  --radius-2xl:                     20px;
+  --radius-3xl:                     30px;
 
   --spacing-stack-sm:   16px;
   --spacing-stack-md:   40px;
