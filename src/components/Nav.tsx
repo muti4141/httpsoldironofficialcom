@@ -43,13 +43,12 @@ export function Nav() {
   return (
     <>
       {/* Duyuru barı — her sayfada sabit üstte */}
-      <div className="announcement-bar">
+      <div className="announcement-bar oi-annbdark">
         <span>1500₺ üzeri ücretsiz kargo · Almanya kalitesi · Lab onaylı</span>
       </div>
 
       <nav
-        className={`nav-bar fixed top-0 z-50 w-full ${scrolled ? "scrolled" : ""}`}
-        style={{ background: "#ffffff", borderBottom: "1px solid #ecedee" }}
+        className={`nav-bar oi-navdark fixed top-0 z-50 w-full ${scrolled ? "scrolled" : ""}`}
       >
         <div className="relative flex justify-between items-center w-full px-[20px] md:px-[52px] h-[56px] max-w-[1440px] mx-auto">
 
@@ -67,7 +66,7 @@ export function Nav() {
             {/* Mobile hamburger */}
             <button
               className="md:hidden flex items-center justify-center w-8 h-8 cursor-pointer"
-              style={{ color: "#111111" }}
+              style={{ color: "#f4f4f4" }}
               onClick={() => setMobileOpen((v) => !v)}
               aria-label="Menü" aria-expanded={mobileOpen}
             >
@@ -86,11 +85,11 @@ export function Nav() {
               alt=""
               aria-hidden
               className="h-[26px] w-auto object-contain"
-              style={{ filter: "invert(1) brightness(0.15)" }}
+              style={{}}
             />
             <span
               className="font-bold leading-none"
-              style={{ fontSize: "20px", letterSpacing: "-0.04em", color: "#111111" }}
+              style={{ fontSize: "20px", letterSpacing: "-0.04em", color: "#f4f4f4" }}
             >
               old iron
             </span>
@@ -101,7 +100,7 @@ export function Nav() {
             {/* Search */}
             <button
               className="hidden md:flex items-center justify-center w-8 h-8 cursor-pointer transition-opacity hover:opacity-70"
-              style={{ color: "#111111" }}
+              style={{ color: "#f4f4f4" }}
               aria-label="Ürün ara"
               onClick={() => navigate({ to: "/shop" })}
             >
@@ -113,30 +112,26 @@ export function Nav() {
               <button
                 onClick={() => setAccountOpen((v) => !v)}
                 className="flex items-center h-8 cursor-pointer transition-colors"
-                style={{ fontSize: "13px", fontWeight: 500, letterSpacing: "-0.04em", color: "#737780" }}
+                style={{ fontSize: "13px", fontWeight: 500, letterSpacing: "-0.04em", color: "rgba(255,255,255,0.6)" }}
                 aria-label="Hesabım" aria-expanded={accountOpen}
               >
                 {user ? "Hesabım" : "Giriş"}
               </button>
 
               {accountOpen && (
-                <div className="absolute right-0 top-full mt-3 w-52
-                  bg-white rounded-[10px]
-                  shadow-[0_8px_32px_rgba(0,0,0,0.12)]
-                  py-2 overflow-hidden"
-                  style={{ border: "1px solid #ecedee" }}
-                >
+                <div className="absolute right-0 top-full mt-3 w-52 oi-glass rounded-[10px]
+                  shadow-[0_12px_40px_rgba(0,0,0,0.6)] py-2 overflow-hidden">
                   {user ? (
                     <>
-                      <div className="px-4 py-3 mb-1" style={{ borderBottom: "1px solid #ecedee" }}>
-                        <p className="text-[9px] uppercase tracking-[0.25em] mb-1" style={{ color: "#737780" }}>Giriş Yapıldı</p>
-                        <p className="text-[12px] truncate font-semibold" style={{ color: "#111111" }}>{user.email}</p>
+                      <div className="px-4 py-3 mb-1" style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+                        <p className="text-[9px] uppercase tracking-[0.25em] mb-1" style={{ color: "rgba(255,255,255,0.5)" }}>Giriş Yapıldı</p>
+                        <p className="text-[12px] truncate font-semibold" style={{ color: "#f4f4f4" }}>{user.email}</p>
                       </div>
                       <MenuLink to="/account" onClick={() => setAccountOpen(false)}>Hesabım</MenuLink>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left px-4 py-2.5 text-[12px] font-medium cursor-pointer transition-colors hover:bg-[#ecedee]"
-                        style={{ color: "#737780" }}
+                        className="w-full text-left px-4 py-2.5 text-[12px] font-medium cursor-pointer transition-colors hover:bg-white/10"
+                        style={{ color: "rgba(255,255,255,0.7)" }}
                       >
                         Çıkış Yap
                       </button>
@@ -149,8 +144,8 @@ export function Nav() {
                       <MenuLink to="/auth" search={{ mode: "signup", redirect: "/" }} onClick={() => setAccountOpen(false)}>
                         Hesap Oluştur
                       </MenuLink>
-                      <div className="px-4 pt-3 pb-2 mt-1" style={{ borderTop: "1px solid #ecedee" }}>
-                        <p className="text-[10px] leading-relaxed" style={{ color: "#737780" }}>Üye olarak özel fırsatlardan yararlan.</p>
+                      <div className="px-4 pt-3 pb-2 mt-1" style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}>
+                        <p className="text-[10px] leading-relaxed" style={{ color: "rgba(255,255,255,0.5)" }}>Üye olarak özel fırsatlardan yararlan.</p>
                       </div>
                     </>
                   )}
@@ -162,14 +157,14 @@ export function Nav() {
             <Link
               to="/cart"
               className="relative flex items-center justify-center w-8 h-8 cursor-pointer transition-opacity hover:opacity-70"
-              style={{ color: "#111111" }}
+              style={{ color: "#f4f4f4" }}
               aria-label={`Sepet (${cartCount} ürün)`}
             >
               <Icon name="shopping_bag" size={20} />
               {cartCount > 0 && (
                 <span
-                  className="absolute -top-1.5 -right-1.5 text-white text-[9px] min-w-[17px] h-[17px] px-1 flex items-center justify-center font-bold leading-none rounded-full"
-                  style={{ background: "#000aff" }}
+                  className="absolute -top-1.5 -right-1.5 text-[9px] min-w-[17px] h-[17px] px-1 flex items-center justify-center font-bold leading-none rounded-full"
+                  style={{ background: "#ffffff", color: "#080808" }}
                 >
                   {cartCount}
                 </span>
@@ -188,15 +183,15 @@ export function Nav() {
 
         <div
           className={`absolute right-0 top-0 bottom-0 w-[300px]
-          bg-white
+          oi-glass
           flex flex-col overflow-y-auto
           transition-transform duration-400 ease-out
           ${mobileOpen ? "translate-x-0" : "translate-x-full"}`}
-          style={{ borderLeft: "1px solid #ecedee" }}
+          style={{ borderLeft: "1px solid rgba(255,255,255,0.12)", background: "#0d0d0d" }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-6 h-[56px] flex-shrink-0" style={{ borderBottom: "1px solid #ecedee" }}>
-            <span className="font-bold" style={{ fontSize: "18px", letterSpacing: "-0.04em", color: "#111111" }}>old iron</span>
+          <div className="flex items-center justify-between px-6 h-[56px] flex-shrink-0" style={{ borderBottom: "1px solid rgba(255,255,255,0.12)" }}>
+            <span className="font-bold" style={{ fontSize: "18px", letterSpacing: "-0.04em", color: "#f4f4f4" }}>old iron</span>
             <button
               onClick={() => setMobileOpen(false)}
               className="w-8 h-8 flex items-center justify-center cursor-pointer"
@@ -212,35 +207,35 @@ export function Nav() {
             <MobileNavLink to="/shop" onClick={() => setMobileOpen(false)}>Mağaza</MobileNavLink>
             <MobileNavLink to="/cart" onClick={() => setMobileOpen(false)}>Sepetim {cartCount > 0 && `(${cartCount})`}</MobileNavLink>
 
-            <div className="mx-6 my-3 h-px" style={{ background: "#ecedee" }} />
+            <div className="mx-6 my-3 h-px" style={{ background: "rgba(255,255,255,0.12)" }} />
 
             <div className="px-6 mb-4">
               <p className="text-eyebrow mb-3">Spor Giyim</p>
               {["Oversize T-Shirt","Atlet & Stringer","Şort","Hoodie","Aksesuar"].map((c) => (
                 <Link key={c} to="/shop" onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 py-2 text-[13px] transition-colors cursor-pointer font-medium hover:text-[#111111]"
+                  className="flex items-center gap-2 py-2 text-[13px] transition-colors cursor-pointer font-medium hover:text-white"
                   style={{ color: "#737780" }}>
-                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#000aff" }} />
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#ffffff", color: "#080808" }} />
                   {c}
                 </Link>
               ))}
             </div>
 
-            <div className="mx-6 my-1 h-px" style={{ background: "#ecedee" }} />
+            <div className="mx-6 my-1 h-px" style={{ background: "rgba(255,255,255,0.12)" }} />
 
             <div className="px-6 mt-4 mb-4">
               <p className="text-eyebrow mb-3">Supplement</p>
               {["Protein","Kreatin","Pre-Workout","Amino Asit","Thermo & Enerji"].map((c) => (
                 <Link key={c} to="/shop" onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-2 py-2 text-[13px] transition-colors cursor-pointer font-medium hover:text-[#111111]"
+                  className="flex items-center gap-2 py-2 text-[13px] transition-colors cursor-pointer font-medium hover:text-white"
                   style={{ color: "#737780" }}>
-                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#000aff" }} />
+                  <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#ffffff", color: "#080808" }} />
                   {c}
                 </Link>
               ))}
             </div>
 
-            <div className="mx-6 h-px mb-4" style={{ background: "#ecedee" }} />
+            <div className="mx-6 h-px mb-4" style={{ background: "rgba(255,255,255,0.12)" }} />
 
             <div className="px-6 space-y-1">
               {user ? (
@@ -248,13 +243,13 @@ export function Nav() {
                   <Link to="/account" onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 py-2.5 text-[13px] font-semibold cursor-pointer"
                     style={{ color: "#737780" }}>
-                    <Icon name="account_circle" size={16} style={{ color: "#111111" }} />
+                    <Icon name="account_circle" size={16} style={{ color: "#f4f4f4" }} />
                     Hesabım
                   </Link>
                   <button onClick={handleLogout}
                     className="flex items-center gap-2 py-2.5 text-[13px] font-semibold cursor-pointer w-full"
                     style={{ color: "#737780" }}>
-                    <Icon name="logout" size={16} style={{ color: "#111111" }} />
+                    <Icon name="logout" size={16} style={{ color: "#f4f4f4" }} />
                     Çıkış Yap
                   </button>
                 </>
@@ -264,7 +259,7 @@ export function Nav() {
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 py-2.5 text-[13px] font-semibold cursor-pointer"
                     style={{ color: "#737780" }}>
-                    <Icon name="login" size={16} style={{ color: "#111111" }} />
+                    <Icon name="login" size={16} style={{ color: "#f4f4f4" }} />
                     Giriş Yap
                   </Link>
                   <Link to="/auth" search={{ mode: "signup", redirect: "/" } as never}
@@ -280,7 +275,7 @@ export function Nav() {
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid #ecedee" }}>
+          <div className="px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid rgba(255,255,255,0.12)" }}>
             <p className="text-[10px] uppercase tracking-widest" style={{ color: "#737780" }}>Almanya'da Üretildi · Türkiye'ye Teslim</p>
           </div>
         </div>
@@ -292,8 +287,8 @@ export function Nav() {
 function MobileNavLink({ to, onClick, children }: { to: string; onClick?: () => void; children: React.ReactNode }) {
   return (
     <Link to={to} onClick={onClick}
-      className="flex items-center px-6 py-3.5 text-[14px] font-bold transition-colors cursor-pointer tracking-[-0.01em] hover:bg-[#ecedee]"
-      style={{ color: "#111111" }}>
+      className="flex items-center px-6 py-3.5 text-[14px] font-bold transition-colors cursor-pointer tracking-[-0.01em] hover:bg-white/10"
+      style={{ color: "#f4f4f4" }}>
       {children}
     </Link>
   );
@@ -302,7 +297,7 @@ function MobileNavLink({ to, onClick, children }: { to: string; onClick?: () => 
 function MenuLink({ to, search, onClick, children }: { to: string; search?: Record<string,string>; onClick?: () => void; children: React.ReactNode }) {
   return (
     <Link to={to} search={search as never} onClick={onClick}
-      className="block px-4 py-2.5 text-[12px] font-medium transition-colors cursor-pointer hover:bg-[#ecedee]"
+      className="block px-4 py-2.5 text-[12px] font-medium transition-colors cursor-pointer hover:bg-white/10"
       style={{ color: "#737780" }}>
       {children}
     </Link>

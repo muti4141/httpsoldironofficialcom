@@ -1201,3 +1201,182 @@ html.lenis, html.lenis body { height: auto; }
 }
 .carousel-arrow:hover { border-color: #111111; color: #111111; transform: translateY(-1px); }
 .carousel-arrow:active { transform: scale(0.96); }
+
+/* ══════════════════════════════════════════════════════════════════
+   KARANLIK GLASS SİSTEMİ — tüm site ana sayfayla bütünleşik
+════════════════════════════════════════════════════════════════════ */
+:root {
+  --z-bg:       #080808;
+  --z-card:     #181818;
+  --z-card-2:   #1f1f1f;
+  --z-line:     rgba(255, 255, 255, 0.12);
+  --z-text:     #f4f4f4;
+  --z-muted:    rgba(255, 255, 255, 0.55);
+  --z-dim:      rgba(255, 255, 255, 0.38);
+  --z-bone:     #dcdcdc;
+}
+
+/* Karanlık sayfa gövdesi */
+.oi-dark {
+  background: var(--z-bg);
+  color: var(--z-text);
+  min-height: 100vh;
+  font-family: "Inter Tight", Inter, sans-serif;
+}
+
+/* Cam panel */
+.oi-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+/* Ürün kartı — referanstaki koyu kart */
+.oi-card {
+  background: var(--z-card);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  text-decoration: none;
+  position: relative;
+  transition: background .35s ease, transform .5s cubic-bezier(.22,1,.36,1);
+}
+.oi-card:hover { background: var(--z-card-2); transform: translateY(-5px); }
+
+/* Kart içi ürün sahnesi */
+.oi-stage {
+  aspect-ratio: 1 / 1;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .6s cubic-bezier(.22,1,.36,1);
+}
+.oi-card:hover .oi-stage { transform: scale(1.04); }
+
+/* Sıra numarası kutusu */
+.oi-rank {
+  display: inline-flex; align-items: center;
+  padding: 5px 22px 5px 10px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 6px;
+  font-weight: 700; font-size: 16px; letter-spacing: -.02em;
+  color: var(--z-text); align-self: flex-start;
+}
+
+/* Marka çipi — beyaz kare */
+.oi-chip {
+  width: 38px; height: 38px; flex-shrink: 0;
+  background: #ffffff; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  overflow: hidden;
+}
+.oi-chip img { width: 74%; filter: invert(1) brightness(.15); }
+
+/* Mono metadata */
+.oi-mono {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px; letter-spacing: .07em; text-transform: uppercase;
+  color: var(--z-muted);
+}
+.oi-price {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px; font-weight: 700; color: var(--z-text);
+}
+.oi-price-strike {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px; color: var(--z-dim); text-decoration: line-through;
+}
+
+/* Rozetler — mavi yok */
+.oi-badge {
+  display: inline-flex; align-items: center;
+  padding: 4px 10px; border-radius: 999px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  background: #ffffff; color: #080808;
+}
+.oi-badge.muted { background: rgba(255,255,255,.15); color: var(--z-muted); }
+
+/* Filtre pill'leri */
+.oi-fpill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 18px; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: transparent; color: var(--z-muted);
+  font-size: 13px; letter-spacing: -.02em; cursor: pointer;
+  transition: border-color .25s, background .25s, color .25s;
+  white-space: nowrap;
+}
+.oi-fpill:hover  { border-color: rgba(255,255,255,.4); color: var(--z-text); }
+.oi-fpill.active { background: #ffffff; border-color: #ffffff; color: #080808; font-weight: 600; }
+.oi-fpill .cnt   { font-family: "JetBrains Mono", monospace; font-size: 11px; opacity: .6; }
+
+/* Butonlar */
+.oi-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: #ffffff; color: #080808;
+  font-size: 14px; font-weight: 600; letter-spacing: -.02em;
+  padding: 14px 28px; border-radius: 10px; border: none;
+  cursor: pointer; text-decoration: none;
+  transition: transform .3s cubic-bezier(.22,1,.36,1), background .25s;
+}
+.oi-btn:hover  { background: #ffffff; transform: translateY(-2px); }
+.oi-btn:active { transform: translateY(0) scale(.98); }
+
+.oi-btn-ghost {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  background: transparent; color: var(--z-text);
+  border: 1px solid rgba(255,255,255,.25); border-radius: 10px;
+  font-size: 14px; font-weight: 500; letter-spacing: -.02em;
+  padding: 13px 28px; cursor: pointer; text-decoration: none;
+  transition: border-color .25s, background .25s;
+}
+.oi-btn-ghost:hover { border-color: #ffffff; background: rgba(255,255,255,.06); }
+
+/* Girdi */
+.oi-input {
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 10px; padding: 13px 16px;
+  font-size: 14px; color: var(--z-text); letter-spacing: -.02em;
+  outline: none; width: 100%;
+  transition: border-color .25s;
+}
+.oi-input::placeholder { color: var(--z-dim); }
+.oi-input:focus { border-color: rgba(255,255,255,.4); }
+
+/* Sepete ekle — kart hover'ında çıkar */
+.oi-add {
+  width: 100%; margin-top: 12px;
+  background: #ffffff; color: #080808;
+  font-size: 13px; font-weight: 600; letter-spacing: -.02em;
+  padding: 10px; border-radius: 8px; border: none; cursor: pointer;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .3s ease, transform .4s cubic-bezier(.22,1,.36,1);
+}
+.oi-card:hover .oi-add { opacity: 1; transform: translateY(0); }
+.oi-add:active { transform: scale(.97); }
+
+/* Karanlık nav */
+.nav-bar.oi-navdark {
+  background: rgba(8, 8, 8, 0.85) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--z-line) !important;
+}
+.oi-navdark .shop-pill {
+  background: transparent; border-color: rgba(255,255,255,.25); color: var(--z-text);
+}
+.oi-navdark .shop-pill.active { background: #ffffff; border-color: #ffffff; color: #080808; }
+
+/* Karanlık duyuru barı */
+.announcement-bar.oi-annbdark {
+  background: #111111;
+  border-bottom: 1px solid var(--z-line);
+}
+
+@media (max-width: 768px) {
+  .oi-card { padding: 12px; }
+}

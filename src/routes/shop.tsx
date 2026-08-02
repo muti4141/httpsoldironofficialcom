@@ -1,10 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { ProductPlate } from "@/components/ProductPlate";
-import { RevealText } from "@/components/RevealText";
 import { useParallax } from "@/components/SmoothScroll";
 import { products, type Product } from "@/data/products";
 import { useCart } from "@/stores/cart";
@@ -13,7 +11,10 @@ export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
       { title: "Mağaza — OLD IRON | Spor Giyim & Supplement" },
-      { name: "description", content: "Premium Spor Giyim ve Supplement. Oversize Tee, Stringer, Şort, Protein, Kreatin ve daha fazlası." },
+      { name: "description", content: "Premium spor giyim ve analiz raporlu elit supplement. Oversize tee, stringer, şort, protein, kreatin ve daha fazlası." },
+    ],
+    links: [
+      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" },
     ],
   }),
   component: Shop,
@@ -35,7 +36,8 @@ const SUPPLEMENT_CATEGORIES = [
 
 type Tab = "all" | "apparel" | "supplement";
 
-/* ── Rozet metni her zaman Türkçe ──────────────────────────────────── */
+const tl = (n: number) => `₺${n.toFixed(2).replace(".", ",")}`;
+
 function badgeLabel(badge?: string) {
   if (!badge) return null;
   const b = badge.toLocaleLowerCase("tr");
@@ -43,50 +45,76 @@ function badgeLabel(badge?: string) {
   return "ÇOK SATAN";
 }
 
-/* ── Reveal hook (index.tsx ile aynı desen) ─────────────────────────── */
-function useReveal(deps: unknown[] = []) {
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("visible");
-            observer.unobserve(e.target);
-          }
-        }),
-      { threshold: 0.06, rootMargin: "0px 0px -50px 0px" }
-    );
-    document
-      .querySelectorAll(
-        ".reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-wipe,.reveal-blur,.press-item"
-      )
-      .forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
+/* ── Ürün görseli — koyu sahne ─────────────────────────────────────── */
+function Visual({ p }: { p: Product }) {
+  return (
+    <div className="oi-stage" style={{ background: "#101010" }}>
+      {p.gallery?.length ? (
+        <img
+          src={p.gallery[0]}
+          alt={p.name}
+          loading="lazy"
+          style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      ) : (
+        <img
+          src="/images/logo.png"
+          alt=""
+          aria-hidden
+          style={{ width: "58%", objectFit: "contain", opacity: 0.85 }}
+        />
+      )}
+    </div>
+  );
 }
 
-/* ── Pill kontrol ───────────────────────────────────────────────────── */
-function pillStyle(active: boolean): React.CSSProperties {
-  return {
-    display: "inline-flex",
-    alignItems: "center",
-    gap: "8px",
-    padding: "9px 18px",
-    borderRadius: "30px",
-    fontSize: "13px",
-    fontWeight: 500,
-    letterSpacing: "-0.04em",
-    lineHeight: 1.2,
-    border: "none",
-    cursor: "pointer",
-    whiteSpace: "nowrap",
-    background: active ? "#000aff" : "#ecedee",
-    color: active ? "#ffffff" : "#111111",
-    transition: "background 0.25s ease, color 0.25s ease, transform 0.25s cubic-bezier(0.22,1,0.36,1)",
-  };
+/* ── Ürün kartı ────────────────────────────────────────────────────── */
+function Card({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) {
+  const label = badgeLabel(p.badge);
+  return (
+    <Link to="/product/$id" params={{ id: p.id }} className="oi-card">
+      {label && (
+        <span
+          className={`oi-badge ${label === "YENİ" ? "" : "muted"}`}
+          style={{ position: "absolute", top: 14, left: 14, zIndex: 3 }}
+        >
+          {label}
+        </span>
+      )}
+
+      <Visual p={p} />
+
+      <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 16 }}>
+        <span className="oi-chip" aria-hidden>
+          <img src="/images/logo.png" alt="" />
+        </span>
+        <div style={{ minWidth: 0, flexGrow: 1 }}>
+          <p style={{
+            fontSize: 15, fontWeight: 700, color: "#f4f4f4", letterSpacing: "-0.02em",
+            lineHeight: 1.2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+          }}>
+            {p.name}
+          </p>
+          <p className="oi-mono" style={{ marginTop: 3, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            {p.categoryLabel}
+          </p>
+        </div>
+        <div style={{ textAlign: "right", flexShrink: 0 }}>
+          <span className="oi-price">{tl(p.price)}</span>
+          {p.originalPrice && (
+            <div className="oi-price-strike" style={{ marginTop: 2 }}>{tl(p.originalPrice)}</div>
+          )}
+        </div>
+      </div>
+
+      <button className="oi-add" onClick={(e) => { e.preventDefault(); onAdd(p); }}>
+        Sepete Ekle
+      </button>
+    </Link>
+  );
 }
 
+/* ══════════════════════════════════════════════════════════════════ */
 function Shop() {
   const [activeTab, setActiveTab] = useState<Tab>("all");
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -94,13 +122,15 @@ function Shop() {
   const [sortBy, setSortBy] = useState<"default" | "price-asc" | "price-desc">("default");
   const [query, setQuery] = useState("");
 
-  const toggleCategory = (cat: string) => {
+  useParallax();
+
+  const add = useCart((s) => s.add);
+  const q = query.trim().toLocaleLowerCase("tr");
+
+  const toggleCategory = (cat: string) =>
     setSelectedCategories((prev) =>
       prev.includes(cat) ? prev.filter((c) => c !== cat) : [...prev, cat]
     );
-  };
-
-  const q = query.trim().toLocaleLowerCase("tr");
 
   const filtered = products
     .filter((p) => {
@@ -108,7 +138,7 @@ function Shop() {
       if (activeTab === "supplement" && p.type !== "supplement") return false;
       if (selectedCategories.length > 0 && !selectedCategories.includes(p.category)) return false;
       if (p.price > maxPrice) return false;
-      if (q && !`${p.name} ${p.subtitle} ${p.categoryLabel}`.toLocaleLowerCase("tr").includes(q)) return false;
+      if (q && !`${p.name} ${p.categoryLabel} ${p.subtitle}`.toLocaleLowerCase("tr").includes(q)) return false;
       return true;
     })
     .sort((a, b) => {
@@ -117,390 +147,189 @@ function Shop() {
       return 0;
     });
 
-  const currentCategories =
+  const categories =
     activeTab === "supplement" ? SUPPLEMENT_CATEGORIES :
     activeTab === "apparel"    ? APPAREL_CATEGORIES :
     [...APPAREL_CATEGORIES, ...SUPPLEMENT_CATEGORIES];
 
   const hasFilters = selectedCategories.length > 0 || maxPrice < 2000 || q.length > 0;
 
-  useReveal([filtered.length, activeTab, sortBy]);
-  useParallax();
+  const counts = {
+    all: products.length,
+    apparel: products.filter((p) => p.type === "apparel").length,
+    supplement: products.filter((p) => p.type === "supplement").length,
+  };
+
+  const handleAdd = (p: Product) => {
+    add(p, p.type === "apparel" ? "M" : "Standart");
+    toast.success(`${p.name} sepete eklendi`);
+  };
+
+  const clearFilters = () => {
+    setSelectedCategories([]);
+    setMaxPrice(2000);
+    setQuery("");
+  };
 
   return (
-    <div style={{ background: "#ffffff", color: "#111111", minHeight: "100vh", overflowX: "hidden" }}>
-
+    <div className="oi-dark">
       <Nav />
 
-      <main style={{ paddingTop: "104px" }}>
+      <main style={{ paddingTop: 104 }}>
+        <div style={{ maxWidth: 1440, margin: "0 auto", padding: "0 clamp(20px, 4vw, 48px)" }}>
 
-        {/* ══════════════════════════════════════════════════════════
-            1. BAŞLIK BANDI
-        ══════════════════════════════════════════════════════════ */}
-        <section style={{ background: "#ecedee", padding: "72px 0 56px" }}>
-          <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 20px" }}>
-            <div className="shop-inner">
-              <div className="reveal-wipe">
-                <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Koleksiyon</p>
-                <RevealText
-                  as="h1"
-                  text="mağaza"
-                  style={{
-                    fontSize: "clamp(40px,7vw,64px)",
-                    fontWeight: 700,
-                    letterSpacing: "-0.04em",
-                    lineHeight: 1.0,
-                    color: "#111111",
-                    textTransform: "lowercase",
-                  }}
-                />
-              </div>
+          {/* ── Başlık + sekmeler — kompakt ── */}
+          <header style={{ paddingTop: 36, paddingBottom: 20 }}>
+            <p className="oi-mono" style={{ marginBottom: 10 }}>Koleksiyon</p>
+            <h1 style={{
+              fontSize: "clamp(36px, 5.5vw, 60px)", fontWeight: 700,
+              letterSpacing: "-0.04em", lineHeight: 1.0, color: "#f4f4f4",
+              textTransform: "lowercase",
+            }}>
+              mağaza
+            </h1>
+            <p style={{
+              fontSize: 15, color: "rgba(255,255,255,0.55)", letterSpacing: "-0.02em",
+              marginTop: 12, maxWidth: 520, lineHeight: 1.45,
+            }}>
+              Premium spor giyim &amp; analiz raporlu elit supplement.
+            </p>
 
-              <p
-                className="reveal"
-                style={{
-                  fontSize: "16px",
-                  color: "#737780",
-                  letterSpacing: "-0.04em",
-                  lineHeight: 1.5,
-                  maxWidth: "480px",
-                  marginTop: "16px",
-                }}
-              >
-                Premium spor giyim & supplement. Sınırları zorlayanlara yönelik ekipman.
-              </p>
-
-              {/* Sekmeler — pill */}
-              <div
-                className="reveal"
-                style={{ display: "flex", gap: "8px", marginTop: "32px", flexWrap: "wrap" }}
-              >
-                {(["all", "apparel", "supplement"] as Tab[]).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => { setActiveTab(tab); setSelectedCategories([]); }}
-                    style={pillStyle(activeTab === tab)}
-                  >
-                    {tab === "all" ? "Tümü" : tab === "apparel" ? "Spor Giyim" : "Supplement"}
-                    <span
-                      className="font-mono"
-                      style={{ fontSize: "11px", letterSpacing: 0, opacity: 0.6 }}
-                    >
-                      {tab === "all" ? products.length : products.filter((p) => p.type === tab).length}
-                    </span>
-                  </button>
-                ))}
-              </div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 22 }}>
+              {([
+                { tab: "all" as Tab,        label: "Tümü",       n: counts.all },
+                { tab: "apparel" as Tab,    label: "Spor Giyim", n: counts.apparel },
+                { tab: "supplement" as Tab, label: "Supplement", n: counts.supplement },
+              ]).map(({ tab, label, n }) => (
+                <button
+                  key={tab}
+                  className={`oi-fpill ${activeTab === tab ? "active" : ""}`}
+                  onClick={() => { setActiveTab(tab); setSelectedCategories([]); }}
+                >
+                  {label}<span className="cnt">{n}</span>
+                </button>
+              ))}
             </div>
-          </div>
-        </section>
+          </header>
 
-        {/* ══════════════════════════════════════════════════════════
-            2. FİLTRE + IZGARA
-        ══════════════════════════════════════════════════════════ */}
-        <section style={{ background: "#ffffff", padding: "56px 0 80px" }}>
-          <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 20px" }}>
-            <div className="shop-inner">
-
-              {/* Filtre çubuğu */}
-              <div
-                className="reveal"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "20px",
-                  paddingBottom: "28px",
-                  borderBottom: "1px solid #d7d7d7",
-                  marginBottom: "32px",
-                }}
-              >
-                {/* Arama + sıralama */}
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-                  <input
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Ürün ara"
-                    aria-label="Ürün ara"
-                    style={{
-                      flex: "1 1 240px",
-                      minWidth: "200px",
-                      background: "#ecedee",
-                      border: "none",
-                      borderRadius: "30px",
-                      padding: "11px 20px",
-                      fontSize: "13px",
-                      color: "#111111",
-                      letterSpacing: "-0.04em",
-                      outline: "none",
-                    }}
-                  />
-                  <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-                    {([
-                      { value: "default",    label: "Varsayılan" },
-                      { value: "price-asc",  label: "Fiyat: Artan" },
-                      { value: "price-desc", label: "Fiyat: Azalan" },
-                    ] as const).map((s) => (
-                      <button
-                        key={s.value}
-                        onClick={() => setSortBy(s.value)}
-                        style={pillStyle(sortBy === s.value)}
-                      >
-                        {s.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Kategoriler */}
-                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-                  <span
-                    className="text-eyebrow"
-                    style={{ marginRight: "4px" }}
-                  >
-                    Kategori
-                  </span>
-                  {currentCategories.map((c) => (
-                    <button
-                      key={c.value}
-                      onClick={() => toggleCategory(c.value)}
-                      aria-pressed={selectedCategories.includes(c.value)}
-                      style={pillStyle(selectedCategories.includes(c.value))}
-                    >
-                      {c.label}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Fiyat + temizle */}
-                <div
-                  style={{
-                    display: "flex",
-                    gap: "20px",
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
+          {/* ── Filtre çubuğu — cam panel ── */}
+          <section className="oi-glass" style={{ borderRadius: 12, padding: 16, marginBottom: 22 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+              <input
+                className="oi-input"
+                style={{ flexGrow: 1, minWidth: 200, maxWidth: 420 }}
+                placeholder="Ürün ara"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Ürün ara"
+              />
+              {([
+                { value: "default"    as const, label: "Varsayılan" },
+                { value: "price-asc"  as const, label: "Fiyat ↑" },
+                { value: "price-desc" as const, label: "Fiyat ↓" },
+              ]).map((s) => (
+                <button
+                  key={s.value}
+                  className={`oi-fpill ${sortBy === s.value ? "active" : ""}`}
+                  onClick={() => setSortBy(s.value)}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: "1 1 280px" }}>
-                    <span className="text-eyebrow" style={{ whiteSpace: "nowrap" }}>Maks. Fiyat</span>
-                    <input
-                      type="range"
-                      min={100}
-                      max={2000}
-                      step={50}
-                      value={maxPrice}
-                      onChange={(e) => setMaxPrice(Number(e.target.value))}
-                      aria-label="Maksimum fiyat"
-                      style={{
-                        flex: 1,
-                        minWidth: "140px",
-                        accentColor: "#000aff",
-                        height: "3px",
-                        cursor: "pointer",
-                      }}
-                    />
-                    <span className="text-price" style={{ whiteSpace: "nowrap" }}>₺{maxPrice.toFixed(2)}</span>
-                  </div>
+                  {s.label}
+                </button>
+              ))}
+            </div>
 
-                  {hasFilters && (
-                    <button
-                      onClick={() => { setSelectedCategories([]); setMaxPrice(2000); setQuery(""); }}
-                      className="link-underline"
-                      style={{
-                        fontSize: "13px",
-                        fontWeight: 500,
-                        letterSpacing: "-0.04em",
-                        color: "#000aff",
-                        background: "none",
-                        border: "none",
-                        padding: 0,
-                        cursor: "pointer",
-                      }}
-                    >
-                      Filtreleri Temizle
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Sonuç sayısı */}
-              <p className="text-brand-credit" style={{ marginBottom: "24px" }}>
-                {filtered.length} ürün
-              </p>
-
-              {/* Izgara */}
-              {filtered.length === 0 ? (
-                <div
-                  className="reveal"
-                  style={{
-                    background: "#ecedee",
-                    borderRadius: "10px",
-                    padding: "80px 24px",
-                    textAlign: "center",
-                  }}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 14, alignItems: "center" }}>
+              <span className="oi-mono" style={{ marginRight: 4 }}>Kategori</span>
+              {categories.map((c) => (
+                <button
+                  key={c.value}
+                  className={`oi-fpill ${selectedCategories.includes(c.value) ? "active" : ""}`}
+                  onClick={() => toggleCategory(c.value)}
                 >
-                  <p
-                    style={{
-                      fontSize: "20px",
-                      fontWeight: 600,
-                      letterSpacing: "-0.04em",
-                      color: "#111111",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    Ürün bulunamadı
-                  </p>
-                  <p style={{ fontSize: "13px", color: "#737780", letterSpacing: "-0.04em" }}>
-                    Filtreleri değiştirip tekrar dene.
-                  </p>
-                </div>
-              ) : (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-                    gap: "12px",
-                  }}
-                >
-                  {filtered.map((p, i) => (
-                    <ProductCard key={p.id} product={p} index={i} />
-                  ))}
-                </div>
+                  {c.label}
+                </button>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 16, flexWrap: "wrap" }}>
+              <span className="oi-mono" style={{ whiteSpace: "nowrap" }}>Maks. Fiyat</span>
+              <input
+                type="range" min={300} max={2000} step={50}
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(Number(e.target.value))}
+                style={{ flexGrow: 1, minWidth: 160, accentColor: "#ffffff" }}
+                aria-label="Maksimum fiyat"
+              />
+              <span className="oi-price" style={{ whiteSpace: "nowrap" }}>{tl(maxPrice)}</span>
+              {hasFilters && (
+                <button className="oi-fpill" onClick={clearFilters}>Filtreleri Temizle</button>
               )}
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* ══════════════════════════════════════════════════════════
-            3. SEO / MARKA METNİ
-        ══════════════════════════════════════════════════════════ */}
-        <section style={{ background: "#ecedee", padding: "80px 0" }}>
-          <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 20px" }}>
-            <div className="shop-inner">
-              <div className="reveal-wipe" style={{ marginBottom: "24px" }}>
-                <p className="text-eyebrow" style={{ marginBottom: "8px" }}>Marka</p>
-                <RevealText
-                  text="Türkiye'nin Elit Spor Markası"
-                  style={{
-                    fontSize: "clamp(32px,4vw,40px)",
-                    fontWeight: 700,
-                    letterSpacing: "-0.04em",
-                    lineHeight: 1.0,
-                    color: "#111111",
-                  }}
-                />
-              </div>
-              <p
-                className="reveal-right"
-                style={{
-                  fontSize: "16px",
-                  color: "#737780",
-                  letterSpacing: "-0.04em",
-                  lineHeight: 1.6,
-                  maxWidth: "640px",
-                }}
-              >
-                OLD IRON, premium spor giyim ve yüksek kaliteli supplementleri tek çatı altında sunuyor.
-                Giyimlerimiz 300 gsm pamuktan üretilir — uzlaşma tanımayan sporcular için tasarlanmıştır.
-                Supplementlerimiz dolgu maddesi içermez, lab testlidir ve maksimum etken madde
-                konsantrasyonu sunar. Disiplinden dövülmüş — elit için.
-              </p>
+          <p className="oi-mono" style={{ marginBottom: 16 }}>{filtered.length} ürün</p>
+
+          {/* ── Ürün ızgarası ── */}
+          {filtered.length > 0 ? (
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+              gap: 16,
+            }}>
+              {filtered.map((p) => (
+                <Card key={p.id} p={p} onAdd={handleAdd} />
+              ))}
             </div>
-          </div>
-        </section>
-      </main>
+          ) : (
+            <div className="oi-card" style={{ padding: 48, alignItems: "center", textAlign: "center" }}>
+              <p style={{ fontSize: 18, fontWeight: 600, color: "#f4f4f4", letterSpacing: "-0.02em" }}>
+                Sonuç bulunamadı
+              </p>
+              <p className="oi-mono" style={{ marginTop: 8, marginBottom: 20 }}>
+                Filtreleri değiştirip tekrar dene
+              </p>
+              <button className="oi-btn" onClick={clearFilters}>Filtreleri Temizle</button>
+            </div>
+          )}
 
-      <style>{`
-        @media (min-width: 768px) {
-          .shop-inner { padding-left: 52px; padding-right: 52px; }
-        }
-      `}</style>
+          {/* ── Güvence şeridi ── */}
+          <section style={{
+            display: "flex", flexWrap: "wrap", gap: "16px 40px",
+            justifyContent: "center", padding: "48px 0 0",
+            borderTop: "1px solid rgba(255,255,255,0.12)", marginTop: 56,
+          }}>
+            {[
+              ["300", "gsm premium pamuk"],
+              ["ISO 17025", "analiz raporlu"],
+              ["0", "dolgu maddesi"],
+              ["1500₺", "üzeri ücretsiz kargo"],
+              ["14", "gün koşulsuz iade"],
+            ].map(([k, v]) => (
+              <span key={v} className="oi-mono" style={{ whiteSpace: "nowrap" }}>
+                <b style={{ color: "rgba(255,255,255,0.85)", fontWeight: 700 }}>{k}</b> {v}
+              </span>
+            ))}
+          </section>
+
+          {/* ── Marka bloğu ── */}
+          <section style={{ padding: "64px 0 88px", maxWidth: 640 }}>
+            <h2 style={{
+              fontSize: "clamp(26px, 3.4vw, 40px)", fontWeight: 700,
+              letterSpacing: "-0.04em", lineHeight: 1.05, color: "#f4f4f4",
+              textTransform: "lowercase", marginBottom: 16,
+            }}>
+              disiplinden dövülmüş.
+            </h2>
+            <p style={{ fontSize: 16, lineHeight: 1.6, color: "rgba(255,255,255,0.55)", letterSpacing: "-0.02em" }}>
+              Her tişört 300 gramlık premium pamuktan, her supplement bağımsız
+              laboratuvar analiziyle üretiliyor. Etikette yazan, kutunun içinde.
+              Uzlaşma yok.
+            </p>
+          </section>
+        </div>
+      </main>
 
       <Footer />
     </div>
-  );
-}
-
-/* ── Ürün kartı ─────────────────────────────────────────────────────── */
-function ProductCard({ product: p, index }: { product: Product; index: number }) {
-  const add = useCart((s) => s.add);
-  const isSupp = p.type === "supplement";
-  const label = badgeLabel(p.badge);
-
-  return (
-    <Link
-      to="/product/$id"
-      params={{ id: p.id }}
-      className="product-card reveal-blur"
-      style={{
-        textDecoration: "none",
-        transitionDelay: `${(index % 12) * 60}ms`,
-        display: "block",
-        background: "#ecedee",
-      }}
-    >
-      {label && (
-        <span
-          className={`badge ${label === "YENİ" ? "badge-new" : "badge-new-color"}`}
-          style={{ position: "absolute", top: "12px", left: "12px", zIndex: 3 }}
-        >
-          {label}
-        </span>
-      )}
-
-      <ProductPlate product={p} ratio="4 / 5" />
-
-      <div style={{ marginTop: "16px" }}>
-        <p
-          style={{
-            fontSize: "16px",
-            fontWeight: 600,
-            color: "#111111",
-            letterSpacing: "-0.04em",
-            lineHeight: 1.2,
-          }}
-        >
-          {p.name}
-        </p>
-        <p className="text-brand-credit" style={{ marginTop: "4px" }}>By OLD IRON</p>
-        <p
-          style={{
-            fontSize: "13px",
-            color: "#737780",
-            letterSpacing: "-0.04em",
-            marginTop: "6px",
-            lineHeight: 1.4,
-          }}
-        >
-          {p.subtitle}
-          {isSupp && p.servings ? ` · ${p.servings} porsiyon` : ""}
-        </p>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
-          <span className="text-price">₺{p.price.toFixed(2)}</span>
-          {p.originalPrice && (
-            <>
-              <span className="text-price-strike">₺{p.originalPrice.toFixed(2)}</span>
-              <span className="badge badge-new-color" style={{ fontSize: "11px", padding: "2px 8px" }}>
-                -%{Math.round((1 - p.price / p.originalPrice) * 100)}
-              </span>
-            </>
-          )}
-        </div>
-      </div>
-
-      <button
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          add(p, isSupp ? "Standart" : "M");
-          toast.success(`${p.name} sepete eklendi`, { duration: 2000 });
-        }}
-        className="card-add-btn"
-        aria-label={`${p.name} sepete ekle`}
-      >
-        Sepete Ekle
-      </button>
-    </Link>
   );
 }
