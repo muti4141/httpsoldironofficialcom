@@ -12,6 +12,24 @@ export function ProductPlate({
   product: Product;
   ratio?: string;
 }) {
+  // Gerçek ürün görseli varsa onu göster
+  if (product.gallery?.length) {
+    return (
+      <img
+        src={product.gallery[0]}
+        alt={product.name}
+        loading="lazy"
+        style={{
+          aspectRatio: ratio,
+          width: "100%",
+          objectFit: "cover",
+          borderRadius: "10px",
+          display: "block",
+        }}
+      />
+    );
+  }
+
   const initial = product.name.replace(/[^A-Za-zÇĞİÖŞÜçğıöşü]/g, "").charAt(0).toLocaleUpperCase("tr");
 
   return (

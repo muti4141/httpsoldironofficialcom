@@ -17,6 +17,7 @@ export type Product = {
   image: string;
   video?: string;
   videoPoster?: string;
+  gallery?: string[];
   badge?: string;
   description: string;
   subtitle: string;
@@ -32,6 +33,28 @@ export const SUPPLEMENT_PLACEHOLDER = "https://images.unsplash.com/photo-1593095
 
 export const products: Product[] = [
   // ── GİYİM ────────────────────────────────────────────────────────────────────
+  {
+    id: "kolsuz-tee-burak",
+    name: "Kolsuz Oversize Tee",
+    category: "tops",
+    categoryLabel: "Üst Giyim",
+    type: "apparel",
+    price: 500,
+    image: "/images/products/burak/aci-1.jpg",
+    gallery: [
+      "/images/products/burak/aci-1.jpg",
+      "/images/products/burak/aci-2.jpg",
+      "/images/products/burak/aci-3.jpg",
+      "/images/products/burak/aci-4.jpg",
+      "/images/products/burak/aci-5.jpg",
+      "/images/products/burak/aci-6.jpg",
+    ],
+    video: "/videos/burak.mp4",
+    videoPoster: "/images/products/burak/aci-1.jpg",
+    badge: "Yeni",
+    subtitle: "Kesik Kol · Ağır Pamuk",
+    description: "Derin kol açıklığı, ağır gramaj pamuk. Salonda maksimum hareket özgürlüğü ve pump'ı gösteren oversize kesim.",
+  },
   {
     id: "iron-tee",
     name: "Oversize Tee 'Iron'",

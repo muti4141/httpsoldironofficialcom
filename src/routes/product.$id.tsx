@@ -100,6 +100,7 @@ function ProductPage() {
   const WEIGHTS = product.weights?.length  ? product.weights  : null;
 
   const [size,   setSize]   = useState(isSupp ? "" : "L");
+  const [galleryIdx, setGalleryIdx] = useState(0);
   const [flavor, setFlavor] = useState(FLAVORS?.[0] ?? "");
   const [weight, setWeight] = useState(WEIGHTS?.[0] ?? "");
 
@@ -165,15 +166,16 @@ function ProductPage() {
             ══════════════════════════════════════════════════════ */}
             <div className="pdp-grid" style={{ paddingBottom: "80px" }}>
 
-              {/* Sol — plaka */}
+              {/* Sol — galeri (gerçek görseller varsa) / plaka */}
               <div>
                 <div
                   className="reveal-scale"
                   style={{
                     background: "#ecedee",
                     borderRadius: "10px",
-                    padding: "24px",
+                    padding: product.gallery ? "0" : "24px",
                     position: "relative",
+                    overflow: "hidden",
                   }}
                 >
                   {label && (
@@ -184,33 +186,120 @@ function ProductPage() {
                       {label}
                     </span>
                   )}
-                  <ProductPlate product={product} ratio="1 / 1" />
+                  {product.gallery ? (
+                    galleryIdx === -1 && product.video ? (
+                      <video
+                        key="video"
+                        src={product.video}
+                        poster={product.videoPoster}
+                        autoPlay muted loop playsInline
+                        style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block", borderRadius: "10px" }}
+                      />
+                    ) : (
+                      <img
+                        key={galleryIdx}
+                        src={product.gallery[galleryIdx] ?? product.gallery[0]}
+                        alt={`${product.name} — açı ${galleryIdx + 1}`}
+                        style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block", borderRadius: "10px" }}
+                      />
+                    )
+                  ) : (
+                    <ProductPlate product={product} ratio="1 / 1" />
+                  )}
                 </div>
 
-                {/* Küçük plakalar */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "12px",
-                    marginTop: "12px",
-                  }}
-                >
-                  {[0, 1, 2].map((i) => (
-                    <div
-                      key={i}
-                      className="reveal-blur"
-                      style={{
-                        background: "#ecedee",
-                        borderRadius: "10px",
-                        padding: "10px",
-                        transitionDelay: `${i * 80}ms`,
-                      }}
-                    >
-                      <ProductPlate product={product} ratio="1 / 1" />
-                    </div>
-                  ))}
-                </div>
+                {/* Küçük kareler: her açı + video */}
+                {product.gallery ? (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(4, 1fr)",
+                      gap: "12px",
+                      marginTop: "12px",
+                    }}
+                  >
+                    {product.gallery.map((src, i) => (
+                      <button
+                        key={src}
+                        className="reveal-blur"
+                        onClick={() => setGalleryIdx(i)}
+                        aria-label={`Açı ${i + 1}`}
+                        style={{
+                          background: "#ecedee",
+                          border: galleryIdx === i ? "2px solid #000aff" : "2px solid transparent",
+                          borderRadius: "10px",
+                          padding: 0,
+                          cursor: "pointer",
+                          overflow: "hidden",
+                          transitionDelay: `${i * 60}ms`,
+                        }}
+                      >
+                        <img
+                          src={src}
+                          alt={`${product.name} açı ${i + 1}`}
+                          style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block" }}
+                        />
+                      </button>
+                    ))}
+                    {product.video && (
+                      <button
+                        className="reveal-blur"
+                        onClick={() => setGalleryIdx(-1)}
+                        aria-label="Video"
+                        style={{
+                          background: "#111111",
+                          border: galleryIdx === -1 ? "2px solid #000aff" : "2px solid transparent",
+                          borderRadius: "10px",
+                          padding: 0,
+                          cursor: "pointer",
+                          overflow: "hidden",
+                          position: "relative",
+                        }}
+                      >
+                        <img
+                          src={product.videoPoster ?? product.gallery[0]}
+                          alt="Video önizleme"
+                          style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block", opacity: 0.6 }}
+                        />
+                        <span
+                          className="material-symbols-outlined"
+                          style={{
+                            position: "absolute", inset: 0, display: "flex",
+                            alignItems: "center", justifyContent: "center",
+                            color: "#ffffff", fontSize: "28px",
+                            fontVariationSettings: "'FILL' 1",
+                          }}
+                        >
+                          play_arrow
+                        </span>
+                      </button>
+                    )}
+                  </div>
+                ) : (
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(3, 1fr)",
+                      gap: "12px",
+                      marginTop: "12px",
+                    }}
+                  >
+                    {[0, 1, 2].map((i) => (
+                      <div
+                        key={i}
+                        className="reveal-blur"
+                        style={{
+                          background: "#ecedee",
+                          borderRadius: "10px",
+                          padding: "10px",
+                          transitionDelay: `${i * 80}ms`,
+                        }}
+                      >
+                        <ProductPlate product={product} ratio="1 / 1" />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Sağ — detay */}

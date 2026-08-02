@@ -39,8 +39,21 @@ function useReveal() {
   }, []);
 }
 
-/* ── Ürün görseli: plaster sahnede logo ────────────────────────────── */
-function ProductVisual({ ratio = "1 / 1" }: { ratio?: string }) {
+/* ── Ürün görseli: gerçek foto varsa o, yoksa plaster sahnede logo ── */
+function ProductVisual({ ratio = "1 / 1", p }: { ratio?: string; p?: Product }) {
+  if (p?.gallery?.length) {
+    return (
+      <img
+        src={p.gallery[0]}
+        alt={p.name}
+        loading="lazy"
+        style={{
+          aspectRatio: ratio, width: "100%", objectFit: "cover",
+          borderRadius: "10px", display: "block", position: "relative", zIndex: 1,
+        }}
+      />
+    );
+  }
   return (
     <div
       style={{
@@ -194,7 +207,11 @@ function Home() {
               width: 60, height: 60, borderRadius: "10px", background: "#ecedee", flexShrink: 0,
               display: "inline-flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
             }}>
-              <img src="/images/logo.png" alt="" style={{ width: "65%", filter: "invert(1) brightness(0.2)" }} />
+              {heroProduct.gallery?.length ? (
+                <img src={heroProduct.gallery[0]} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              ) : (
+                <img src="/images/logo.png" alt="" style={{ width: "65%", filter: "invert(1) brightness(0.2)" }} />
+              )}
             </span>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: "16px", fontWeight: 600, letterSpacing: "-0.04em", color: "#111111", lineHeight: 1.2 }}>
@@ -243,7 +260,7 @@ function Home() {
                 }}
               >
                 <span className="rank-numeral" data-parallax="-0.2">{i + 1}</span>
-                <ProductVisual />
+                <ProductVisual p={p} />
                 <CardMeta p={p} />
                 <button
                   className="card-add-btn"
@@ -278,7 +295,7 @@ function Home() {
                     YENİ
                   </span>
                 )}
-                <ProductVisual />
+                <ProductVisual p={p} />
                 <CardMeta p={p} />
                 <button
                   className="card-add-btn"
