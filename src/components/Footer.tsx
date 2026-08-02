@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Icon, type IconName } from "@/components/Icon";
 
 const shopLinks = [
   { label: "Tüm Ürünler",   to: "/shop" },
@@ -42,12 +43,12 @@ export function Footer() {
 
             <div className="space-y-2">
               {[
-                { icon: "workspace_premium", text: "Almanya'da Üretildi" },
-                { icon: "science",           text: "ISO 17025 Lab Onaylı" },
-                { icon: "local_shipping",    text: "Türkiye'ye Hızlı Kargo" },
+                { icon: "workspace_premium" as IconName, text: "Almanya'da Üretildi" },
+                { icon: "science" as IconName,           text: "ISO 17025 Lab Onaylı" },
+                { icon: "local_shipping" as IconName,    text: "Türkiye'ye Hızlı Kargo" },
               ].map((b) => (
                 <div key={b.text} className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-cobalt text-[14px]" style={{ fontVariationSettings: "'FILL' 1" }}>{b.icon}</span>
+                  <Icon name={b.icon} size={14} className="text-cobalt" />
                   <span className="text-[11px] text-secondary font-medium">{b.text}</span>
                 </div>
               ))}
@@ -102,25 +103,25 @@ export function Footer() {
             <p className="text-eyebrow mb-5">İletişim</p>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-cobalt text-[14px] mt-0.5 flex-shrink-0">alternate_email</span>
+                <Icon name="alternate_email" size={14} className="text-cobalt mt-0.5 flex-shrink-0" />
                 <span className="text-[12px] text-secondary font-medium">info@oldiron.com</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="material-symbols-outlined text-cobalt text-[14px] mt-0.5 flex-shrink-0">location_on</span>
+                <Icon name="location_on" size={14} className="text-cobalt mt-0.5 flex-shrink-0" />
                 <span className="text-[12px] text-secondary font-medium">Almanya · Türkiye'ye Gönderim</span>
               </li>
             </ul>
 
             <div className="flex gap-2 mt-8">
               {[
-                { icon: "photo_camera", label: "Instagram" },
-                { icon: "public",       label: "Web" },
-                { icon: "mail",         label: "E-posta" },
+                { icon: "photo_camera" as IconName, label: "Instagram" },
+                { icon: "public" as IconName,       label: "Web" },
+                { icon: "mail" as IconName,         label: "E-posta" },
               ].map((s) => (
                 <a key={s.label} href="#" aria-label={s.label}
                   className="w-9 h-9 bg-white border border-outline-variant rounded-[8px] flex items-center justify-center
                     text-secondary hover:text-cobalt hover:border-cobalt/30 transition-all cursor-pointer">
-                  <span className="material-symbols-outlined text-[16px]">{s.icon}</span>
+                  <Icon name={s.icon} size={16} />
                 </a>
               ))}
             </div>

@@ -3,6 +3,7 @@ import { useCartCount } from "@/stores/cart";
 import { useAuth, signOut } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { useState, useRef, useEffect } from "react";
+import { Icon } from "@/components/Icon";
 
 export function Nav() {
   const navigate   = useNavigate();
@@ -70,7 +71,7 @@ export function Nav() {
               onClick={() => setMobileOpen((v) => !v)}
               aria-label="Menü" aria-expanded={mobileOpen}
             >
-              <span className="material-symbols-outlined">{mobileOpen ? "close" : "menu"}</span>
+              <Icon name={mobileOpen ? "close" : "menu"} size={24} />
             </button>
           </div>
 
@@ -104,7 +105,7 @@ export function Nav() {
               aria-label="Ürün ara"
               onClick={() => navigate({ to: "/shop" })}
             >
-              <span className="material-symbols-outlined text-[20px]">search</span>
+              <Icon name="search" size={20} />
             </button>
 
             {/* Account */}
@@ -164,7 +165,7 @@ export function Nav() {
               style={{ color: "#111111" }}
               aria-label={`Sepet (${cartCount} ürün)`}
             >
-              <span className="material-symbols-outlined text-[20px]">shopping_bag</span>
+              <Icon name="shopping_bag" size={20} />
               {cartCount > 0 && (
                 <span
                   className="absolute -top-1.5 -right-1.5 text-white text-[9px] min-w-[17px] h-[17px] px-1 flex items-center justify-center font-bold leading-none rounded-full"
@@ -201,7 +202,7 @@ export function Nav() {
               className="w-8 h-8 flex items-center justify-center cursor-pointer"
               style={{ color: "#737780" }}
             >
-              <span className="material-symbols-outlined">close</span>
+              <Icon name="close" size={24} />
             </button>
           </div>
 
@@ -247,13 +248,13 @@ export function Nav() {
                   <Link to="/account" onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 py-2.5 text-[13px] font-semibold cursor-pointer"
                     style={{ color: "#737780" }}>
-                    <span className="material-symbols-outlined text-[16px]" style={{ color: "#111111" }}>account_circle</span>
+                    <Icon name="account_circle" size={16} style={{ color: "#111111" }} />
                     Hesabım
                   </Link>
                   <button onClick={handleLogout}
                     className="flex items-center gap-2 py-2.5 text-[13px] font-semibold cursor-pointer w-full"
                     style={{ color: "#737780" }}>
-                    <span className="material-symbols-outlined text-[16px]" style={{ color: "#111111" }}>logout</span>
+                    <Icon name="logout" size={16} style={{ color: "#111111" }} />
                     Çıkış Yap
                   </button>
                 </>
@@ -263,14 +264,14 @@ export function Nav() {
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 py-2.5 text-[13px] font-semibold cursor-pointer"
                     style={{ color: "#737780" }}>
-                    <span className="material-symbols-outlined text-[16px]" style={{ color: "#111111" }}>login</span>
+                    <Icon name="login" size={16} style={{ color: "#111111" }} />
                     Giriş Yap
                   </Link>
                   <Link to="/auth" search={{ mode: "signup", redirect: "/" } as never}
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 py-2.5 text-[13px] font-bold cursor-pointer"
                     style={{ color: "#000aff" }}>
-                    <span className="material-symbols-outlined text-[16px]">person_add</span>
+                    <Icon name="person_add" size={16} />
                     Hesap Oluştur
                   </Link>
                 </>

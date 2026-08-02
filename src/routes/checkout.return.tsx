@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect } from "react";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
+import { Icon } from "@/components/Icon";
 
 export const Route = createFileRoute("/checkout/return")({
   head: () => ({ meta: [{ title: "Sipariş Onaylandı — OLD IRON" }] }),
@@ -28,7 +29,7 @@ function CheckoutReturn() {
       <Nav />
       <main className="pt-[120px] pb-[80px] px-[20px] md:px-[72px] max-w-[800px] mx-auto text-center">
         <div className="w-14 h-14 bg-cobalt rounded-full flex items-center justify-center mx-auto mb-6 mt-12">
-          <span className="material-symbols-outlined text-white text-[28px]" style={{ fontVariationSettings: "'FILL' 1" }}>check</span>
+          <Icon name="check" size={28} className="text-white" strokeWidth={2} />
         </div>
         <h1 className="text-[40px] md:text-[52px] font-bold tracking-[-0.04em] text-foreground leading-none">Ödeme Alındı</h1>
         <p className="text-secondary mt-4 text-[16px]">Siparişin işleme alındı.</p>

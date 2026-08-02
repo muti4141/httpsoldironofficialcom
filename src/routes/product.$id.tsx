@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { ProductPlate } from "@/components/ProductPlate";
+import { Icon, type IconName } from "@/components/Icon";
 import { RevealText } from "@/components/RevealText";
 import { useParallax } from "@/components/SmoothScroll";
 import { findProduct, products } from "@/data/products";
@@ -333,15 +334,13 @@ function ProductPage() {
                           style={{ width: "100%", aspectRatio: "1 / 1", objectFit: "cover", display: "block", opacity: 0.6 }}
                         />
                         <span
-                          className="material-symbols-outlined"
                           style={{
                             position: "absolute", inset: 0, display: "flex",
                             alignItems: "center", justifyContent: "center",
-                            color: "#ffffff", fontSize: "28px",
-                            fontVariationSettings: "'FILL' 1",
+                            color: "#ffffff",
                           }}
                         >
-                          play_arrow
+                          <Icon name="play_arrow" size={28} style={{ fill: "currentColor" }} />
                         </span>
                       </button>
                     )}
@@ -677,11 +676,11 @@ function ProductPage() {
                       paddingTop: "2px",
                     }}
                   >
-                    {[
+                    {([
                       ["local_shipping", "1500₺ üzeri ücretsiz kargo"],
                       ["restart_alt", "14 gün içinde iade"],
                       ["lock", "Güvenli ödeme"],
-                    ].map(([icon, text]) => (
+                    ] as [IconName, string][]).map(([icon, text]) => (
                       <span
                         key={text}
                         style={{
@@ -693,17 +692,11 @@ function ProductPage() {
                           letterSpacing: "-0.04em",
                         }}
                       >
-                        <span
-                          className="material-symbols-outlined"
-                          aria-hidden
-                          style={{
-                            fontSize: "18px",
-                            color: "#111111",
-                            fontVariationSettings: "'FILL' 0, 'wght' 300",
-                          }}
-                        >
-                          {icon}
-                        </span>
+                        <Icon
+                          name={icon}
+                          size={18}
+                          style={{ color: "#111111" }}
+                        />
                         {text}
                       </span>
                     ))}
