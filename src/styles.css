@@ -571,7 +571,18 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
 }
+
+/* Nav duyuru barının altına iner */
+.nav-bar { top: 36px !important; }
+
+/* Sayfa içeriği sabit bar + nav kadar aşağıdan başlar */
+.hero-section { margin-top: 0; }
 
 .announcement-bar span {
   font-size: 13px;

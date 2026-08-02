@@ -154,11 +154,16 @@ function Home() {
         {/* Bottom-right: floating product card */}
         <div className="hero-product-card anim-5" style={{ display: "none" as const }}>
           <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "16px" }}>
-            <img
-              src="/images/logo.png"
-              alt={heroProduct?.name}
-              style={{ width: 60, height: 60, borderRadius: "8px", objectFit: "contain", background: "#ecedee", padding: 8, flexShrink: 0 }}
-            />
+            <div
+              aria-hidden
+              style={{
+                width: 60, height: 60, borderRadius: "8px", background: "#ecedee",
+                flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+                fontWeight: 700, fontSize: "24px", letterSpacing: "-0.04em", color: "#a1a4aa",
+              }}
+            >
+              {heroProduct?.name.charAt(0).toLocaleUpperCase("tr")}
+            </div>
             <div>
               <p style={{ fontSize: "16px", fontWeight: 600, color: "#111111", letterSpacing: "-0.04em", lineHeight: 1.2 }}>
                 {heroProduct?.name}

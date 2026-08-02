@@ -45,12 +45,20 @@ export function Nav() {
 
           {/* ── Logo ── */}
           <Link to="/" onClick={() => setMobileOpen(false)}
-            className="flex items-center cursor-pointer">
+            className="flex items-center gap-2.5 cursor-pointer group">
             <img
               src="/images/logo.png"
-              alt="OLD IRON"
-              className="h-[48px] w-auto object-contain opacity-90 hover:opacity-100 transition-opacity"
+              alt=""
+              aria-hidden
+              className="h-[30px] w-auto object-contain transition-opacity"
+              style={{ filter: "invert(1) brightness(0.15)" }}
             />
+            <span
+              className="font-bold leading-none transition-colors group-hover:text-cobalt"
+              style={{ fontSize: "20px", letterSpacing: "-0.04em", color: "#111111" }}
+            >
+              old iron
+            </span>
           </Link>
 
           {/* ── Desktop Links ── */}
