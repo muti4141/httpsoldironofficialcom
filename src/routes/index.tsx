@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { RevealText } from "@/components/RevealText";
-import { ProductPlate } from "@/components/ProductPlate";
 import { useParallax } from "@/components/SmoothScroll";
 import { products, type Product } from "@/data/products";
 import { useEffect, useRef } from "react";
@@ -19,71 +18,86 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-/* ── Data ───────────────────────────────────────────────────────────── */
-const pressItems = [
-  "ISO 17025", "ALMANYA ÜRETİMİ", "300 GSM", "SAF PROTEİN", "LAB ONAYLI",
-];
-
-const testimonials = [
-  { quote: "Kumaşın kalitesi rakipsiz. Her antrenmanda farkı hissediyorsun.", name: "Mehmet Yılmaz", role: "Powerlifter · İstanbul" },
-  { quote: "Iron Whey şimdiye kadar içtiğim en iyi protein. Şişkinlik yok, maksimum emilim.", name: "Seda Kaya", role: "Kişisel Antrenör · Ankara" },
-  { quote: "Old Iron modern fitness dünyasında özlediğim şeyi sunuyor: gerçek disiplin, gerçek kalite.", name: "Burak Şahin", role: "Bodybuilder · İzmir" },
-];
-
-/* ── Fiyat formatı: ₺849,00 ─────────────────────────────────────────── */
+/* ₺849,00 biçimi */
 const tl = (n: number) => `₺${n.toFixed(2).replace(".", ",")}`;
 
-/* ── Reveal hook ────────────────────────────────────────────────────── */
+const pressItems = ["ISO 17025", "ALMANYA ÜRETİMİ", "300 GSM", "SAF PROTEİN", "LAB ONAYLI"];
+
+/* ── Scroll reveal ─────────────────────────────────────────────────── */
 function useReveal() {
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add("visible");
-            observer.unobserve(e.target);
-          }
-        }),
+    const obs = new IntersectionObserver(
+      (es) => es.forEach((e) => {
+        if (e.isIntersecting) { e.target.classList.add("visible"); obs.unobserve(e.target); }
+      }),
       { threshold: 0.06, rootMargin: "0px 0px -50px 0px" }
     );
     document
-      .querySelectorAll(".reveal,.reveal-left,.reveal-right,.reveal-scale,.reveal-wipe,.reveal-blur,.press-item")
-      .forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
+      .querySelectorAll(".reveal,.reveal-blur,.reveal-wipe,.press-item")
+      .forEach((el) => obs.observe(el));
+    return () => obs.disconnect();
   }, []);
 }
 
-/* ── Bölüm başlığı + ok çifti ───────────────────────────────────────── */
-function SectionHeader({
-  title,
-  onPrev,
-  onNext,
-}: {
-  title: string;
-  onPrev?: () => void;
-  onNext?: () => void;
-}) {
+/* ── Ürün görseli: plaster sahnede logo ────────────────────────────── */
+function ProductVisual({ ratio = "1 / 1" }: { ratio?: string }) {
   return (
     <div
-      className="reveal-wipe"
       style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: "16px",
-        marginBottom: "32px",
+        aspectRatio: ratio, borderRadius: "10px", overflow: "hidden",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "40px 20px", position: "relative", zIndex: 1,
       }}
     >
+      <img
+        src="/images/logo.png"
+        alt=""
+        aria-hidden
+        style={{
+          width: "60%", maxHeight: "70%", objectFit: "contain",
+          filter: "invert(1) brightness(0.25)",
+        }}
+      />
+    </div>
+  );
+}
+
+/* ── Kart metadata: OI çipi + isim + kredi + fiyat (sol hizalı) ───── */
+function CardMeta({ p }: { p: Product }) {
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginTop: "16px", textAlign: "left" }}>
+      <span
+        aria-hidden
+        style={{
+          width: 40, height: 40, flexShrink: 0,
+          background: "#ffffff", border: "1px solid #ecedee", borderRadius: "4px",
+          display: "inline-flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
+        }}
+      >
+        <img src="/images/logo.png" alt="" style={{ width: "70%", filter: "invert(1) brightness(0.2)" }} />
+      </span>
+      <div style={{ minWidth: 0 }}>
+        <p style={{
+          fontSize: "16px", fontWeight: 600, letterSpacing: "-0.04em", color: "#111111",
+          lineHeight: 1.2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+        }}>
+          {p.name}
+        </p>
+        <p className="text-brand-credit" style={{ marginTop: "2px" }}>By OLD IRON</p>
+        <p className="text-price" style={{ marginTop: "4px" }}>{tl(p.price)}</p>
+      </div>
+    </div>
+  );
+}
+
+/* ── Bölüm başlığı + karusel okları ────────────────────────────────── */
+function SectionHeader({ title, onPrev, onNext }: { title: string; onPrev?: () => void; onNext?: () => void }) {
+  return (
+    <div className="reveal-wipe" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "16px", marginBottom: "32px" }}>
       <RevealText
         as="h2"
         text={title}
-        style={{
-          fontSize: "20px",
-          fontWeight: 600,
-          letterSpacing: "-0.04em",
-          color: "#111111",
-          textTransform: "lowercase",
-        }}
+        style={{ fontSize: "20px", fontWeight: 600, letterSpacing: "-0.04em", color: "#111111", textTransform: "lowercase" }}
       />
       {onPrev && onNext && (
         <div style={{ display: "flex", gap: "8px" }}>
@@ -99,39 +113,7 @@ function SectionHeader({
   );
 }
 
-/* ── Kart metadata kümesi ───────────────────────────────────────────── */
-function CardMeta({ product: p }: { product: Product }) {
-  return (
-    <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginTop: "16px", textAlign: "left" }}>
-      <span
-        aria-hidden
-        style={{
-          width: 40, height: 40, flexShrink: 0,
-          background: "#ffffff", border: "1px solid #ecedee", borderRadius: "4px",
-          display: "inline-flex", alignItems: "center", justifyContent: "center",
-          fontSize: "12px", fontWeight: 700, letterSpacing: "-0.04em", color: "#111111",
-        }}
-      >
-        OI
-      </span>
-      <div style={{ minWidth: 0 }}>
-        <p
-          style={{
-            fontSize: "16px", fontWeight: 600, letterSpacing: "-0.04em",
-            color: "#111111", lineHeight: 1.2,
-            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
-          }}
-        >
-          {p.name}
-        </p>
-        <p className="text-brand-credit" style={{ marginTop: "2px" }}>By OLD IRON</p>
-        <p className="text-price" style={{ marginTop: "4px" }}>{tl(p.price)}</p>
-      </div>
-    </div>
-  );
-}
-
-/* ── Main ───────────────────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════ */
 function Home() {
   useReveal();
   useParallax();
@@ -146,8 +128,7 @@ function Home() {
     const el = rankedRef.current;
     if (!el) return;
     const card = el.firstElementChild as HTMLElement | null;
-    const step = card ? card.offsetWidth + 16 : el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * step, behavior: "smooth" });
+    el.scrollBy({ left: dir * ((card?.offsetWidth ?? 300) + 16), behavior: "smooth" });
   };
 
   const quickAdd = (p: Product) => {
@@ -158,129 +139,97 @@ function Home() {
   return (
     <div style={{ background: "#ffffff", color: "#111111", minHeight: "100vh", overflowX: "hidden" }}>
 
-      {/* 1 ── ANNOUNCEMENT BAR */}
+      {/* ── Duyuru barı ── */}
       <div className="announcement-bar">
         <span>1500₺ üzeri ücretsiz kargo · Almanya kalitesi · Lab onaylı</span>
       </div>
 
-      {/* 2 ── NAV */}
       <Nav />
 
-      {/* 3 ── HERO — plaster tam ekran sahne */}
-      <section
-        style={{
-          position: "relative",
-          minHeight: "100vh",
-          background: "#ecedee",
-          overflow: "hidden",
-          paddingTop: "92px",
-        }}
-      >
-        {/* Sahne objesi — sağa yerleşik, multiply, Ken Burns + parallax */}
+      {/* ════════════════════════════════════════════════
+          HERO — tam ekran VİDEO, spec'in foto hero'su
+      ════════════════════════════════════════════════ */}
+      <section style={{ position: "relative", minHeight: "100vh", overflow: "hidden", background: "#111111" }}>
+        <video
+          src="/videos/hero.mp4"
+          autoPlay muted loop playsInline
+          data-parallax="0.12"
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
+        {/* Alt üçte-bir okunurluk gradyanı */}
         <div
           aria-hidden
-          data-parallax="0.15"
           style={{
-            position: "absolute",
-            top: 0, right: 0, bottom: 0,
-            width: "62%",
-            overflow: "hidden",
-            display: "flex", alignItems: "center", justifyContent: "center",
+            position: "absolute", inset: 0,
+            background: "linear-gradient(to top, rgba(0,0,0,0.62) 0%, rgba(0,0,0,0.18) 42%, rgba(0,0,0,0.05) 100%)",
           }}
-        >
-          <img
-            src="/images/hero-end.jpg"
-            alt=""
-            className="hero-kenburns"
-            style={{
-              width: "100%", height: "100%",
-              objectFit: "cover", objectPosition: "center",
-              mixBlendMode: "multiply",
-            }}
-          />
-        </div>
+        />
 
-        {/* Sol-alt içerik yığını */}
-        <div className="hero-content-left" style={{ left: "clamp(20px, 4vw, 52px)", bottom: "clamp(32px, 6vh, 64px)" }}>
-          <span className="badge badge-new anim-1" style={{ marginBottom: "20px", display: "inline-flex" }}>
-            YENİ
-          </span>
-          <h1 className="hero-headline" style={{ fontSize: "clamp(64px, 9vw, 128px)", fontWeight: 700, letterSpacing: "-0.04em", lineHeight: 0.95, color: "#111111", textTransform: "lowercase" }}>
-            <span style={{ display: "block", animationDelay: "0.15s" }}>disiplinden</span>
-            <span style={{ display: "block", animationDelay: "0.30s" }}>dövülmüş.</span>
+        {/* Sol-alt yığın */}
+        <div style={{ position: "absolute", left: "clamp(20px, 4vw, 52px)", bottom: "clamp(36px, 7vh, 72px)", zIndex: 5, maxWidth: "760px" }}>
+          <span className="badge badge-new anim-1" style={{ display: "inline-flex", marginBottom: "20px" }}>YENİ</span>
+          <h1 style={{
+            fontSize: "clamp(64px, 9vw, 128px)", fontWeight: 700, letterSpacing: "-0.04em",
+            lineHeight: 1.0, color: "#ffffff", textTransform: "lowercase",
+          }}>
+            <span className="line-rise" style={{ display: "block", animationDelay: "0.12s" }}>disiplinden</span>
+            <span className="line-rise" style={{ display: "block", animationDelay: "0.28s" }}>dövülmüş.</span>
           </h1>
-          <p
-            className="anim-4"
-            style={{
-              marginTop: "20px",
-              fontSize: "16px",
-              letterSpacing: "-0.04em",
-              lineHeight: 1.5,
-              color: "rgba(17,17,17,0.8)",
-              maxWidth: "420px",
-            }}
-          >
+          <p className="anim-4" style={{ fontSize: "16px", color: "rgba(255,255,255,0.8)", letterSpacing: "-0.04em", marginTop: "16px", lineHeight: 1.4 }}>
             Premium spor giyim & supplement. Almanya'da üretildi.
           </p>
         </div>
 
-        {/* Sağ-alt yüzen ürün kartı */}
-        <div className="hero-product-card anim-5" style={{ right: "clamp(20px, 4vw, 52px)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-            <span
-              aria-hidden
-              style={{
-                width: 60, height: 60, flexShrink: 0,
-                background: "#ecedee", borderRadius: "10px",
-                display: "inline-flex", alignItems: "center", justifyContent: "center",
-                fontSize: "24px", fontWeight: 700, letterSpacing: "-0.04em", color: "#111111",
-              }}
-            >
-              {heroProduct.name.replace(/[^A-Za-zÇĞİÖŞÜçğıöşü]/g, "").charAt(0).toLocaleUpperCase("tr")}
+        {/* Sağ yüzen ürün kartı */}
+        <div
+          className="anim-5"
+          style={{
+            position: "absolute", right: "clamp(20px, 4vw, 52px)", bottom: "clamp(36px, 7vh, 72px)",
+            zIndex: 5, width: "280px", background: "#ffffff", borderRadius: "14.4px", padding: "20px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+          }}
+        >
+          <div style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "16px" }}>
+            <span style={{
+              width: 60, height: 60, borderRadius: "10px", background: "#ecedee", flexShrink: 0,
+              display: "inline-flex", alignItems: "center", justifyContent: "center", overflow: "hidden",
+            }}>
+              <img src="/images/logo.png" alt="" style={{ width: "65%", filter: "invert(1) brightness(0.2)" }} />
             </span>
             <div style={{ minWidth: 0 }}>
               <p style={{ fontSize: "16px", fontWeight: 600, letterSpacing: "-0.04em", color: "#111111", lineHeight: 1.2 }}>
                 {heroProduct.name}
               </p>
-              <p className="text-brand-credit" style={{ marginTop: "2px" }}>By OLD IRON</p>
+              <p className="text-brand-credit" style={{ marginTop: "4px" }}>By OLD IRON</p>
               <p className="text-price-lg" style={{ marginTop: "4px", fontWeight: 600 }}>{tl(heroProduct.price)}</p>
             </div>
           </div>
           <Link
             to="/product/$id"
             params={{ id: heroProduct.id }}
-            className="btn-sweep"
             style={{
               display: "flex", alignItems: "center", justifyContent: "center",
-              marginTop: "16px", width: "100%",
-              background: "#111111", color: "#ffffff",
-              fontSize: "13px", fontWeight: 600, letterSpacing: "-0.04em",
-              padding: "12px", borderRadius: "10px", textDecoration: "none",
+              width: "100%", background: "#111111", color: "#ffffff",
+              fontSize: "14px", fontWeight: 600, letterSpacing: "-0.04em",
+              padding: "10px 20px", borderRadius: "10px", textDecoration: "none",
             }}
           >
-            İncele: {heroProduct.name}
+            İncele: {heroProduct.name.split(" ")[0].toLocaleLowerCase("tr")}
           </Link>
         </div>
       </section>
 
-      {/* 4 ── HAFTANIN EN ÇOK SATANLARI — sıralı editoryal ızgara */}
-      <section style={{ padding: "100px 0 0" }}>
+      {/* ════════════════════════════════════════════════
+          SIRALI GRID — haftanın en çok satanları
+      ════════════════════════════════════════════════ */}
+      <section style={{ background: "#ffffff", padding: "96px 0 48px" }}>
         <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" }}>
-          <SectionHeader
-            title="haftanın en çok satanları"
-            onPrev={() => scrollRanked(-1)}
-            onNext={() => scrollRanked(1)}
-          />
+          <SectionHeader title="haftanın en çok satanları" onPrev={() => scrollRanked(-1)} onNext={() => scrollRanked(1)} />
 
           <div
             ref={rankedRef}
             className="drag-scroll"
-            style={{
-              display: "flex",
-              gap: "16px",
-              overflowX: "auto",
-              scrollSnapType: "x mandatory",
-            }}
+            style={{ display: "flex", gap: "16px", overflowX: "auto", scrollSnapType: "x mandatory" }}
           >
             {ranked.map((p, i) => (
               <Link
@@ -289,78 +238,51 @@ function Home() {
                 params={{ id: p.id }}
                 className="ranked-card reveal-blur"
                 style={{
-                  flex: "0 0 clamp(280px, 24vw, 340px)",
-                  scrollSnapAlign: "start",
-                  textDecoration: "none",
-                  transitionDelay: `${i * 70}ms`,
-                  display: "block",
+                  flex: "0 0 clamp(260px, 24vw, 340px)", scrollSnapAlign: "start",
+                  textDecoration: "none", transitionDelay: `${i * 70}ms`, display: "block",
                 }}
               >
-                <span
-                  className="rank-numeral"
-                  data-parallax="-0.2"
-                  style={{ fontSize: "clamp(200px, 18vw, 280px)", color: "rgba(255,255,255,0.6)" }}
+                <span className="rank-numeral" data-parallax="-0.2">{i + 1}</span>
+                <ProductVisual />
+                <CardMeta p={p} />
+                <button
+                  className="card-add-btn"
+                  onClick={(e) => { e.preventDefault(); quickAdd(p); }}
                 >
-                  {i + 1}
-                </span>
-
-                <div style={{ position: "relative", zIndex: 1, marginTop: "40px" }}>
-                  <ProductPlate product={p} ratio="1 / 1" />
-                </div>
-
-                <div style={{ position: "relative", zIndex: 3 }}>
-                  <CardMeta product={p} />
-                  <button
-                    className="card-add-btn"
-                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); quickAdd(p); }}
-                    aria-label={`${p.name} sepete ekle`}
-                  >
-                    Sepete Ekle
-                  </button>
-                </div>
+                  Sepete Ekle
+                </button>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 5 ── YENİ GELENLER — standart ızgara */}
-      <section style={{ padding: "100px 0" }}>
+      {/* ════════════════════════════════════════════════
+          STANDART GRID — yeni gelenler
+      ════════════════════════════════════════════════ */}
+      <section style={{ background: "#ffffff", padding: "48px 0 96px" }}>
         <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" }}>
           <SectionHeader title="yeni gelenler" />
 
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-              gap: "16px",
-            }}
-          >
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
             {fresh.map((p, i) => (
               <Link
                 key={p.id}
                 to="/product/$id"
                 params={{ id: p.id }}
                 className="product-card reveal-blur"
-                style={{
-                  textDecoration: "none",
-                  transitionDelay: `${i * 70}ms`,
-                  display: "block",
-                  background: "#ecedee",
-                  position: "relative",
-                }}
+                style={{ textDecoration: "none", transitionDelay: `${i * 70}ms`, display: "block", position: "relative" }}
               >
                 {p.badge && (
                   <span className="badge badge-new" style={{ position: "absolute", top: "12px", left: "12px", zIndex: 3 }}>
                     YENİ
                   </span>
                 )}
-                <ProductPlate product={p} ratio="4 / 5" />
-                <CardMeta product={p} />
+                <ProductVisual />
+                <CardMeta p={p} />
                 <button
                   className="card-add-btn"
-                  onClick={(e) => { e.preventDefault(); e.stopPropagation(); quickAdd(p); }}
-                  aria-label={`${p.name} sepete ekle`}
+                  onClick={(e) => { e.preventDefault(); quickAdd(p); }}
                 >
                   Sepete Ekle
                 </button>
@@ -368,42 +290,31 @@ function Home() {
             ))}
           </div>
 
-          <div className="reveal" style={{ marginTop: "32px" }}>
-            <Link to="/shop" className="btn-see-all">
-              Tümünü Gör
-            </Link>
+          <div style={{ marginTop: "32px" }}>
+            <Link to="/shop" className="btn-see-all">Tümünü Gör</Link>
           </div>
         </div>
       </section>
 
-      {/* 6 ── GÜVENCE BARI (press) */}
-      <section>
-        <p className="text-brand-credit reveal" style={{ textAlign: "center", marginBottom: "24px" }}>
+      {/* ════════════════════════════════════════════════
+          PRESS BARI — güvence standartları
+      ════════════════════════════════════════════════ */}
+      <section style={{ padding: "48px 0 0" }}>
+        <p className="text-brand-credit" style={{ textAlign: "center", marginBottom: "24px" }}>
           Güvence standartlarımız
         </p>
-        <div
-          style={{
-            background: "#111111",
-            minHeight: "100px",
-            display: "flex",
-            flexWrap: "wrap",
-            alignItems: "center",
-            justifyContent: "space-evenly",
-            gap: "24px",
-            padding: "24px clamp(20px, 4vw, 52px)",
-          }}
-        >
+        <div style={{
+          background: "#111111", minHeight: "100px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          flexWrap: "wrap", gap: "clamp(24px, 5vw, 72px)", padding: "32px clamp(20px, 4vw, 52px)",
+        }}>
           {pressItems.map((item, i) => (
             <span
               key={item}
               className="press-item"
               style={{
-                fontWeight: 700,
-                fontSize: "clamp(16px, 2.2vw, 24px)",
-                letterSpacing: "-0.04em",
-                color: "rgba(255,255,255,0.6)",
-                transitionDelay: `${i * 90}ms`,
-                whiteSpace: "nowrap",
+                fontWeight: 700, fontSize: "clamp(14px, 2vw, 22px)", letterSpacing: "-0.04em",
+                color: "rgba(255,255,255,0.6)", whiteSpace: "nowrap", transitionDelay: `${i * 90}ms`,
               }}
             >
               {item}
@@ -412,125 +323,54 @@ function Home() {
         </div>
       </section>
 
-      {/* 7 ── COBALT CLAIM */}
-      <section style={{ background: "#000aff", padding: "120px clamp(20px, 4vw, 52px)", marginTop: "100px" }}>
+      {/* ════════════════════════════════════════════════
+          COBALT CLAIM — tek renk anı
+      ════════════════════════════════════════════════ */}
+      <section style={{ background: "#000aff", padding: "120px clamp(20px, 4vw, 52px)" }}>
         <RevealText
           text="disiplinden dövülmüş."
           once={false}
           stagger={120}
           style={{
-            textAlign: "center",
-            fontSize: "clamp(48px, 8vw, 96px)",
-            fontWeight: 700,
-            letterSpacing: "-0.04em",
-            lineHeight: 1.0,
-            color: "#ffffff",
-            textTransform: "lowercase",
+            fontSize: "clamp(48px, 7vw, 96px)", fontWeight: 700, letterSpacing: "-0.04em",
+            lineHeight: 1.0, color: "#ffffff", textAlign: "center", textTransform: "lowercase",
           }}
         />
       </section>
 
-      {/* 8 ── YORUMLAR — plaster bant */}
-      <section style={{ background: "#ecedee", padding: "100px 0" }}>
-        <div style={{ maxWidth: "1440px", margin: "0 auto", padding: "0 clamp(20px, 4vw, 52px)" }}>
-          <SectionHeader title="sporcuların yorumları" />
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: "16px",
-            }}
-          >
-            {testimonials.map((t, i) => (
-              <div
-                key={t.name}
-                className="testimonial-card reveal-blur"
-                style={{
-                  background: "#ffffff",
-                  borderRadius: "10px",
-                  padding: "28px",
-                  transitionDelay: `${i * 80}ms`,
-                }}
-              >
-                <div style={{ display: "flex", gap: "3px", marginBottom: "20px" }}>
-                  {Array.from({ length: 5 }).map((_, s) => (
-                    <span
-                      key={s}
-                      className="material-symbols-outlined"
-                      style={{ fontSize: 14, color: "#000aff", fontVariationSettings: "'FILL' 1" }}
-                    >
-                      star
-                    </span>
-                  ))}
-                </div>
-                <p style={{ fontSize: "16px", lineHeight: 1.5, letterSpacing: "-0.04em", color: "#111111", marginBottom: "24px" }}>
-                  "{t.quote}"
-                </p>
-                <div style={{ paddingTop: "16px", borderTop: "1px solid #ecedee" }}>
-                  <p style={{ fontSize: "13px", fontWeight: 600, letterSpacing: "-0.04em", color: "#111111" }}>{t.name}</p>
-                  <p className="text-brand-credit" style={{ marginTop: "2px" }}>{t.role}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 9 ── BÜLTEN */}
-      <section style={{ background: "#ffffff", padding: "120px 20px" }}>
-        <div style={{ maxWidth: "480px", margin: "0 auto", textAlign: "center" }}>
+      {/* ════════════════════════════════════════════════
+          BÜLTEN
+      ════════════════════════════════════════════════ */}
+      <section style={{ background: "#ffffff", padding: "96px 20px" }}>
+        <div className="reveal" style={{ maxWidth: "480px", margin: "0 auto", textAlign: "center" }}>
           <RevealText
             text="elitin bir parçası ol"
             style={{
-              fontSize: "clamp(32px, 5vw, 40px)",
-              fontWeight: 700,
-              letterSpacing: "-0.04em",
-              lineHeight: 1.05,
-              color: "#111111",
-              textTransform: "lowercase",
-              textAlign: "center",
-              marginBottom: "16px",
+              fontSize: "clamp(32px, 4.5vw, 48px)", fontWeight: 700, letterSpacing: "-0.04em",
+              lineHeight: 1.05, color: "#111111", textTransform: "lowercase", marginBottom: "12px",
             }}
           />
-          <p className="text-brand-credit reveal" style={{ marginBottom: "32px" }}>
+          <p className="text-brand-credit" style={{ marginBottom: "32px" }}>
             Sınırlı stok · Erken erişim · Üyeye özel indirimler
           </p>
           <form
-            className="reveal"
             style={{ display: "flex", gap: "8px", flexWrap: "wrap", justifyContent: "center" }}
             onSubmit={(e) => { e.preventDefault(); toast.success("Hoş geldin — elitin bir parçasısın."); }}
           >
             <input
-              type="email"
-              required
-              placeholder="E-posta adresin"
-              aria-label="E-posta adresin"
+              type="email" required placeholder="E-posta adresin"
               style={{
-                flexGrow: 1,
-                minWidth: "220px",
-                background: "#ecedee",
-                border: "none",
-                borderRadius: "10px",
-                padding: "14px 18px",
-                fontSize: "14px",
-                color: "#111111",
-                letterSpacing: "-0.04em",
-                outline: "none",
+                flexGrow: 1, minWidth: "220px", background: "#ecedee", border: "none",
+                borderRadius: "10px", padding: "14px 18px", fontSize: "14px",
+                color: "#111111", letterSpacing: "-0.04em", outline: "none",
               }}
             />
             <button
               type="submit"
-              className="btn-sweep"
               style={{
-                background: "#111111",
-                color: "#ffffff",
-                fontSize: "14px",
-                fontWeight: 600,
-                letterSpacing: "-0.04em",
-                padding: "14px 28px",
-                borderRadius: "10px",
-                border: "none",
-                cursor: "pointer",
+                background: "#111111", color: "#ffffff", fontSize: "14px", fontWeight: 600,
+                letterSpacing: "-0.04em", padding: "14px 28px", borderRadius: "10px",
+                border: "none", cursor: "pointer",
               }}
             >
               Kaydol
