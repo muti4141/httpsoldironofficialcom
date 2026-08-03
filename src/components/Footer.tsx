@@ -1,19 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import { Icon, type IconName } from "@/components/Icon";
 
-const shopLinks = [
-  { label: "Tüm Ürünler",   to: "/shop" },
-  { label: "Spor Giyim",    to: "/shop" },
-  { label: "Supplement",    to: "/shop" },
-  { label: "Yeni Gelenler", to: "/shop" },
-  { label: "En Çok Satanlar", to: "/shop" },
-];
+const BG = "#0d0d0d";
+const HAIR = "rgba(255,255,255,0.12)";
+const TEXT = "#f4f4f4";
+const MUTED = "rgba(255,255,255,0.55)";
 
-const infoLinks = [
-  { label: "Hakkımızda",       to: "/" },
-  { label: "Almanya Kalitesi", to: "/" },
-  { label: "İletişim",         to: "/" },
-  { label: "SSS",              to: "/" },
+const shopLinks = [
+  { label: "Tüm Ürünler",     to: "/shop" },
+  { label: "Spor Giyim",      to: "/shop" },
+  { label: "Yeni Gelenler",   to: "/shop" },
 ];
 
 const legalLinks = [
@@ -25,44 +21,55 @@ const legalLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-plaster border-t border-outline-variant">
+    <footer style={{ background: BG, borderTop: `1px solid ${HAIR}` }}>
       <div className="max-w-[1440px] mx-auto px-[20px] md:px-[72px] pt-16 pb-10">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
 
-          {/* Brand column */}
+          {/* Marka sütunu */}
           <div className="md:col-span-4">
             <div className="mb-5">
-              <img src="/images/logo.png" alt="OLD IRON"
-                className="h-[52px] w-auto object-contain opacity-80" />
+              <span
+                style={{
+                  fontFamily: "'Inter Tight', Inter, sans-serif",
+                  fontWeight: 700, fontSize: 20, letterSpacing: "-0.02em", color: TEXT,
+                }}
+              >
+                OLD IRON
+              </span>
             </div>
 
-            <p className="text-[13px] text-secondary leading-relaxed mb-6 max-w-xs tracking-[-0.01em]">
-              Premium spor giyim ve supplement. Almanya'da üretildi,
-              Türkiye'ye teslim. Old School zihniyeti, modern güç.
+            <p className="text-[13px] leading-relaxed mb-6 max-w-xs tracking-[-0.01em]" style={{ color: MUTED }}>
+              Premium spor giyim ve analiz raporlu elit supplement.
+              Old School zihniyeti, modern güç.
             </p>
 
             <div className="space-y-2">
               {[
-                { icon: "workspace_premium" as IconName, text: "Almanya'da Üretildi" },
+                { icon: "workspace_premium" as IconName, text: "Premium Kalite" },
                 { icon: "science" as IconName,           text: "ISO 17025 Lab Onaylı" },
                 { icon: "local_shipping" as IconName,    text: "Türkiye'ye Hızlı Kargo" },
               ].map((b) => (
                 <div key={b.text} className="flex items-center gap-2">
-                  <Icon name={b.icon} size={14} className="text-cobalt" />
-                  <span className="text-[11px] text-secondary font-medium">{b.text}</span>
+                  <Icon name={b.icon} size={14} style={{ color: TEXT }} />
+                  <span className="text-[11px] font-medium" style={{ color: MUTED }}>{b.text}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Links columns */}
+          {/* Mağaza */}
           <div className="md:col-span-2">
-            <p className="text-eyebrow mb-5">Mağaza</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] mb-5" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+              Mağaza
+            </p>
             <ul className="space-y-3">
               {shopLinks.map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to}
-                    className="text-[13px] text-secondary hover:text-foreground transition-colors cursor-pointer link-underline font-medium">
+                  <Link
+                    to={l.to}
+                    className="text-[13px] font-medium transition-colors cursor-pointer"
+                    style={{ color: MUTED, textDecoration: "none" }}
+                  >
                     {l.label}
                   </Link>
                 </li>
@@ -70,27 +77,19 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Yasal */}
           <div className="md:col-span-2">
-            <p className="text-eyebrow mb-5">Bilgi</p>
-            <ul className="space-y-3">
-              {infoLinks.map((l) => (
-                <li key={l.label}>
-                  <Link to={l.to}
-                    className="text-[13px] text-secondary hover:text-foreground transition-colors cursor-pointer link-underline font-medium">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="md:col-span-2">
-            <p className="text-eyebrow mb-5">Yasal</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] mb-5" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+              Yasal
+            </p>
             <ul className="space-y-3">
               {legalLinks.map((l) => (
                 <li key={l.label}>
-                  <Link to={l.to}
-                    className="text-[13px] text-secondary hover:text-foreground transition-colors cursor-pointer link-underline font-medium">
+                  <Link
+                    to={l.to}
+                    className="text-[13px] font-medium transition-colors cursor-pointer"
+                    style={{ color: MUTED, textDecoration: "none" }}
+                  >
                     {l.label}
                   </Link>
                 </li>
@@ -98,47 +97,38 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div className="md:col-span-2">
-            <p className="text-eyebrow mb-5">İletişim</p>
+          {/* İletişim */}
+          <div className="md:col-span-4">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] mb-5" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+              İletişim
+            </p>
             <ul className="space-y-3">
               <li className="flex items-start gap-2">
-                <Icon name="alternate_email" size={14} className="text-cobalt mt-0.5 flex-shrink-0" />
-                <span className="text-[12px] text-secondary font-medium">info@oldiron.com</span>
+                <Icon name="alternate_email" size={14} style={{ color: TEXT, marginTop: 2, flexShrink: 0 }} />
+                <span className="text-[12px] font-medium" style={{ color: MUTED }}>info@oldironofficial.com</span>
               </li>
               <li className="flex items-start gap-2">
-                <Icon name="location_on" size={14} className="text-cobalt mt-0.5 flex-shrink-0" />
-                <span className="text-[12px] text-secondary font-medium">Almanya · Türkiye'ye Gönderim</span>
+                <Icon name="location_on" size={14} style={{ color: TEXT, marginTop: 2, flexShrink: 0 }} />
+                <span className="text-[12px] font-medium" style={{ color: MUTED }}>Türkiye geneli gönderim</span>
               </li>
             </ul>
-
-            <div className="flex gap-2 mt-8">
-              {[
-                { icon: "photo_camera" as IconName, label: "Instagram" },
-                { icon: "public" as IconName,       label: "Web" },
-                { icon: "mail" as IconName,         label: "E-posta" },
-              ].map((s) => (
-                <a key={s.label} href="#" aria-label={s.label}
-                  className="w-9 h-9 bg-white border border-outline-variant rounded-[8px] flex items-center justify-center
-                    text-secondary hover:text-cobalt hover:border-cobalt/30 transition-all cursor-pointer">
-                  <Icon name={s.icon} size={16} />
-                </a>
-              ))}
-            </div>
           </div>
         </div>
 
-        {/* Bottom bar */}
-        <div className="h-px bg-outline-variant mb-8" />
+        {/* Alt bar */}
+        <div style={{ height: 1, background: HAIR, marginBottom: 32 }} />
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[11px] text-secondary tracking-[-0.01em] font-medium">
+          <p className="text-[11px] font-medium tracking-[-0.01em]" style={{ color: MUTED }}>
             © 2026 OLD IRON — Disiplinden Dövülmüş
           </p>
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-secondary font-medium">Ödeme:</span>
-            {["Visa", "MC", "TR Pay"].map((pay) => (
-              <span key={pay}
-                className="text-[10px] bg-white border border-outline-variant rounded-[6px] px-2.5 py-1 text-secondary font-bold">
+            <span className="text-[10px] font-medium" style={{ color: MUTED }}>Ödeme:</span>
+            {["Visa", "Mastercard", "Troy"].map((pay) => (
+              <span
+                key={pay}
+                className="text-[10px] font-bold px-2.5 py-1"
+                style={{ color: MUTED, border: `1px solid ${HAIR}`, borderRadius: 6 }}
+              >
                 {pay}
               </span>
             ))}

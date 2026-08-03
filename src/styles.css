@@ -1395,3 +1395,11 @@ html.lenis, html.lenis body { height: auto; }
 }
 .oi-gnav:hover  { background: rgba(8,8,8,.85); border-color: rgba(255,255,255,.45); }
 .oi-gnav:active { transform: translateY(-50%) scale(.94); }
+
+/* Çerez bildirimi açıkken ürün sayfasının sabit satın alma barı
+   yarı saydam banner'ın altından sızmasın diye tamamen gizlenir. */
+body.has-cookie-banner .oi-sticky-buybar {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translateY(110%) !important;
+}

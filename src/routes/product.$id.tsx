@@ -1025,12 +1025,15 @@ function ProductPage() {
       {/* ══ Sabit satın alma barı ══════════════════════════════════ */}
       <div
         aria-hidden={!showSticky}
+        className="oi-sticky-buybar"
         style={{
           position: "fixed",
           left: 0,
           right: 0,
           bottom: 0,
-          zIndex: 60,
+          /* Çerez bildirimiyle (z-60) çakışmasın — o açıkken bu barın
+             altında tamamen kalır, kapanınca normal önceliğine döner. */
+          zIndex: 55,
           background: "rgba(8,8,8,0.85)",
           backdropFilter: "blur(12px)",
           borderTop: `1px solid ${HAIR}`,

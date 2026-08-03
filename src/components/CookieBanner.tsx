@@ -18,6 +18,13 @@ export function CookieBanner() {
     if (!readConsent()) setOpen(true);
   }, []);
 
+  /* Diğer sabit alt barlar (ürün sayfası satın alma barı vb.) bununla
+     çakışmasın diye <body> üzerinde bir işaret bırakılıyor. */
+  useEffect(() => {
+    document.body.classList.toggle("has-cookie-banner", open);
+    return () => document.body.classList.remove("has-cookie-banner");
+  }, [open]);
+
   if (!open) return null;
 
   const decide = (choice: Consent) => {

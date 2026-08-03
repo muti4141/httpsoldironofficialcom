@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import { useCartCount } from "@/stores/cart";
+import { useAuth } from "@/hooks/use-auth";
+import { Icon } from "@/components/Icon";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -11,7 +14,7 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const VIDEO_URL = "https://zxdefgavgwfxastwmmjm.supabase.co/storage/v1/object/public/assets/chalk.mp4";
+const VIDEO_URL = "/videos/hero.mp4";
 
 const navLinks = [
   { label: "Koleksiyon", to: "/shop" },
@@ -42,14 +45,19 @@ function Home() {
   const beatRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const logoBeatRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
+  const cartCount = useCartCount();
+  const { user } = useAuth();
 
   /* Video kaynağı — doğrudan stream, blob yok (tüm dosyayı belleğe çekmiyoruz) */
   useEffect(() => {
     const film = filmRef.current;
     if (!film) return;
     film.src = VIDEO_URL;
+    /* Video hiç yüklenmezse yükleme perdesi sonsuza kadar takılı kalmasın */
+    const onError = () => setReady(true);
+    film.addEventListener("error", onError);
     const t = setTimeout(() => setReady(true), 6000);
-    return () => clearTimeout(t);
+    return () => { clearTimeout(t); film.removeEventListener("error", onError); };
   }, []);
 
   /* Scrub döngüsü — her karede React değil, doğrudan DOM güncellenir */
@@ -163,6 +171,45 @@ function Home() {
             padding: "13px 26px",
           }}>
             Lansmanı Keşfet
+          </Link>
+
+          {/* Hesap */}
+          <Link
+            to={user ? "/account" : "/auth"}
+            search={user ? undefined : { mode: "login", redirect: "/" }}
+            className="oi-navlink"
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontSize: "11px", letterSpacing: ".08em", textTransform: "uppercase",
+              color: "rgba(255,255,255,.55)", textDecoration: "none",
+            }}
+          >
+            {user ? "Hesabım" : "Giriş"}
+          </Link>
+
+          {/* Sepet */}
+          <Link
+            to="/cart"
+            aria-label={`Sepet (${cartCount} ürün)`}
+            style={{
+              position: "relative", display: "flex", alignItems: "center",
+              justifyContent: "center", width: 32, height: 32, color: "#f4f4f4",
+            }}
+          >
+            <Icon name="shopping_bag" size={20} />
+            {cartCount > 0 && (
+              <span
+                style={{
+                  position: "absolute", top: -4, right: -4,
+                  minWidth: 16, height: 16, padding: "0 4px",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  borderRadius: 999, background: "#ffffff", color: "#080808",
+                  fontSize: 9, fontWeight: 700, lineHeight: 1,
+                }}
+              >
+                {cartCount}
+              </span>
+            )}
           </Link>
         </div>
       </nav>
