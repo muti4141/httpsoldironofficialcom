@@ -37,8 +37,9 @@ jobs:
       - name: iyzico gizli anahtarlarını Worker'a yaz
         # GitHub repo secrets'ta IYZICO_API_KEY / IYZICO_SECRET_KEY tanımlıysa
         # Cloudflare Worker'ın secret store'una yazar. Anahtarlar hiçbir zaman
-        # kodda veya loglarda görünmez.
-        if: ${{ secrets.IYZICO_API_KEY != '' && secrets.IYZICO_SECRET_KEY != '' }}
+        # kodda veya loglarda görünmez. (if: içinde doğrudan `secrets` bağlamı
+        # kullanılamıyor — bu yüzden önce env'e taşınıyor.)
+        if: ${{ env.IYZICO_API_KEY != '' && env.IYZICO_SECRET_KEY != '' }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
