@@ -24,7 +24,7 @@ export const Route = createFileRoute("/account")({
     if (!data.session) {
       throw redirect({
         to: "/auth",
-        search: { mode: "login", redirect: location.href },
+        search: { mode: "login", redirect: location.pathname + location.search },
       });
     }
   },
