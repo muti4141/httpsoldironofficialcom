@@ -64,7 +64,7 @@ function Versand() {
           <li>Sipariş sırasında gösterilen diğer yöntemler</li>
         </ul>
         <p className="text-[13px] text-secondary mt-2">
-          Tüm ödemeler Stripe üzerinden güvenle işlenir. Kart bilgileriniz sunucularımızda saklanmaz.
+          Tüm ödemeler iyzico üzerinden güvenle işlenir. Kart bilgileriniz sunucularımızda saklanmaz.
         </p>
       </section>
 

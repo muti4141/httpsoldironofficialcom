@@ -38,6 +38,7 @@ type Profile = {
   shipping_city: string | null;
   shipping_zip: string | null;
   shipping_country: string | null;
+  identity_number: string | null;
 };
 
 function AccountPage() {
@@ -49,6 +50,7 @@ function AccountPage() {
     shipping_city: "",
     shipping_zip: "",
     shipping_country: "TR",
+    identity_number: "",
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -62,7 +64,7 @@ function AccountPage() {
       const [{ data: prof }, { data: ords }] = await Promise.all([
         supabase
           .from("profiles")
-          .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country")
+          .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country, identity_number")
           .eq("id", userData.user.id)
           .maybeSingle(),
         supabase
@@ -126,6 +128,16 @@ function AccountPage() {
               <Field label="Telefon">
                 <Input value={profile.phone ?? ""} onChange={(v) => set("phone", v)} type="tel" />
               </Field>
+              <Field label="TC Kimlik No">
+                <Input
+                  value={profile.identity_number ?? ""}
+                  onChange={(v) => set("identity_number", v.replace(/\D/g, "").slice(0, 11))}
+                  type="text"
+                />
+              </Field>
+              <p className="text-[12px] text-secondary -mt-2">
+                Ödeme sağlayıcımız iyzico'nun yasal zorunluluğu gereği gereklidir.
+              </p>
             </Section>
 
             <Section title="Teslimat Adresi">

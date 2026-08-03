@@ -1,9 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
-import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
 
 let _supabase: ReturnType<typeof createClient> | null = null;
-function getSupabase() {
+export function getServiceSupabase() {
   if (!_supabase) {
     _supabase = createClient(
       process.env.SUPABASE_URL!,
@@ -13,7 +11,7 @@ function getSupabase() {
   return _supabase;
 }
 
-async function sendOrderEmails(orderId: string) {
+export async function sendOrderEmails(orderId: string) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
     console.log("RESEND_API_KEY not set, skipping emails");
@@ -22,7 +20,7 @@ async function sendOrderEmails(orderId: string) {
   const fromEmail = process.env.ORDER_EMAIL_FROM || "OLD IRON <onboarding@resend.dev>";
   const adminEmail = process.env.ADMIN_ORDER_EMAIL;
 
-  const supabase = getSupabase();
+  const supabase = getServiceSupabase();
   const { data: orderRow } = await supabase
     .from("orders")
     .select("*")
@@ -36,8 +34,8 @@ async function sendOrderEmails(orderId: string) {
     .eq("order_id", orderId);
   const items = (itemsRows || []) as any[];
 
-  const fmt = (cents: number) => `€${(cents / 100).toFixed(2)}`;
-  const itemRows = (items || [])
+  const fmt = (cents: number) => `₺${(cents / 100).toFixed(2)}`;
+  const itemRows = items
     .map(
       (i: any) =>
         `<tr><td style="padding:8px;border-bottom:1px solid #eee">${i.product_name}${i.size ? ` (${i.size})` : ""} × ${i.quantity}</td><td style="padding:8px;border-bottom:1px solid #eee;text-align:right">${fmt(i.line_total_cents)}</td></tr>`,
@@ -46,7 +44,7 @@ async function sendOrderEmails(orderId: string) {
 
   const html = `
     <div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#111">
-      <h1 style="margin:0 0 16px">Sipariş onayı</h1>
+      <h1 style="margin:0 0 16px">Sipariş Onayı</h1>
       <p>Merhaba ${order.full_name},</p>
       <p>Siparişin alındı. Sipariş no: <strong>#${String(order.id).slice(0, 8)}</strong></p>
       <table style="width:100%;border-collapse:collapse;margin:16px 0">
@@ -65,10 +63,7 @@ async function sendOrderEmails(orderId: string) {
     sends.push(
       fetch("https://api.resend.com/emails", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           from: fromEmail,
           to: order.email,
@@ -82,10 +77,7 @@ async function sendOrderEmails(orderId: string) {
     sends.push(
       fetch("https://api.resend.com/emails", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
+        headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
         body: JSON.stringify({
           from: fromEmail,
           to: adminEmail,
@@ -103,66 +95,3 @@ async function sendOrderEmails(orderId: string) {
     }
   }
 }
-
-async function handleCheckoutCompleted(session: any) {
-  const orderId = session.metadata?.orderId;
-  if (!orderId) {
-    console.error("No orderId in session metadata");
-    return;
-  }
-  const supabase = getSupabase();
-  const { error } = await (supabase.from("orders") as any)
-    .update({
-      status: "paid",
-      updated_at: new Date().toISOString(),
-    })
-    .eq("id", orderId);
-  if (error) {
-    console.error("Failed to update order:", error);
-    return;
-  }
-  await sendOrderEmails(orderId);
-}
-
-async function handleCheckoutExpired(session: any) {
-  const orderId = session.metadata?.orderId;
-  if (!orderId) return;
-  await (getSupabase().from("orders") as any)
-    .update({ status: "expired", updated_at: new Date().toISOString() })
-    .eq("id", orderId)
-    .eq("status", "pending");
-}
-
-export const Route = createFileRoute("/api/public/payments/webhook")({
-  server: {
-    handlers: {
-      POST: async ({ request }) => {
-        const rawEnv = new URL(request.url).searchParams.get("env");
-        if (rawEnv !== "sandbox" && rawEnv !== "live") {
-          console.error("Webhook missing/invalid env:", rawEnv);
-          return Response.json({ received: true, ignored: "invalid env" });
-        }
-        const env: StripeEnv = rawEnv;
-        try {
-          const event = await verifyWebhook(request, env);
-          switch (event.type) {
-            case "checkout.session.completed":
-            case "checkout.session.async_payment_succeeded":
-              await handleCheckoutCompleted(event.data.object);
-              break;
-            case "checkout.session.expired":
-            case "checkout.session.async_payment_failed":
-              await handleCheckoutExpired(event.data.object);
-              break;
-            default:
-              console.log("Unhandled event:", event.type);
-          }
-          return Response.json({ received: true });
-        } catch (e) {
-          console.error("Webhook error:", e);
-          return new Response("Webhook error", { status: 400 });
-        }
-      },
-    },
-  },
-});

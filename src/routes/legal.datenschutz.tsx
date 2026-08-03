@@ -36,7 +36,7 @@ function Datenschutz() {
         <p>Online mağazamızı kullandığınızda aşağıdaki veriler işlenir:</p>
         <ul className="list-disc pl-6 space-y-1">
           <li>Sipariş verileri (ad soyad, adres, e-posta, telefon)</li>
-          <li>Ödeme verileri (Stripe üzerinden işlenir)</li>
+          <li>Ödeme verileri (iyzico üzerinden işlenir)</li>
           <li>Sunucu kayıtları (IP adresi, zaman damgası, tarayıcı)</li>
           <li>Çerezler (bkz. bölüm 6)</li>
         </ul>
@@ -53,7 +53,7 @@ function Datenschutz() {
       <section>
         <H2>4. Veri Aktarılan Taraflar</H2>
         <ul className="list-disc pl-6 space-y-1">
-          <li>Stripe Payments Europe Ltd. — ödeme işlemleri</li>
+          <li>iyzico Ödeme Hizmetleri A.Ş. — ödeme işlemleri</li>
           <li>Resend — işlem e-postaları</li>
           <li>Supabase / Lovable Cloud — barındırma ve veritabanı</li>
           <li>Kargo hizmet sağlayıcıları — teslimat</li>

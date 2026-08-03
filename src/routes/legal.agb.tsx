@@ -54,7 +54,7 @@ function AGB() {
         <H2>5. Ödeme</H2>
         <p>
           Ödeme; kredi kartı, Apple Pay, Google Pay veya sipariş sırasında gösterilen diğer ödeme yöntemleriyle yapılabilir.
-          Ödemeler, ödeme hizmet sağlayıcımız Stripe üzerinden güvenle işlenir.
+          Ödemeler, ödeme hizmet sağlayıcımız iyzico üzerinden güvenle işlenir.
         </p>
       </section>
 

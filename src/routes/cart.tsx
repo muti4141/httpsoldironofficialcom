@@ -5,7 +5,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { useCart, type CartItem } from "@/stores/cart";
 import { supabase } from "@/integrations/supabase/client";
-import { StripeCartCheckout } from "@/components/StripeCartCheckout";
+import { IyzicoCartCheckout } from "@/components/IyzicoCartCheckout";
 import { products, type Product } from "@/data/products";
 
 const FREE_SHIPPING_THRESHOLD = 1500;
@@ -161,7 +161,6 @@ function CartPage() {
     orderId: string;
     items: { productId: string; name: string; unitAmountCents: number; quantity: number }[];
     shippingCents: number;
-    returnUrl: string;
   }>(null);
 
   const items = (Array.isArray(rawItems) ? rawItems : []).map(safeItem);
@@ -210,11 +209,16 @@ function CartPage() {
       }
       const { data: profile } = await supabase
         .from("profiles")
-        .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country")
+        .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country, identity_number")
         .eq("id", userData.user.id)
         .maybeSingle();
       if (!profile?.shipping_address || !profile.shipping_city || !profile.shipping_zip) {
         toast.error("Lütfen önce teslimat adresini ekle.");
+        navigate({ to: "/account" });
+        return;
+      }
+      if (!profile.identity_number || String(profile.identity_number).length < 10) {
+        toast.error("Ödeme için TC Kimlik No gerekli. Lütfen hesap sayfasından ekle.");
         navigate({ to: "/account" });
         return;
       }
@@ -230,6 +234,7 @@ function CartPage() {
           shipping_city: profile.shipping_city,
           shipping_zip: profile.shipping_zip,
           shipping_country: profile.shipping_country ?? "TR",
+          identity_number: profile.identity_number,
           subtotal_cents: cents(subtotal),
           tax_cents: cents(kdv),
           shipping_cents: cents(shipping),
@@ -263,7 +268,6 @@ function CartPage() {
           quantity: i.qty,
         })),
         shippingCents: cents(shipping),
-        returnUrl: `${window.location.origin}/checkout/return?order_id=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
       });
       clear();
     } catch (e) {
@@ -383,7 +387,7 @@ function CartPage() {
 
         {checkoutData ? (
           <div className="rounded-[10px] p-6" style={cardStyle}>
-            <StripeCartCheckout {...checkoutData} />
+            <IyzicoCartCheckout {...checkoutData} />
           </div>
         ) : items.length === 0 ? (
           <div>

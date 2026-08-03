@@ -155,6 +155,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          identity_number: string | null
           notes: string | null
           phone: string | null
           shipping_address: string
@@ -175,6 +176,7 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          identity_number?: string | null
           notes?: string | null
           phone?: string | null
           shipping_address: string
@@ -195,6 +197,7 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          identity_number?: string | null
           notes?: string | null
           phone?: string | null
           shipping_address?: string
@@ -216,6 +219,7 @@ export type Database = {
           created_at: string
           display_name: string | null
           id: string
+          identity_number: string | null
           phone: string | null
           shipping_address: string | null
           shipping_city: string | null
@@ -227,6 +231,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id: string
+          identity_number?: string | null
           phone?: string | null
           shipping_address?: string | null
           shipping_city?: string | null
@@ -238,6 +243,7 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          identity_number?: string | null
           phone?: string | null
           shipping_address?: string | null
           shipping_city?: string | null
