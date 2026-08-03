@@ -10,8 +10,8 @@ import { useCart } from "@/stores/cart";
 export const Route = createFileRoute("/shop")({
   head: () => ({
     meta: [
-      { title: "Mağaza — OLD IRON | Spor Giyim & Supplement" },
-      { name: "description", content: "Premium spor giyim ve analiz raporlu elit supplement. Oversize tee, stringer, şort, protein, kreatin ve daha fazlası." },
+      { title: "Mağaza — OLD IRON | Premium Spor Giyim" },
+      { name: "description", content: "Premium spor giyim. Racerback atlet, oversize tee ve daha fazlası." },
     ],
   }),
   component: Shop,
@@ -19,17 +19,9 @@ export const Route = createFileRoute("/shop")({
 
 const APPAREL_CATEGORIES = [
   { value: "tops",        label: "Üst Giyim" },
-  { value: "bottoms",     label: "Alt Giyim" },
-  { value: "accessories", label: "Aksesuar" },
 ];
 
-const SUPPLEMENT_CATEGORIES = [
-  { value: "protein",     label: "Protein" },
-  { value: "creatine",    label: "Kreatin" },
-  { value: "preworkout",  label: "Pre-Workout" },
-  { value: "aminoacids",  label: "Amino Asit" },
-  { value: "thermo",      label: "Thermo & Enerji" },
-];
+const SUPPLEMENT_CATEGORIES: { value: string; label: string }[] = [];
 
 type Tab = "all" | "apparel" | "supplement";
 
