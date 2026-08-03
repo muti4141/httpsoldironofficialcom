@@ -25,6 +25,7 @@ export type Product = {
   weights?: string[];
   servings?: number;
   originalPrice?: number;
+  outOfStock?: boolean;
 };
 
 // Güvenilir fallback görseller (görsel yüklenemeyince gösterilir)
@@ -113,6 +114,7 @@ export const products: Product[] = [
     badge: "Bestseller",
     subtitle: "Ağır Pamuk Oversize",
     description: "Nihai Pump Cover. 300gsm ağır pamuktan üretilmiş, maksimum dayanıklılık ve konfor için. Spor salonunda uzlaşma tanımayan sporcular için tasarlandı.",
+    outOfStock: true,
   },
   {
     id: "stringer-hustle",
@@ -125,6 +127,7 @@ export const products: Product[] = [
     video: "/videos/stringer-hustle.mp4",
     subtitle: "Klasik Kesim Antrasit",
     description: "Derin kol açıklığı. Ağır kumaş. Spor salonunda maksimum hareket özgürlüğü.",
+    outOfStock: true,
   },
   {
     id: "training-shorts",

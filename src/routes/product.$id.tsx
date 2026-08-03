@@ -239,6 +239,10 @@ function ProductPage() {
     : size;
 
   const handleAdd = () => {
+    if (product.outOfStock) {
+      toast.error("Bu ürün şu anda stokta yok.");
+      return;
+    }
     addToCart(product, variantLabel);
     toast.success(`${product.name} sepete eklendi`);
     setAdded(true);
@@ -248,7 +252,10 @@ function ProductPage() {
   const bundlePartner = useMemo(
     () =>
       products.find(
-        (p) => p.id !== product.id && (isSupp ? p.type === "apparel" : p.type === "supplement")
+        (p) =>
+          p.id !== product.id &&
+          !p.outOfStock &&
+          (isSupp ? p.type === "apparel" : p.type === "supplement")
       ) ?? null,
     [product.id, isSupp]
   );
@@ -501,7 +508,27 @@ function ProductPage() {
                     {isSupp ? "Supplement Koleksiyonu" : "Giyim Koleksiyonu"}
                   </p>
 
-                  {product.badge && (
+                  {product.outOfStock ? (
+                    <span
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        background: "rgba(255,255,255,0.10)",
+                        color: DIM,
+                        border: `1px solid ${HAIR}`,
+                        borderRadius: "999px",
+                        padding: "6px 14px",
+                        fontFamily: MONO,
+                        fontSize: "10px",
+                        fontWeight: 600,
+                        letterSpacing: ".08em",
+                        textTransform: "uppercase",
+                        marginBottom: "12px",
+                      }}
+                    >
+                      Stokta Yok
+                    </span>
+                  ) : product.badge && (
                     <span
                       style={{
                         display: "inline-flex",
@@ -770,15 +797,19 @@ function ProductPage() {
                   <button
                     ref={ctaRef}
                     onClick={handleAdd}
+                    disabled={product.outOfStock}
                     className="oi-cta"
                     style={{
                       ...ctaPrimary,
                       width: "100%",
                       padding: "16px 24px",
                       minHeight: "48px",
+                      ...(product.outOfStock
+                        ? { background: "rgba(255,255,255,0.10)", color: DIM, cursor: "not-allowed" }
+                        : {}),
                     }}
                   >
-                    {added ? "Sepete eklendi ✓" : "Sepete Ekle"}
+                    {product.outOfStock ? "Stokta Yok" : added ? "Sepete eklendi ✓" : "Sepete Ekle"}
                   </button>
 
                   {/* Güven satırı */}
@@ -1053,15 +1084,19 @@ function ProductPage() {
 
           <button
             onClick={handleAdd}
+            disabled={product.outOfStock}
             className="oi-cta"
             style={{
               ...ctaPrimary,
               flexShrink: 0,
               padding: "14px 22px",
               minHeight: "48px",
+              ...(product.outOfStock
+                ? { background: "rgba(255,255,255,0.10)", color: DIM, cursor: "not-allowed" }
+                : {}),
             }}
           >
-            {added ? "Eklendi ✓" : "Sepete Ekle"}
+            {product.outOfStock ? "Stokta Yok" : added ? "Eklendi ✓" : "Sepete Ekle"}
           </button>
         </div>
       </div>

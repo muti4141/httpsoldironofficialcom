@@ -75,9 +75,14 @@ function Visual({ p }: { p: Product }) {
 
 /* ── Ürün kartı ────────────────────────────────────────────────────── */
 function Card({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) {
-  const label = badgeLabel(p.badge);
+  const label = p.outOfStock ? "TÜKENDİ" : badgeLabel(p.badge);
   return (
-    <Link to="/product/$id" params={{ id: p.id }} className="oi-card">
+    <Link
+      to="/product/$id"
+      params={{ id: p.id }}
+      className="oi-card"
+      style={p.outOfStock ? { opacity: 0.6 } : undefined}
+    >
       {label && (
         <span
           className={`oi-badge ${label === "YENİ" ? "" : "muted"}`}
@@ -112,9 +117,15 @@ function Card({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) {
         </div>
       </div>
 
-      <button className="oi-add" onClick={(e) => { e.preventDefault(); onAdd(p); }}>
-        Sepete Ekle
-      </button>
+      {p.outOfStock ? (
+        <button className="oi-add" disabled style={{ cursor: "not-allowed" }}>
+          Stokta Yok
+        </button>
+      ) : (
+        <button className="oi-add" onClick={(e) => { e.preventDefault(); onAdd(p); }}>
+          Sepete Ekle
+        </button>
+      )}
     </Link>
   );
 }
