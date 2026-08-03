@@ -3,16 +3,15 @@ import { createIyzicoCheckout } from "@/lib/payments.iyzico.functions";
 
 type Props = {
   orderId: string;
-  items: { productId: string; name: string; unitAmountCents: number; quantity: number }[];
-  shippingCents: number;
 };
 
 /**
  * iyzico Ödeme Formu istemcisi. iyzico'nun döndürdüğü HTML/script parçasını
  * (checkoutFormContent) DOM'a enjekte eder — script içeriği innerHTML ile
  * çalışmadığı için elle <script> elemanları oluşturup ekliyoruz.
+ * Tutarlar/kalemler sunucuda orderId'den okunur, buradan gönderilmez.
  */
-export function IyzicoCartCheckout({ orderId, items, shippingCents }: Props) {
+export function IyzicoCartCheckout({ orderId }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
   const started = useRef(false);
@@ -26,7 +25,7 @@ export function IyzicoCartCheckout({ orderId, items, shippingCents }: Props) {
     (async () => {
       try {
         const { checkoutFormContent } = await createIyzicoCheckout({
-          data: { orderId, items, shippingCents },
+          data: { orderId },
         });
         if (cancelled || !containerRef.current) return;
 
@@ -58,7 +57,7 @@ export function IyzicoCartCheckout({ orderId, items, shippingCents }: Props) {
     })();
 
     return () => { cancelled = true; };
-  }, [orderId, items, shippingCents]);
+  }, [orderId]);
 
   if (error) {
     return (

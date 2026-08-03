@@ -7,6 +7,7 @@ import { useCart, type CartItem } from "@/stores/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { IyzicoCartCheckout } from "@/components/IyzicoCartCheckout";
 import { products, type Product } from "@/data/products";
+import { createOrder } from "@/lib/checkout.functions";
 
 const FREE_SHIPPING_THRESHOLD = 1500;
 const SHIPPING_FEE = 140;
@@ -157,11 +158,7 @@ function CartPage() {
   const navigate   = useNavigate();
   const [terms, setTerms]     = useState(false);
   const [placing, setPlacing] = useState(false);
-  const [checkoutData, setCheckoutData] = useState<null | {
-    orderId: string;
-    items: { productId: string; name: string; unitAmountCents: number; quantity: number }[];
-    shippingCents: number;
-  }>(null);
+  const [checkoutData, setCheckoutData] = useState<null | { orderId: string }>(null);
 
   const items = (Array.isArray(rawItems) ? rawItems : []).map(safeItem);
 
@@ -207,72 +204,21 @@ function CartPage() {
         navigate({ to: "/auth", search: { mode: "login", redirect: "/cart" } });
         return;
       }
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("display_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country, identity_number")
-        .eq("id", userData.user.id)
-        .maybeSingle();
-      if (!profile?.shipping_address || !profile.shipping_city || !profile.shipping_zip) {
-        toast.error("Lütfen önce teslimat adresini ekle.");
-        navigate({ to: "/account" });
-        return;
-      }
-      if (!profile.identity_number || String(profile.identity_number).length < 10) {
-        toast.error("Ödeme için TC Kimlik No gerekli. Lütfen hesap sayfasından ekle.");
-        navigate({ to: "/account" });
-        return;
-      }
-      const cents = (n: number) => Math.round(n * 100);
-      const { data: order, error: orderErr } = await supabase
-        .from("orders")
-        .insert({
-          user_id: userData.user.id,
-          email: userData.user.email!,
-          full_name: profile.display_name ?? userData.user.email!.split("@")[0],
-          phone: profile.phone,
-          shipping_address: profile.shipping_address,
-          shipping_city: profile.shipping_city,
-          shipping_zip: profile.shipping_zip,
-          shipping_country: profile.shipping_country ?? "TR",
-          identity_number: profile.identity_number,
-          subtotal_cents: cents(subtotal),
-          tax_cents: cents(kdv),
-          shipping_cents: cents(shipping),
-          total_cents: cents(total),
-          currency: "TRY",
-          status: "pending",
-        })
-        .select("id")
-        .single();
-      if (orderErr || !order) throw orderErr ?? new Error("Sipariş oluşturulamadı.");
-      const { error: itemsErr } = await supabase.from("order_items").insert(
-        items.map((i) => ({
-          order_id: order.id,
-          product_id: i.productId,
-          product_name: i.name,
-          product_image: i.image,
-          size: i.size,
-          quantity: i.qty,
-          unit_price_cents: cents(i.price),
-          line_total_cents: cents(i.price * i.qty),
-        }))
-      );
-      if (itemsErr) throw itemsErr;
-      const orderId = order.id as string;
-      setCheckoutData({
-        orderId,
-        items: items.map((i) => ({
-          productId: i.productId,
-          name: `${i.name} — ${i.size}`,
-          unitAmountCents: cents(i.price),
-          quantity: i.qty,
-        })),
-        shippingCents: cents(shipping),
+      // Fiyatlar sunucuda, products.ts'ten yeniden hesaplanır — sepetteki
+      // (localStorage'dan gelen, değiştirilebilir) fiyat asla gönderilmez.
+      const result = await createOrder({
+        data: {
+          lines: items.map((i) => ({ productId: i.productId, size: i.size, qty: i.qty })),
+        },
       });
+      setCheckoutData({ orderId: result.orderId });
       clear();
     } catch (e) {
       const msg = e instanceof Error ? e.message : "Sipariş oluşturulamadı.";
       toast.error(msg);
+      if (msg.includes("teslimat adresini") || msg.includes("TC Kimlik No")) {
+        navigate({ to: "/account" });
+      }
     } finally {
       setPlacing(false);
     }
