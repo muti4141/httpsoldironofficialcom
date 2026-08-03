@@ -15,6 +15,7 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { CookieBanner } from "@/components/CookieBanner";
 import { PerfMonitor } from "@/components/PerfMonitor";
+import { Preloader } from "@/components/Preloader";
 import { supabase } from "@/integrations/supabase/client";
 
 function NotFoundComponent() {
@@ -113,6 +114,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <Preloader />
       <AuthSync />
       <SmoothScroll />
       <PaymentTestModeBanner />
