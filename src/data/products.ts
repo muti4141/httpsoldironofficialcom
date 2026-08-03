@@ -39,8 +39,8 @@ export const products: Product[] = [
     category: "tops",
     categoryLabel: "Üst Giyim",
     type: "apparel",
-    price: 650,
-    originalPrice: 790,
+    price: 400,
+    originalPrice: 600,
     image: "/images/products/elite1/f-1.jpg",
     gallery: [
       "/images/products/elite1/f-1.jpg",
@@ -62,8 +62,8 @@ export const products: Product[] = [
     category: "tops",
     categoryLabel: "Üst Giyim",
     type: "apparel",
-    price: 650,
-    originalPrice: 790,
+    price: 400,
+    originalPrice: 600,
     image: "/images/products/elite2/f-1.jpg",
     gallery: [
       "/images/products/elite2/f-1.jpg",
