@@ -5,25 +5,26 @@ import type { Database } from './types';
 function createSupabaseClient() {
   // Use import.meta.env for client-side (Vite build-time replacement)
   // Fall back to process.env for SSR (server-side rendering)
-  const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '').trim();
-  const SUPABASE_PUBLISHABLE_KEY = (import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || '').trim();
-
   // apikey/Authorization header'ları yalnızca ISO-8859-1 karakter kabul eder;
-  // ortam değişkeninde görünmez bir karakter (kopyala-yapıştır kaynaklı) varsa
-  // tarayıcı fetch'i "String contains non ISO-8859-1 code point" hatasıyla
-  // tamamen çöker (giriş/kayıt formları dahil). Erken ve anlaşılır uyar.
-  if (SUPABASE_PUBLISHABLE_KEY && /[^\x00-\xFF]/.test(SUPABASE_PUBLISHABLE_KEY)) {
-    console.error(
-      '[Supabase] VITE_SUPABASE_PUBLISHABLE_KEY geçersiz karakter(ler) içeriyor. ' +
-      'GitHub repo secrets\'taki değeri silip yeniden, boşluksuz olarak yapıştırın.'
-    );
-  }
-  if (SUPABASE_URL && /[^\x00-\xFF]/.test(SUPABASE_URL)) {
-    console.error(
-      '[Supabase] VITE_SUPABASE_URL geçersiz karakter(ler) içeriyor. ' +
-      'GitHub repo secrets\'taki değeri silip yeniden, boşluksuz olarak yapıştırın.'
-    );
-  }
+  // ortam değişkeninde görünmez bir karakter (kopyala-yapıştır kaynaklı, ör.
+  // akıllı tırnak/sıfır genişlikli boşluk) varsa tarayıcı fetch'i "String
+  // contains non ISO-8859-1 code point" hatasıyla tamamen çöker — giriş/kayıt
+  // formları dahil HİÇBİR şey çalışmaz. Sadece uyarmak yetmiyor: değeri
+  // gerçekten temizleyip en azından anlaşılır bir 401/geçersiz anahtar
+  // hatasına düşmesini sağlıyoruz.
+  const stripBad = (v: string, name: string) => {
+    const cleaned = v.replace(/[^\x00-\xFF]/g, '');
+    if (cleaned !== v) {
+      console.error(
+        `[Supabase] ${name} geçersiz karakter(ler) içeriyordu ve temizlendi. ` +
+        `GitHub repo secrets'taki değeri silip yeniden, boşluksuz/görünmez karaktersiz yapıştırın.`
+      );
+    }
+    return cleaned;
+  };
+
+  const SUPABASE_URL = stripBad((import.meta.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '').trim(), 'VITE_SUPABASE_URL');
+  const SUPABASE_PUBLISHABLE_KEY = stripBad((import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || process.env.SUPABASE_PUBLISHABLE_KEY || '').trim(), 'VITE_SUPABASE_PUBLISHABLE_KEY');
 
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
     const missing = [
