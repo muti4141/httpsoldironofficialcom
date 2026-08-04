@@ -46,7 +46,7 @@ export const Route = createFileRoute("/admin/orders")({
   beforeLoad: async ({ location }) => {
     const { data } = await supabase.auth.getSession();
     if (!data.session) {
-      throw redirect({ to: "/auth", search: { mode: "login", redirect: location.href } });
+      throw redirect({ to: "/auth", search: { mode: "login", redirect: location.pathname + location.search } });
     }
   },
   component: AdminOrdersPage,
