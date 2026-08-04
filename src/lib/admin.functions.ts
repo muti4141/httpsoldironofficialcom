@@ -35,7 +35,7 @@ export const listAllOrders = createServerFn({ method: "GET" })
     await assertAdmin(supabase, userId);
     const { data, error } = await supabase
       .from("orders")
-      .select("*")
+      .select("*, order_items(*)")
       .order("created_at", { ascending: false })
       .limit(500);
     if (error) throw new Error(error.message);

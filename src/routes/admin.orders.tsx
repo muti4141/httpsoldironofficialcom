@@ -1,11 +1,11 @@
 import { createFileRoute, redirect, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { translateError } from "@/lib/error-messages";
 import {
   checkIsAdmin,
   listAllOrders,
@@ -13,8 +13,9 @@ import {
 } from "@/lib/admin.functions";
 
 const STATUSES = ["pending", "paid", "shipped", "delivered", "cancelled", "refunded", "expired"] as const;
+type Status = (typeof STATUSES)[number];
 
-const STATUS_TR: Record<string, string> = {
+const STATUS_TR: Record<Status, string> = {
   pending: "Beklemede",
   paid: "Ödendi",
   shipped: "Kargoda",
@@ -24,16 +25,57 @@ const STATUS_TR: Record<string, string> = {
   expired: "Süresi Doldu",
 };
 
+const STATUS_COLOR: Record<Status, string> = {
+  pending: "#f5c66b",
+  paid: "#6fd68a",
+  shipped: "#6fb8ff",
+  delivered: "#c8c8c8",
+  cancelled: "#ff6f6f",
+  refunded: "#ff9f6f",
+  expired: "rgba(255,255,255,0.4)",
+};
+
+/* ── Karanlık tema jetonları (site geneliyle aynı) ──────────────────────── */
+const BG     = "#080808";
+const CARD   = "#141414";
+const RAISED = "#1c1c1c";
+const HAIR   = "rgba(255,255,255,0.12)";
+const TEXT   = "#f4f4f4";
+const MUTED  = "rgba(255,255,255,0.55)";
+const DIM    = "rgba(255,255,255,0.38)";
+const MONO   = "'JetBrains Mono', ui-monospace, monospace";
+const SANS   = "'Inter Tight', Inter, sans-serif";
+const EASE   = "cubic-bezier(.16,.8,.24,1)";
+
+type OrderItem = {
+  id: string;
+  product_id: string;
+  product_name: string;
+  product_image: string | null;
+  size: string | null;
+  quantity: number;
+  unit_price_cents: number;
+  line_total_cents: number;
+};
+
 type Order = {
   id: string;
   created_at: string;
   email: string;
   full_name: string;
+  phone: string | null;
+  shipping_address: string;
   shipping_city: string;
+  shipping_zip: string;
   shipping_country: string;
+  identity_number: string | null;
+  subtotal_cents: number;
+  shipping_cents: number;
   total_cents: number;
   currency: string;
-  status: string;
+  status: Status;
+  notes: string | null;
+  order_items: OrderItem[];
 };
 
 export const Route = createFileRoute("/admin/orders")({
@@ -56,6 +98,22 @@ function fmt(cents: number, currency = "TRY") {
   return new Intl.NumberFormat("tr-TR", { style: "currency", currency }).format(cents / 100);
 }
 
+function fmtDate(iso: string) {
+  return new Date(iso).toLocaleString("tr-TR", {
+    day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit",
+  });
+}
+
+const TABS: { key: "action" | "all" | Status; label: string }[] = [
+  { key: "action", label: "Kargo Bekliyor" },
+  { key: "all", label: "Tümü" },
+  { key: "pending", label: STATUS_TR.pending },
+  { key: "paid", label: STATUS_TR.paid },
+  { key: "shipped", label: STATUS_TR.shipped },
+  { key: "delivered", label: STATUS_TR.delivered },
+  { key: "cancelled", label: STATUS_TR.cancelled },
+];
+
 function AdminOrdersPage() {
   const check = useServerFn(checkIsAdmin);
   const list = useServerFn(listAllOrders);
@@ -64,112 +122,296 @@ function AdminOrdersPage() {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("action");
+  const [query, setQuery] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const { isAdmin } = await check();
-        if (!isAdmin) {
-          setAuthorized(false);
-          setLoading(false);
-          return;
-        }
-        setAuthorized(true);
-        const { orders } = await list();
-        setOrders(orders as Order[]);
-      } catch (e: any) {
-        toast.error(e?.message ?? "Yüklenirken hata oluştu");
-        setAuthorized(false);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
-
-  const handleStatus = async (orderId: string, status: string) => {
+  const load = async () => {
     try {
-      await update({ data: { orderId, status: status as any } });
-      setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status } : o)));
-      toast.success("Durum güncellendi");
-    } catch (e: any) {
-      toast.error(e?.message ?? "Güncelleme başarısız");
+      const { isAdmin } = await check();
+      if (!isAdmin) { setAuthorized(false); setLoading(false); return; }
+      setAuthorized(true);
+      const { orders } = await list();
+      setOrders(orders as unknown as Order[]);
+    } catch (e) {
+      toast.error(translateError(e instanceof Error ? e.message : null));
+      setAuthorized(false);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => { load(); }, []);
+
+  const handleStatus = async (orderId: string, status: Status) => {
+    const prev = orders;
+    setOrders((os) => os.map((o) => (o.id === orderId ? { ...o, status } : o)));
+    try {
+      await update({ data: { orderId, status } });
+      toast.success(status === "shipped" ? "Kargoya verildi olarak işaretlendi." : "Durum güncellendi.");
+    } catch (e) {
+      setOrders(prev);
+      toast.error(translateError(e instanceof Error ? e.message : null));
+    }
+  };
+
+  const counts = useMemo(() => {
+    const c: Record<string, number> = { all: orders.length, action: 0 };
+    for (const o of orders) {
+      c[o.status] = (c[o.status] ?? 0) + 1;
+      if (o.status === "paid") c.action++;
+    }
+    return c;
+  }, [orders]);
+
+  const filtered = useMemo(() => {
+    let list = orders;
+    if (tab === "action") list = list.filter((o) => o.status === "paid");
+    else if (tab !== "all") list = list.filter((o) => o.status === tab);
+    const q = query.trim().toLowerCase();
+    if (q) {
+      list = list.filter((o) =>
+        o.full_name?.toLowerCase().includes(q) ||
+        o.email?.toLowerCase().includes(q) ||
+        o.id.toLowerCase().includes(q) ||
+        o.shipping_city?.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [orders, tab, query]);
+
+  const copyAddress = (o: Order) => {
+    const text = [
+      o.full_name,
+      o.phone ?? "",
+      o.shipping_address,
+      `${o.shipping_zip} ${o.shipping_city} / ${o.shipping_country}`,
+    ].filter(Boolean).join("\n");
+    navigator.clipboard?.writeText(text).then(
+      () => toast.success("Adres kopyalandı."),
+      () => toast.error("Kopyalanamadı.")
+    );
+  };
+
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div style={{ background: BG, color: TEXT, minHeight: "100vh", fontFamily: SANS }}>
       <Nav />
-      <main className="flex-1 container mx-auto px-4 py-12 max-w-7xl">
-        <div className="flex items-center justify-between mb-8">
-          <h1 className="text-[32px] font-bold tracking-[-0.04em]">Siparişler</h1>
-          <Link to="/account">
-            <Button variant="outline" size="sm">Hesabım</Button>
+      <main style={{ maxWidth: "1280px", margin: "0 auto", padding: "132px 20px 96px" }}>
+        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "16px", marginBottom: "28px", flexWrap: "wrap" }}>
+          <div>
+            <p style={{ fontFamily: MONO, fontSize: "11px", letterSpacing: ".2em", textTransform: "uppercase", color: DIM, marginBottom: "8px" }}>
+              Admin
+            </p>
+            <h1 style={{ fontSize: "34px", fontWeight: 700, letterSpacing: "-0.03em", margin: 0 }}>
+              Siparişler
+            </h1>
+          </div>
+          <Link
+            to="/account"
+            style={{
+              fontFamily: MONO, fontSize: "11px", letterSpacing: ".08em", textTransform: "uppercase",
+              color: MUTED, border: `1px solid ${HAIR}`, borderRadius: "8px", padding: "10px 16px",
+              textDecoration: "none", transition: `border-color .2s ${EASE}, color .2s ${EASE}`,
+            }}
+          >
+            ← Hesabım
           </Link>
         </div>
 
-        {loading && <p className="text-secondary">Yükleniyor…</p>}
+        {loading && <p style={{ color: MUTED, fontSize: "14px" }}>Yükleniyor…</p>}
 
         {!loading && authorized === false && (
-          <div className="border border-outline-variant rounded-[10px] p-8 text-center bg-plaster">
-            <p className="text-[16px] font-bold mb-2">Erişim Reddedildi</p>
-            <p className="text-secondary">Admin yetkisine sahip değilsiniz.</p>
+          <div style={{ background: CARD, border: `1px solid ${HAIR}`, borderRadius: "14px", padding: "40px", textAlign: "center" }}>
+            <p style={{ fontSize: "16px", fontWeight: 700, marginBottom: "8px" }}>Erişim Reddedildi</p>
+            <p style={{ color: MUTED, fontSize: "14px" }}>Bu sayfayı görmek için admin yetkin olması gerekiyor.</p>
           </div>
         )}
 
-        {!loading && authorized && orders.length === 0 && (
-          <p className="text-secondary">Henüz sipariş bulunmuyor.</p>
-        )}
+        {!loading && authorized && (
+          <>
+            {/* ── Durum sekmeleri ── */}
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "20px" }}>
+              {TABS.map((t) => {
+                const active = tab === t.key;
+                const n = counts[t.key] ?? 0;
+                return (
+                  <button
+                    key={t.key}
+                    onClick={() => setTab(t.key)}
+                    style={{
+                      fontFamily: MONO, fontSize: "11px", letterSpacing: ".06em", textTransform: "uppercase",
+                      padding: "10px 14px", borderRadius: "8px", cursor: "pointer",
+                      border: `1px solid ${active ? "rgba(255,255,255,.5)" : HAIR}`,
+                      background: active ? "#f4f4f4" : RAISED,
+                      color: active ? BG : MUTED,
+                      fontWeight: active ? 700 : 500,
+                      transition: `all .2s ${EASE}`,
+                      display: "flex", alignItems: "center", gap: "8px",
+                    }}
+                  >
+                    {t.label}
+                    {n > 0 && (
+                      <span style={{
+                        fontSize: "10px", padding: "1px 6px", borderRadius: "999px",
+                        background: active ? "rgba(8,8,8,.15)" : "rgba(255,255,255,.1)",
+                      }}>
+                        {n}
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-        {!loading && authorized && orders.length > 0 && (
-          <div className="overflow-x-auto border border-outline-variant rounded-[10px]">
-            <table className="w-full text-sm">
-              <thead className="bg-plaster text-left">
-                <tr>
-                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Tarih</th>
-                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">No</th>
-                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Müşteri</th>
-                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Konum</th>
-                  <th className="px-4 py-3 text-right font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Tutar</th>
-                  <th className="px-4 py-3 font-bold text-[12px] uppercase tracking-[0.1em] text-secondary">Durum</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orders.map((o) => (
-                  <tr key={o.id} className="border-t border-outline-variant hover:bg-plaster/50">
-                    <td className="px-4 py-3 whitespace-nowrap text-secondary">
-                      {new Date(o.created_at).toLocaleString("tr-TR")}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-xs">
-                      <Link to="/order/$id" params={{ id: o.id }} className="hover:underline text-cobalt font-bold">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="İsim, e-posta, şehir veya sipariş no ara…"
+              style={{
+                width: "100%", maxWidth: "420px", marginBottom: "24px",
+                padding: "11px 14px", borderRadius: "8px",
+                background: RAISED, border: `1px solid ${HAIR}`, color: TEXT,
+                fontSize: "13px", outline: "none",
+              }}
+            />
+
+            {filtered.length === 0 && (
+              <p style={{ color: MUTED, fontSize: "14px" }}>Bu filtrede sipariş yok.</p>
+            )}
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              {filtered.map((o) => {
+                const open = openId === o.id;
+                return (
+                  <div key={o.id} style={{
+                    background: CARD, border: `1px solid ${HAIR}`, borderRadius: "12px", overflow: "hidden",
+                  }}>
+                    {/* ── Satır başlığı ── */}
+                    <button
+                      onClick={() => setOpenId(open ? null : o.id)}
+                      style={{
+                        width: "100%", textAlign: "left", cursor: "pointer",
+                        background: "transparent", border: "none", color: TEXT,
+                        padding: "18px 20px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap",
+                      }}
+                    >
+                      <span style={{
+                        width: "8px", height: "8px", borderRadius: "50%", flexShrink: 0,
+                        background: STATUS_COLOR[o.status] ?? DIM,
+                      }} />
+                      <span style={{ fontFamily: MONO, fontSize: "12px", color: DIM, minWidth: "90px" }}>
                         #{o.id.slice(0, 8)}
-                      </Link>
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="font-semibold text-foreground">{o.full_name}</div>
-                      <div className="text-xs text-secondary">{o.email}</div>
-                    </td>
-                    <td className="px-4 py-3 text-secondary">
-                      {o.shipping_city}, {o.shipping_country}
-                    </td>
-                    <td className="px-4 py-3 text-right font-mono font-bold">
-                      {fmt(o.total_cents, o.currency)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <select
-                        value={o.status}
-                        onChange={(e) => handleStatus(o.id, e.target.value)}
-                        className="bg-white border border-outline-variant rounded-[6px] px-2 py-1 text-sm text-foreground"
-                      >
-                        {STATUSES.map((s) => (
-                          <option key={s} value={s}>{STATUS_TR[s] ?? s}</option>
-                        ))}
-                      </select>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                      </span>
+                      <span style={{ flex: "1 1 180px", fontWeight: 600, fontSize: "14px" }}>
+                        {o.full_name}
+                        <span style={{ display: "block", fontSize: "12px", color: MUTED, fontWeight: 400 }}>{o.email}</span>
+                      </span>
+                      <span style={{ fontSize: "13px", color: MUTED, flex: "0 0 140px" }}>
+                        {o.shipping_city}, {o.shipping_country}
+                      </span>
+                      <span style={{ fontFamily: MONO, fontSize: "11px", color: DIM, flex: "0 0 140px" }}>
+                        {fmtDate(o.created_at)}
+                      </span>
+                      <span style={{ fontFamily: MONO, fontSize: "14px", fontWeight: 700, flex: "0 0 100px", textAlign: "right" }}>
+                        {fmt(o.total_cents, o.currency)}
+                      </span>
+                      <span style={{
+                        fontFamily: MONO, fontSize: "10px", letterSpacing: ".06em", textTransform: "uppercase",
+                        padding: "5px 10px", borderRadius: "999px",
+                        border: `1px solid ${STATUS_COLOR[o.status]}55`,
+                        color: STATUS_COLOR[o.status], flex: "0 0 auto", whiteSpace: "nowrap",
+                      }}>
+                        {STATUS_TR[o.status] ?? o.status}
+                      </span>
+                      <span style={{ color: DIM, transform: open ? "rotate(180deg)" : "none", transition: `transform .2s ${EASE}` }}>▾</span>
+                    </button>
+
+                    {/* ── Genişletilmiş kargo detayı ── */}
+                    {open && (
+                      <div style={{ borderTop: `1px solid ${HAIR}`, padding: "20px", display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "24px" }}>
+                        <div>
+                          <p style={{ fontFamily: MONO, fontSize: "10px", letterSpacing: ".1em", textTransform: "uppercase", color: DIM, marginBottom: "10px" }}>
+                            Kalemler
+                          </p>
+                          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                            {o.order_items?.map((it) => (
+                              <div key={it.id} style={{ display: "flex", justifyContent: "space-between", gap: "12px", fontSize: "13px" }}>
+                                <span>
+                                  {it.product_name}
+                                  {it.size && <span style={{ color: MUTED }}> — {it.size}</span>}
+                                  <span style={{ color: DIM }}> × {it.quantity}</span>
+                                </span>
+                                <span style={{ fontFamily: MONO, color: MUTED, flexShrink: 0 }}>{fmt(it.line_total_cents, o.currency)}</span>
+                              </div>
+                            ))}
+                          </div>
+                          <div style={{ marginTop: "14px", paddingTop: "14px", borderTop: `1px solid ${HAIR}`, display: "flex", justifyContent: "space-between", fontSize: "12px", color: MUTED }}>
+                            <span>Kargo</span>
+                            <span style={{ fontFamily: MONO }}>{o.shipping_cents === 0 ? "Ücretsiz" : fmt(o.shipping_cents, o.currency)}</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+                            <p style={{ fontFamily: MONO, fontSize: "10px", letterSpacing: ".1em", textTransform: "uppercase", color: DIM, margin: 0 }}>
+                              Teslimat Adresi
+                            </p>
+                            <button
+                              onClick={() => copyAddress(o)}
+                              style={{
+                                fontFamily: MONO, fontSize: "10px", letterSpacing: ".04em",
+                                color: TEXT, background: RAISED, border: `1px solid ${HAIR}`,
+                                borderRadius: "6px", padding: "5px 10px", cursor: "pointer",
+                              }}
+                            >
+                              Adresi Kopyala
+                            </button>
+                          </div>
+                          <p style={{ fontSize: "13px", lineHeight: 1.7, color: TEXT, margin: 0 }}>
+                            {o.full_name}<br />
+                            {o.phone && <>{o.phone}<br /></>}
+                            {o.shipping_address}<br />
+                            {o.shipping_zip} {o.shipping_city} / {o.shipping_country}
+                          </p>
+                          {o.notes && (
+                            <p style={{ fontSize: "12px", color: MUTED, marginTop: "10px" }}>
+                              Not: {o.notes}
+                            </p>
+                          )}
+
+                          <div style={{ marginTop: "18px" }}>
+                            <p style={{ fontFamily: MONO, fontSize: "10px", letterSpacing: ".1em", textTransform: "uppercase", color: DIM, marginBottom: "8px" }}>
+                              Durumu Değiştir
+                            </p>
+                            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                              {STATUSES.map((s) => (
+                                <button
+                                  key={s}
+                                  onClick={() => handleStatus(o.id, s)}
+                                  disabled={o.status === s}
+                                  style={{
+                                    fontFamily: MONO, fontSize: "11px", padding: "8px 12px", borderRadius: "7px",
+                                    cursor: o.status === s ? "default" : "pointer",
+                                    border: `1px solid ${o.status === s ? STATUS_COLOR[s] : HAIR}`,
+                                    background: o.status === s ? `${STATUS_COLOR[s]}1a` : RAISED,
+                                    color: o.status === s ? STATUS_COLOR[s] : MUTED,
+                                    opacity: o.status === s ? 1 : 0.85,
+                                    transition: `all .2s ${EASE}`,
+                                  }}
+                                >
+                                  {STATUS_TR[s]}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
       </main>
       <Footer />
