@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { IyzicoCartCheckout } from "@/components/IyzicoCartCheckout";
 import { products, type Product } from "@/data/products";
 import { createOrder } from "@/lib/checkout.functions";
+import { translateError } from "@/lib/error-messages";
 
 const FREE_SHIPPING_THRESHOLD = 1500;
 const SHIPPING_FEE = 140;
@@ -214,7 +215,7 @@ function CartPage() {
       setCheckoutData({ orderId: result.orderId });
       clear();
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Sipariş oluşturulamadı.";
+      const msg = translateError(e instanceof Error ? e.message : "Sipariş oluşturulamadı.");
       toast.error(msg);
       if (msg.includes("teslimat adresini") || msg.includes("TC Kimlik No")) {
         navigate({ to: "/account" });

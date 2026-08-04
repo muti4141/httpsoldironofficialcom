@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-ro
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { translateError } from "@/lib/error-messages";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
@@ -70,7 +71,7 @@ function AuthPage() {
         navigate({ to: redirectTo });
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Bir hata oluştu.");
+      toast.error(translateError(err instanceof Error ? err.message : null));
     } finally {
       setBusy(false);
     }

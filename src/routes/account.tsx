@@ -5,6 +5,7 @@ import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { signOut } from "@/hooks/use-auth";
+import { translateError } from "@/lib/error-messages";
 
 type OrderRow = {
   id: string;
@@ -88,7 +89,7 @@ function AccountPage() {
       .from("profiles")
       .upsert({ id: userData.user.id, ...profile });
     setSaving(false);
-    if (error) toast.error(error.message);
+    if (error) toast.error(translateError(error.message));
     else toast.success("Profil kaydedildi.");
   };
 

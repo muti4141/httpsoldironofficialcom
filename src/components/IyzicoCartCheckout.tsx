@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { createIyzicoCheckout } from "@/lib/payments.iyzico.functions";
+import { translateError } from "@/lib/error-messages";
 
 type Props = {
   orderId: string;
@@ -51,7 +52,7 @@ export function IyzicoCartCheckout({ orderId }: Props) {
         }
       } catch (e) {
         if (!cancelled) {
-          setError(e instanceof Error ? e.message : "Ödeme başlatılamadı. Lütfen tekrar deneyin.");
+          setError(translateError(e instanceof Error ? e.message : "Ödeme başlatılamadı. Lütfen tekrar deneyin."));
         }
       }
     })();
