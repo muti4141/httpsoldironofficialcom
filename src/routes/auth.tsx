@@ -2,7 +2,6 @@ import { createFileRoute, Link, useNavigate, redirect } from "@tanstack/react-ro
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
@@ -66,10 +65,12 @@ function AuthPage() {
 
   const handleGoogle = async () => {
     setBusy(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
-    if (result.error) { toast.error(result.error.message); setBusy(false); return; }
-    if (result.redirected) return;
-    navigate({ to: redirectTo });
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}${redirectTo}` },
+    });
+    if (error) { toast.error(error.message); setBusy(false); }
+    /* Başarılıysa Supabase kendi tam sayfa yönlendirmesini yapar, burada yapılacak bir şey kalmaz. */
   };
 
   return (

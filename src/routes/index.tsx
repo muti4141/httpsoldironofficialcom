@@ -248,7 +248,6 @@ function Home() {
 
           <video
             ref={filmRef}
-            poster="/images/hero-end.jpg"
             muted playsInline preload="auto"
             onLoadedData={() => { setReady(true); try { if (filmRef.current) filmRef.current.currentTime = 0; } catch { /* noop */ } }}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
