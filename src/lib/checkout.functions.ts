@@ -46,11 +46,27 @@ export const createOrder = createServerFn({ method: "POST" })
       .eq("id", userId)
       .maybeSingle();
 
-    if (!profile?.shipping_address || !profile.shipping_city || !profile.shipping_zip) {
-      throw new Error("Lütfen önce teslimat adresini ekle.");
+    if (
+      !profile?.shipping_address ||
+      profile.shipping_address.trim().length < 10 ||
+      !profile.shipping_city ||
+      !profile.shipping_zip
+    ) {
+      throw new Error(
+        "Teslimat adresin eksik veya çok kısa görünüyor. Lütfen hesap sayfasından gerçek adresini (sokak, bina no dahil), şehrini ve posta kodunu eksiksiz gir."
+      );
     }
-    if (!profile.identity_number || String(profile.identity_number).length < 10) {
-      throw new Error("Ödeme için TC Kimlik No gerekli. Lütfen hesap sayfasından ekle.");
+    if (!/^\d{5}$/.test(String(profile.shipping_zip).trim())) {
+      throw new Error("Posta kodu 5 haneli rakam olmalı (örn. 34000). Lütfen hesap sayfasından düzelt.");
+    }
+    // iyzico, TC Kimlik No'yu tam 11 haneli gerçek bir numara olarak zorunlu tutuyor;
+    // eksik/sahte bir değerle ödeme isteği "Geçersiz istek" gibi anlaşılmaz bir hatayla
+    // reddediliyordu. Burada erkenden, anlaşılır bir mesajla engelliyoruz.
+    if (!/^\d{11}$/.test(String(profile.identity_number ?? "").trim())) {
+      throw new Error("TC Kimlik No tam 11 haneli olmalı. Lütfen hesap sayfasından gerçek TC Kimlik No'nu gir.");
+    }
+    if (!profile.phone || !/^\d{10,11}$/.test(profile.phone.replace(/\D/g, ""))) {
+      throw new Error("Geçerli bir telefon numarası gerekli (10-11 haneli). Lütfen hesap sayfasından ekle.");
     }
 
     const subtotal = resolved.reduce((s, r) => s + r.product.price * r.qty, 0);

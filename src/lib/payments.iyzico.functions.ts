@@ -31,8 +31,8 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     const order = orderRow as any;
     if (!order) throw new Error("Sipariş bulunamadı");
     if (order.status !== "pending") throw new Error("Bu sipariş zaten işlenmiş.");
-    if (!order.identity_number || String(order.identity_number).length < 10) {
-      throw new Error("TC Kimlik No eksik. Lütfen hesap sayfasından ekle.");
+    if (!/^\d{11}$/.test(String(order.identity_number ?? "").trim())) {
+      throw new Error("TC Kimlik No tam 11 haneli olmalı. Lütfen hesap sayfasından gerçek TC Kimlik No'nu gir.");
     }
 
     // Sepet kalemleri ve tutarlar istemciden değil, sipariş oluşturulurken
@@ -64,6 +64,12 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
 
     const [firstName, ...rest] = String(order.full_name || "Müşteri").trim().split(" ");
     const lastName = rest.join(" ") || firstName;
+
+    // iyzico gsmNumber'ı "+90XXXXXXXXXX" formatında bekliyor.
+    const phoneDigits = String(order.phone || "").replace(/\D/g, "");
+    const gsmNumber = phoneDigits
+      ? "+90" + (phoneDigits.length === 11 && phoneDigits.startsWith("0") ? phoneDigits.slice(1) : phoneDigits)
+      : undefined;
 
     const subtotalCents = items.reduce((s, i) => s + i.unitAmountCents * i.quantity, 0);
     const totalCents = subtotalCents + shippingCents;
@@ -106,7 +112,7 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
         id: userId,
         name: firstName || "Müşteri",
         surname: lastName || "Müşteri",
-        gsmNumber: order.phone || undefined,
+        gsmNumber,
         email,
         identityNumber: String(order.identity_number),
         registrationAddress: order.shipping_address || "-",

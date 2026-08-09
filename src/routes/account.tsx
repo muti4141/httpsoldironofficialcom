@@ -82,6 +82,21 @@ function AccountPage() {
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Ödeme sağlayıcı iyzico bu alanları katı formatta zorunlu tutuyor;
+    // eksik/sahte veriyle ödeme anında anlaşılmaz bir hata almak yerine
+    // burada, kaydederken net bir uyarı veriyoruz.
+    if (profile.identity_number && !/^\d{11}$/.test(profile.identity_number)) {
+      toast.error("TC Kimlik No tam 11 haneli olmalı.");
+      return;
+    }
+    if (profile.phone && !/^\d{10,11}$/.test(profile.phone.replace(/\D/g, ""))) {
+      toast.error("Telefon numarası 10-11 haneli olmalı (örn. 05XX XXX XX XX).");
+      return;
+    }
+    if (profile.shipping_zip && !/^\d{5}$/.test(profile.shipping_zip.trim())) {
+      toast.error("Posta kodu 5 haneli rakam olmalı (örn. 34000).");
+      return;
+    }
     setSaving(true);
     const { data: userData } = await supabase.auth.getUser();
     if (!userData.user) return;
