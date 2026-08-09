@@ -6,8 +6,8 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "src/server.ts",
   "vars": {
-    "SUPABASE_URL": "https://tvfhwqdxtoemsupabwjo.supabase.co",
-    "SUPABASE_PUBLISHABLE_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2Zmh3cWR4dG9lbXN1cGFid2pvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk2MzU1NjUsImV4cCI6MjA5NTIxMTU2NX0.E02VE_8O_Gr6AESRcUqYr8K05EJrQkHdnL-WJs0Y_OQ"
+    "SUPABASE_URL": "https://ohgvzowuuhhubymiocpn.supabase.co",
+    "SUPABASE_PUBLISHABLE_KEY": "sb_publishable_odKtFlXSPOyBNYElKjvRMQ_nQ753G3w"
   },
   "custom_domains": [
     { "pattern": "oldironofficial.com" },
