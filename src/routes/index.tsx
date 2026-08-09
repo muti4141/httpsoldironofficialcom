@@ -39,8 +39,6 @@ const LOGO_TO   = 0.92;
 function Home() {
   const filmRef  = useRef<HTMLVideoElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const pctRef   = useRef<HTMLSpanElement>(null);
-  const railRef  = useRef<HTMLDivElement>(null);
   const ctaRef   = useRef<HTMLDivElement>(null);
   const beatRefs = useRef<(HTMLParagraphElement | null)[]>([]);
   const logoBeatRef = useRef<HTMLDivElement>(null);
@@ -60,31 +58,20 @@ function Home() {
     return () => { clearTimeout(t); film.removeEventListener("error", onError); };
   }, []);
 
-  /* Scrub döngüsü — her karede React değil, doğrudan DOM güncellenir */
+  /* Video normal şekilde oynar (scroll'a bağlı değil); yazı/logo geçişleri
+     videonun kendi oynama zamanına göre — döngü her tekrarında akıcı şekilde
+     belirip kaybolurlar. */
   useEffect(() => {
-    const stage = stageRef.current;
-    if (!stage) return;
+    const film = filmRef.current;
+    if (!film) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
     const paint = (p: number) => {
-      if (pctRef.current) {
-        const v = Math.round(p * 100);
-        pctRef.current.textContent = v < 10 ? `0${v}` : String(v);
-      }
-      if (railRef.current) railRef.current.style.width = `${p * 100}%`;
-
       if (logoBeatRef.current) {
         const on = p >= LOGO_FROM && p <= LOGO_TO;
         logoBeatRef.current.style.opacity = on ? "1" : "0";
         logoBeatRef.current.style.transform = on ? "translateY(0)" : "translateY(18px)";
-      }
-
-      const ctaIn = Math.min(1, Math.max(0, (p - 0.94) / 0.06));
-      if (ctaRef.current) {
-        ctaRef.current.style.opacity = String(ctaIn);
-        ctaRef.current.style.pointerEvents = ctaIn > 0.5 ? "auto" : "none";
-        ctaRef.current.style.transform = `translateY(${(1 - ctaIn) * 24}px)`;
       }
 
       beats.forEach((b, i) => {
@@ -99,43 +86,30 @@ function Home() {
     if (reduced) { paint(0.5); return; }
 
     let raf = 0;
-    let current = 0;
     let last = -1;
-
-    /* Layout ölçümlerini önbellekle — her karede okumak reflow tetikliyordu */
-    let stageTop = 0, total = 1;
-    const measure = () => {
-      stageTop = stage.getBoundingClientRect().top + window.scrollY;
-      total = Math.max(1, stage.offsetHeight - window.innerHeight);
-    };
-    measure();
-    window.addEventListener("resize", measure, { passive: true });
-
     const loop = () => {
-      const target = Math.min(1, Math.max(0, (window.scrollY - stageTop) / total));
-
-      /* Süzülmeyi veren satır */
-      current += (target - current) * 0.12;
-
-      /* Hareket bittiyse boş boyama yapma */
-      if (Math.abs(current - last) > 0.0004) {
-        paint(current);
-        last = current;
-
-        const film = filmRef.current;
-        /* Dekoderi boğmamak için: önceki seek bitmeden yenisini isteme */
-        if (film && film.duration && !film.seeking) {
-          const t = current * (film.duration - 0.05);
-          if (Math.abs(film.currentTime - t) > 0.02) {
-            try { film.currentTime = t; } catch { /* hazır değil */ }
-          }
-        }
+      if (film.duration) {
+        const p = film.currentTime / film.duration;
+        if (Math.abs(p - last) > 0.0008) { paint(p); last = p; }
       }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("resize", measure); };
+    return () => cancelAnimationFrame(raf);
   }, []);
+
+  /* Büyük CTA — sayfa açılınca kısa bir gecikmeyle akıcı şekilde belirir */
+  useEffect(() => {
+    if (!ready) return;
+    const t = setTimeout(() => {
+      const cta = ctaRef.current;
+      if (!cta) return;
+      cta.style.opacity = "1";
+      cta.style.pointerEvents = "auto";
+      cta.style.transform = "translateY(0)";
+    }, 600);
+    return () => clearTimeout(t);
+  }, [ready]);
 
   return (
     <div style={{ background: "#080808", color: "#f4f4f4", fontFamily: "'Inter Tight', Inter, sans-serif" }}>
@@ -214,22 +188,6 @@ function Home() {
         </div>
       </nav>
 
-      {/* ── SCRUB UI ────────────────────────────────────── */}
-      <div style={{
-        position: "fixed", left: "clamp(20px, 4vw, 48px)", bottom: "28px", zIndex: 50,
-        display: "flex", alignItems: "center", gap: "14px",
-      }}>
-        <span ref={pctRef} style={{
-          fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
-          color: "rgba(255,255,255,.65)", minWidth: "26px",
-        }}>
-          00
-        </span>
-        <div style={{ width: "120px", height: "1px", background: "rgba(255,255,255,.12)", position: "relative" }}>
-          <div ref={railRef} style={{ position: "absolute", inset: "0 auto 0 0", width: "0%", background: "#dcdcdc" }} />
-        </div>
-      </div>
-
       {/* ── SPEC SATIRI ─────────────────────────────────── */}
       <div className="oi-specs" style={{
         position: "fixed", left: "50%", transform: "translateX(-50%)", bottom: "28px", zIndex: 50,
@@ -242,14 +200,14 @@ function Home() {
         <span><b style={{ color: "rgba(255,255,255,.8)", fontWeight: 500 }}>0</b> dolgu maddesi</span>
       </div>
 
-      {/* ── STICKY SAHNE ────────────────────────────────── */}
-      <section ref={stageRef} style={{ height: "420vh", position: "relative" }}>
-        <div style={{ position: "sticky", top: 0, height: "100vh", overflow: "hidden" }}>
+      {/* ── HERO ────────────────────────────────────────── */}
+      <section ref={stageRef} style={{ height: "100vh", position: "relative", overflow: "hidden" }}>
+        <div style={{ position: "relative", height: "100%" }}>
 
           <video
             ref={filmRef}
-            muted playsInline preload="auto"
-            onLoadedData={() => { setReady(true); try { if (filmRef.current) filmRef.current.currentTime = 0; } catch { /* noop */ } }}
+            autoPlay muted loop playsInline preload="auto"
+            onLoadedData={() => setReady(true)}
             style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
           />
 
