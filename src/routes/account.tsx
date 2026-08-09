@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
 import { signOut } from "@/hooks/use-auth";
 import { translateError } from "@/lib/error-messages";
+import { isValidTcKimlik } from "@/lib/tc-kimlik";
 
 type OrderRow = {
   id: string;
@@ -85,8 +86,8 @@ function AccountPage() {
     // Ödeme sağlayıcı iyzico bu alanları katı formatta zorunlu tutuyor;
     // eksik/sahte veriyle ödeme anında anlaşılmaz bir hata almak yerine
     // burada, kaydederken net bir uyarı veriyoruz.
-    if (profile.identity_number && !/^\d{11}$/.test(profile.identity_number)) {
-      toast.error("TC Kimlik No tam 11 haneli olmalı.");
+    if (profile.identity_number && !isValidTcKimlik(profile.identity_number)) {
+      toast.error("Geçerli bir TC Kimlik No gir (gerçek numaranız olmalı, rastgele 11 hane geçmez).");
       return;
     }
     if (profile.phone && !/^\d{10,11}$/.test(profile.phone.replace(/\D/g, ""))) {

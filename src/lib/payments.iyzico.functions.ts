@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { initializeCheckoutForm } from "@/lib/iyzico.server";
+import { isValidTcKimlik } from "@/lib/tc-kimlik";
 
 const toAmount = (cents: number) => (cents / 100).toFixed(2);
 
@@ -31,8 +32,8 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     const order = orderRow as any;
     if (!order) throw new Error("Sipariş bulunamadı");
     if (order.status !== "pending") throw new Error("Bu sipariş zaten işlenmiş.");
-    if (!/^\d{11}$/.test(String(order.identity_number ?? "").trim())) {
-      throw new Error("TC Kimlik No tam 11 haneli olmalı. Lütfen hesap sayfasından gerçek TC Kimlik No'nu gir.");
+    if (!isValidTcKimlik(String(order.identity_number ?? "").trim())) {
+      throw new Error("Geçerli bir TC Kimlik No gir (11 hane, gerçek numaranız olmalı). Rastgele/sahte numara ödeme sağlayıcı tarafından reddedilir.");
     }
 
     // Sepet kalemleri ve tutarlar istemciden değil, sipariş oluşturulurken
