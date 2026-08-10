@@ -7,7 +7,7 @@ import { useCart, type CartItem } from "@/stores/cart";
 import { supabase } from "@/integrations/supabase/client";
 import { IyzicoCartCheckout } from "@/components/IyzicoCartCheckout";
 import { products, type Product } from "@/data/products";
-import { createOrder } from "@/lib/checkout.functions";
+import { createOrder, validateDiscountCode } from "@/lib/checkout.functions";
 import { translateError } from "@/lib/error-messages";
 
 const FREE_SHIPPING_THRESHOLD = 1500;
@@ -160,13 +160,33 @@ function CartPage() {
   const [terms, setTerms]     = useState(false);
   const [placing, setPlacing] = useState(false);
   const [checkoutData, setCheckoutData] = useState<null | { orderId: string }>(null);
+  const [discountInput, setDiscountInput] = useState("");
+  const [discount, setDiscount] = useState<null | { code: string; percentOff: number }>(null);
+  const [checkingDiscount, setCheckingDiscount] = useState(false);
 
   const items = (Array.isArray(rawItems) ? rawItems : []).map(safeItem);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const kdv      = subtotal * 0.20;
   const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-  const total    = subtotal + shipping;
+  const discountAmount = discount ? subtotal * (discount.percentOff / 100) : 0;
+  const total    = Math.max(0, subtotal + shipping - discountAmount);
+
+  const applyDiscount = async () => {
+    const code = discountInput.trim();
+    if (!code) return;
+    setCheckingDiscount(true);
+    try {
+      const result = await validateDiscountCode({ data: { code } });
+      setDiscount(result);
+      toast.success(`"${result.code}" kodu uygulandı — %${result.percentOff} indirim.`);
+    } catch (e) {
+      setDiscount(null);
+      toast.error(translateError(e instanceof Error ? e.message : "Geçersiz kod."));
+    } finally {
+      setCheckingDiscount(false);
+    }
+  };
   const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
   const progress  = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
 
@@ -210,6 +230,7 @@ function CartPage() {
       const result = await createOrder({
         data: {
           lines: items.map((i) => ({ productId: i.productId, size: i.size, qty: i.qty })),
+          discountCode: discount?.code,
         },
       });
       setCheckoutData({ orderId: result.orderId });
@@ -428,11 +449,54 @@ function CartPage() {
                           {shipping === 0 ? "Ücretsiz" : tl(shipping)}
                         </span>
                       </div>
+                      {discount && (
+                        <div className="flex justify-between items-baseline">
+                          <span className="text-[14px]" style={{ color: "#8fd99a" }}>
+                            İndirim ({discount.code} · %{discount.percentOff})
+                          </span>
+                          <span className="text-right" style={{ ...priceLg, color: "#8fd99a" }}>
+                            −{tl(discountAmount)}
+                          </span>
+                        </div>
+                      )}
                       <div className="pt-3 flex justify-between items-baseline" style={{ borderTop: `1px solid ${HAIR}` }}>
                         <span className="text-[16px] font-semibold" style={{ color: TEXT }}>Toplam</span>
                         <span className="text-right" style={{ ...priceLg, fontSize: 20 }}>{tl(total)}</span>
                       </div>
                       <p style={{ ...microLabel, color: DIM }}>KDV dahil ({tl(kdv)})</p>
+                    </div>
+
+                    <div className="pt-5">
+                      {discount ? (
+                        <div className="flex items-center justify-between rounded-[8px] px-3 py-2" style={{ background: "rgba(143,217,154,0.08)", border: "1px solid rgba(143,217,154,0.3)" }}>
+                          <span className="text-[13px]" style={{ color: "#8fd99a" }}>
+                            "{discount.code}" uygulandı — %{discount.percentOff} indirim
+                          </span>
+                          <button onClick={() => { setDiscount(null); setDiscountInput(""); }}
+                            className="text-[12px] underline" style={{ color: MUTED }}>
+                            Kaldır
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <input
+                            value={discountInput}
+                            onChange={(e) => setDiscountInput(e.target.value.toUpperCase())}
+                            onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); applyDiscount(); } }}
+                            placeholder="İndirim kodu"
+                            className="flex-1 rounded-[8px] px-3 py-2.5 text-[13px]"
+                            style={{ background: RAISED, border: `1px solid ${HAIR}`, color: TEXT }}
+                          />
+                          <button
+                            onClick={applyDiscount}
+                            disabled={checkingDiscount || !discountInput.trim()}
+                            className="px-4 rounded-[8px] text-[12px] font-semibold disabled:opacity-40"
+                            style={{ background: RAISED, border: `1px solid ${HAIR}`, color: TEXT }}
+                          >
+                            {checkingDiscount ? "…" : "Uygula"}
+                          </button>
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-4 pt-6">

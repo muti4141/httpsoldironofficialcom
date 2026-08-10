@@ -24,7 +24,7 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
     const { data: orderRow } = await supabase
       .from("orders")
       .select(
-        "full_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country, identity_number, user_id, status, shipping_cents"
+        "full_name, phone, shipping_address, shipping_city, shipping_zip, shipping_country, identity_number, user_id, status, shipping_cents, discount_cents, total_cents"
       )
       .eq("id", data.orderId)
       .eq("user_id", userId)
@@ -73,7 +73,12 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
       : undefined;
 
     const subtotalCents = items.reduce((s, i) => s + i.unitAmountCents * i.quantity, 0);
-    const totalCents = subtotalCents + shippingCents;
+    const discountCents = (order.discount_cents as number) ?? 0;
+    // paidPrice, sipariş oluşturulurken sunucuda (indirim dahil) hesaplanan
+    // total_cents'ten alınır — iyzico'nun "price" (sepet toplamı, indirimsiz)
+    // ile "paidPrice" (gerçekte tahsil edilen) arasındaki fark indirim
+    // olarak kabul edilir.
+    const totalCents = (order.total_cents as number) ?? Math.max(0, subtotalCents + shippingCents - discountCents);
 
     const address = {
       contactName: order.full_name || "Müşteri",
@@ -101,10 +106,14 @@ export const createIyzicoCheckout = createServerFn({ method: "POST" })
       });
     }
 
+    // iyzico "price" alanı basketItems toplamıyla birebir eşleşmeli (kargo dahil);
+    // eşleşmezse istek "Geçersiz istek" gibi genel bir hatayla reddediliyor.
+    // "paidPrice" ise gerçekte tahsil edilen (indirim sonrası) tutar.
+    const basketSumCents = subtotalCents + shippingCents;
     const result = await initializeCheckoutForm({
       locale: "tr",
       conversationId: data.orderId,
-      price: toAmount(subtotalCents),
+      price: toAmount(basketSumCents),
       paidPrice: toAmount(totalCents),
       currency: "TRY",
       basketId: data.orderId,

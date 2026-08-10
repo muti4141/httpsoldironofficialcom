@@ -71,6 +71,8 @@ type Order = {
   identity_number: string | null;
   subtotal_cents: number;
   shipping_cents: number;
+  discount_cents: number | null;
+  discount_code: string | null;
   total_cents: number;
   currency: string;
   status: Status;
@@ -125,6 +127,7 @@ function AdminOrdersPage() {
   const [tab, setTab] = useState<(typeof TABS)[number]["key"]>("action");
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [codeFilter, setCodeFilter] = useState<string | null>(null);
 
   const load = async () => {
     try {
@@ -168,17 +171,37 @@ function AdminOrdersPage() {
     let list = orders;
     if (tab === "action") list = list.filter((o) => o.status === "paid");
     else if (tab !== "all") list = list.filter((o) => o.status === tab);
+    if (codeFilter) list = list.filter((o) => o.discount_code === codeFilter);
     const q = query.trim().toLowerCase();
     if (q) {
       list = list.filter((o) =>
         o.full_name?.toLowerCase().includes(q) ||
         o.email?.toLowerCase().includes(q) ||
         o.id.toLowerCase().includes(q) ||
-        o.shipping_city?.toLowerCase().includes(q)
+        o.shipping_city?.toLowerCase().includes(q) ||
+        o.discount_code?.toLowerCase().includes(q)
       );
     }
     return list;
-  }, [orders, tab, query]);
+  }, [orders, tab, query, codeFilter]);
+
+  /* İndirim kodu bazlı özet — hak ediş hesaplaması için (iptal/süresi dolan
+     siparişler hariç, gerçekleşen ciro üzerinden). */
+  const codeStats = useMemo(() => {
+    const stats = new Map<string, { orders: number; revenue: number; discountGiven: number }>();
+    for (const o of orders) {
+      if (!o.discount_code) continue;
+      if (o.status === "cancelled" || o.status === "expired") continue;
+      const s = stats.get(o.discount_code) ?? { orders: 0, revenue: 0, discountGiven: 0 };
+      s.orders += 1;
+      s.revenue += o.total_cents;
+      s.discountGiven += o.discount_cents ?? 0;
+      stats.set(o.discount_code, s);
+    }
+    return Array.from(stats.entries())
+      .map(([code, s]) => ({ code, ...s }))
+      .sort((a, b) => b.revenue - a.revenue);
+  }, [orders]);
 
   const copyAddress = (o: Order) => {
     const text = [
@@ -229,6 +252,43 @@ function AdminOrdersPage() {
 
         {!loading && authorized && (
           <>
+            {/* ── İndirim kodu özeti (hak ediş) ── */}
+            {codeStats.length > 0 && (
+              <div style={{ marginBottom: "24px" }}>
+                <p style={{ fontFamily: MONO, fontSize: "10px", letterSpacing: ".1em", textTransform: "uppercase", color: DIM, marginBottom: "10px" }}>
+                  İndirim Kodları — Hak Ediş Özeti
+                </p>
+                <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+                  {codeStats.map((s) => {
+                    const active = codeFilter === s.code;
+                    return (
+                      <button
+                        key={s.code}
+                        onClick={() => setCodeFilter(active ? null : s.code)}
+                        style={{
+                          textAlign: "left", cursor: "pointer", minWidth: "180px",
+                          background: active ? "#f4f4f4" : CARD,
+                          border: `1px solid ${active ? "rgba(255,255,255,.5)" : HAIR}`,
+                          borderRadius: "10px", padding: "12px 16px",
+                          transition: `all .2s ${EASE}`,
+                        }}
+                      >
+                        <div style={{ fontFamily: MONO, fontSize: "13px", fontWeight: 700, color: active ? BG : TEXT }}>
+                          {s.code}
+                        </div>
+                        <div style={{ fontSize: "12px", color: active ? "rgba(8,8,8,.6)" : MUTED, marginTop: "4px" }}>
+                          {s.orders} sipariş · {fmt(s.revenue)} ciro
+                        </div>
+                        <div style={{ fontSize: "11px", color: active ? "rgba(8,8,8,.5)" : DIM }}>
+                          {fmt(s.discountGiven)} indirim verildi
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* ── Durum sekmeleri ── */}
             <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "20px" }}>
               {TABS.map((t) => {
@@ -312,6 +372,15 @@ function AdminOrdersPage() {
                       <span style={{ fontFamily: MONO, fontSize: "11px", color: DIM, flex: "0 0 140px" }}>
                         {fmtDate(o.created_at)}
                       </span>
+                      {o.discount_code && (
+                        <span style={{
+                          fontFamily: MONO, fontSize: "10px", color: "#8fd99a",
+                          border: "1px solid rgba(143,217,154,.35)", borderRadius: "999px",
+                          padding: "3px 8px", flexShrink: 0,
+                        }}>
+                          {o.discount_code}
+                        </span>
+                      )}
                       <span style={{ fontFamily: MONO, fontSize: "14px", fontWeight: 700, flex: "0 0 100px", textAlign: "right" }}>
                         {fmt(o.total_cents, o.currency)}
                       </span>
@@ -349,6 +418,12 @@ function AdminOrdersPage() {
                             <span>Kargo</span>
                             <span style={{ fontFamily: MONO }}>{o.shipping_cents === 0 ? "Ücretsiz" : fmt(o.shipping_cents, o.currency)}</span>
                           </div>
+                          {o.discount_code && (
+                            <div style={{ marginTop: "6px", display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#8fd99a" }}>
+                              <span>İndirim ({o.discount_code})</span>
+                              <span style={{ fontFamily: MONO }}>−{fmt(o.discount_cents ?? 0, o.currency)}</span>
+                            </div>
+                          )}
                         </div>
 
                         <div>

@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { supabase as anonSupabase } from "@/integrations/supabase/client";
 import { products } from "@/data/products";
 import { isValidTcKimlik } from "@/lib/tc-kimlik";
 
@@ -10,22 +11,43 @@ type LineInput = { productId: string; size?: string; qty: number };
 
 const cents = (n: number) => Math.round(n * 100);
 
+/** Sepet ekranında kodun geçerliliğini/indirim yüzdesini önizlemek için. */
+export const validateDiscountCode = createServerFn({ method: "GET" })
+  .inputValidator((data: { code: string }) => {
+    if (!data.code || !data.code.trim()) throw new Error("Kod boş");
+    return { code: data.code.trim().toUpperCase() };
+  })
+  .handler(async ({ data }) => {
+    const { data: row } = await anonSupabase
+      .from("discount_codes")
+      .select("code, percent_off, active")
+      .eq("code", data.code)
+      .eq("active", true)
+      .maybeSingle();
+    if (!row) throw new Error("Geçersiz veya süresi dolmuş indirim kodu.");
+    return { code: row.code, percentOff: row.percent_off };
+  });
+
 /**
  * Fiyatlar burada, ürünlerin tek doğruluk kaynağı olan products.ts'ten
  * sunucu tarafında hesaplanır — sepetten/istemciden gelen fiyat asla
  * kullanılmaz (client localStorage'ı değiştirerek fiyat düşürme
- * açığını kapatır).
+ * açığını kapatır). İndirim kodu da aynı şekilde sunucuda, DB'deki
+ * gerçek yüzdeye göre uygulanır.
  */
 export const createOrder = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { lines: LineInput[] }) => {
+  .inputValidator((data: { lines: LineInput[]; discountCode?: string }) => {
     if (!Array.isArray(data.lines) || !data.lines.length) throw new Error("Sepet boş");
     for (const l of data.lines) {
       if (!l.productId || !Number.isInteger(l.qty) || l.qty < 1 || l.qty > 20) {
         throw new Error("Geçersiz sepet öğesi");
       }
     }
-    return data;
+    return {
+      lines: data.lines,
+      discountCode: data.discountCode?.trim().toUpperCase() || undefined,
+    };
   })
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
@@ -73,7 +95,24 @@ export const createOrder = createServerFn({ method: "POST" })
     const subtotal = resolved.reduce((s, r) => s + r.product.price * r.qty, 0);
     const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
     const tax = subtotal * 0.2;
-    const total = subtotal + shipping;
+
+    // İndirim kodu — sadece DB'deki gerçek (aktif) yüzdeye göre uygulanır,
+    // istemciden gelen bir indirim tutarı asla kullanılmaz.
+    let discountCode: string | null = null;
+    let discountCents = 0;
+    if (data.discountCode) {
+      const { data: codeRow } = await supabase
+        .from("discount_codes")
+        .select("code, percent_off, active")
+        .eq("code", data.discountCode)
+        .eq("active", true)
+        .maybeSingle();
+      if (!codeRow) throw new Error("Geçersiz veya süresi dolmuş indirim kodu.");
+      discountCode = codeRow.code;
+      discountCents = Math.round(cents(subtotal) * (codeRow.percent_off / 100));
+    }
+
+    const total = subtotal + shipping - discountCents / 100;
 
     const { data: order, error: orderErr } = await supabase
       .from("orders")
@@ -90,7 +129,9 @@ export const createOrder = createServerFn({ method: "POST" })
         subtotal_cents: cents(subtotal),
         tax_cents: cents(tax),
         shipping_cents: cents(shipping),
-        total_cents: cents(total),
+        discount_code: discountCode,
+        discount_cents: discountCents,
+        total_cents: Math.max(0, cents(total)),
         currency: "TRY",
         status: "pending",
       })

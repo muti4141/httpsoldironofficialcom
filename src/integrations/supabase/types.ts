@@ -152,6 +152,8 @@ export type Database = {
         Row: {
           created_at: string
           currency: string
+          discount_cents: number
+          discount_code: string | null
           email: string
           full_name: string
           id: string
@@ -173,6 +175,8 @@ export type Database = {
         Insert: {
           created_at?: string
           currency?: string
+          discount_cents?: number
+          discount_code?: string | null
           email: string
           full_name: string
           id?: string
@@ -194,6 +198,8 @@ export type Database = {
         Update: {
           created_at?: string
           currency?: string
+          discount_cents?: number
+          discount_code?: string | null
           email?: string
           full_name?: string
           id?: string
@@ -211,6 +217,30 @@ export type Database = {
           total_cents?: number
           updated_at?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      discount_codes: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          owner_name: string | null
+          percent_off: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          owner_name?: string | null
+          percent_off: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          owner_name?: string | null
+          percent_off?: number
         }
         Relationships: []
       }
