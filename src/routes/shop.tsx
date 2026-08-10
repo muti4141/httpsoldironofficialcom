@@ -22,7 +22,7 @@ const APPAREL_CATEGORIES = [
 ];
 
 const SUPPLEMENT_CATEGORIES: { value: string; label: string }[] = [
-  { value: "supplement", label: "Supplement" },
+  { value: "supplement", label: "Elite Supplement" },
 ];
 
 type Tab = "all" | "apparel" | "supplement";
@@ -209,7 +209,7 @@ function Shop() {
               {([
                 { tab: "all" as Tab,        label: "Tümü",       n: counts.all },
                 { tab: "apparel" as Tab,    label: "Spor Giyim", n: counts.apparel },
-                { tab: "supplement" as Tab, label: "Supplement", n: counts.supplement },
+                { tab: "supplement" as Tab, label: "Elite Supplement", n: counts.supplement },
               ]).map(({ tab, label, n }) => (
                 <button
                   key={tab}

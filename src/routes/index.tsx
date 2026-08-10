@@ -18,7 +18,7 @@ const VIDEO_URL = "/videos/hero.mp4";
 
 const navLinks = [
   { label: "Koleksiyon", to: "/shop" },
-  { label: "Supplement", to: "/shop" },
+  { label: "Elite Supplement", to: "/shop" },
   { label: "Hikayemiz", to: "/shop" },
   { label: "İletişim",   to: "/shop" },
 ];
