@@ -21,7 +21,9 @@ const APPAREL_CATEGORIES = [
   { value: "tops",        label: "Üst Giyim" },
 ];
 
-const SUPPLEMENT_CATEGORIES: { value: string; label: string }[] = [];
+const SUPPLEMENT_CATEGORIES: { value: string; label: string }[] = [
+  { value: "supplement", label: "Supplement" },
+];
 
 type Tab = "all" | "apparel" | "supplement";
 
