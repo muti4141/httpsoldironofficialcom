@@ -40,8 +40,8 @@ function AGB() {
       <section>
         <H2>3. Fiyatlar ve Kargo Ücretleri</H2>
         <p>
-          Tüm fiyatlar yasal KDV dahil nihai fiyatlardır. Belirtilen fiyatlara ek olarak, sipariş sürecinde ayrıca
-          gösterilen kargo ücretleri uygulanabilir. 1500₺ ve üzeri siparişlerde kargo ücretsizdir.
+          Tüm fiyatlar yasal KDV dahil nihai fiyatlardır. Kargo ücreti sitede tahsil edilmez; teslimat sırasında
+          alıcı tarafından doğrudan kargo firmasına ödenir.
         </p>
       </section>
 

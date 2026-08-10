@@ -312,7 +312,7 @@ function Shop() {
               ["300", "gsm premium pamuk"],
               ["ISO 17025", "analiz raporlu"],
               ["0", "dolgu maddesi"],
-              ["1500₺", "üzeri ücretsiz kargo"],
+              ["Kargo", "alıcı öder"],
               ["14", "gün koşulsuz iade"],
             ].map(([k, v]) => (
               <span key={v} className="oi-mono" style={{ whiteSpace: "nowrap" }}>

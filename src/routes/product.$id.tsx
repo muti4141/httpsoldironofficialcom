@@ -113,9 +113,6 @@ const tr = (v: string) => TR[v] ?? v;
 /* ── Fiyat formatı: ₺500,00 ─────────────────────────────────────────── */
 const fmt = (n: number) => `₺${n.toFixed(2).replace(".", ",")}`;
 
-/* ── Ücretsiz kargo eşiği ───────────────────────────────────────────── */
-const FREE_SHIPPING = 1500;
-
 /* ── Beden tablosu (oversize kesim) ─────────────────────────────────── */
 const SIZE_TABLE: Array<[string, string, string]> = [
   ["S", "104", "68"],
@@ -201,9 +198,6 @@ function ProductPage() {
   const [weight, setWeight] = useState(WEIGHTS?.[0] ?? "");
 
   const addToCart = useCart((s) => s.add);
-  const cartTotal = useCart((s) =>
-    s.items.reduce((sum, i) => sum + i.price * i.qty, 0)
-  );
   const related   = products.filter((p) => p.id !== product.id).slice(0, 4);
 
   /* Post-add geri bildirimi */
@@ -275,10 +269,6 @@ function ProductPage() {
     toast.success("İki ürün de sepete eklendi");
     setAdded(true);
   };
-
-  /* ── Ücretsiz kargo ilerlemesi ─────────────────────────────────── */
-  const remaining = Math.max(0, FREE_SHIPPING - cartTotal);
-  const progressPct = Math.min(100, (cartTotal / FREE_SHIPPING) * 100);
 
   const discountPct = product.originalPrice
     ? Math.round((1 - product.price / product.originalPrice) * 100)
@@ -756,7 +746,7 @@ function ProductPage() {
 
                 {/* CTA */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {/* Ücretsiz kargo ilerlemesi */}
+                  {/* Kargo bilgisi */}
                   <div
                     style={{
                       background: CARD,
@@ -765,33 +755,7 @@ function ProductPage() {
                       padding: "14px 18px",
                     }}
                   >
-                    {remaining > 0 ? (
-                      <>
-                        <p style={{ fontSize: "13px", color: TEXT, marginBottom: "10px" }}>
-                          Ücretsiz kargoya{" "}
-                          <span style={priceStyle}>{fmt(remaining)}</span> kaldı
-                        </p>
-                        <div
-                          style={{
-                            height: "3px",
-                            background: HAIR,
-                            borderRadius: "999px",
-                            overflow: "hidden",
-                          }}
-                        >
-                          <div
-                            style={{
-                              width: `${progressPct}%`,
-                              height: "100%",
-                              background: BONE,
-                              transition: "width 0.4s cubic-bezier(0.22,1,0.36,1)",
-                            }}
-                          />
-                        </div>
-                      </>
-                    ) : (
-                      <p style={{ ...microLabel, color: TEXT }}>Kargo bedava ✓</p>
-                    )}
+                    <p style={{ ...microLabel, color: TEXT }}>Kargo ücreti alıcı öder</p>
                   </div>
 
                   <button
@@ -822,7 +786,7 @@ function ProductPage() {
                     }}
                   >
                     {([
-                      ["local_shipping", "1500₺ üzeri ücretsiz kargo"],
+                      ["local_shipping", "Kargo ücreti alıcı öder"],
                       ["restart_alt", "14 gün içinde iade"],
                       ["lock", "Güvenli ödeme"],
                     ] as [IconName, string][]).map(([icon, text]) => (
@@ -900,8 +864,8 @@ function ProductPage() {
                       lineHeight: 1.4,
                     }}
                   >
-                    <span style={{ fontWeight: 500 }}>1500₺ üzeri kargo ücretsiz.</span>{" "}
-                    <span style={{ color: MUTED }}>Altındaki siparişlerde kargo ücreti 140₺.</span>
+                    <span style={{ fontWeight: 500 }}>Kargo ücreti alıcı öder.</span>{" "}
+                    <span style={{ color: MUTED }}>Sitede kargo ücreti tahsil edilmez.</span>
                   </div>
                 </div>
 

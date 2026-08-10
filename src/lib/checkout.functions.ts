@@ -4,8 +4,8 @@ import { supabase as anonSupabase } from "@/integrations/supabase/client";
 import { products } from "@/data/products";
 import { isValidTcKimlik } from "@/lib/tc-kimlik";
 
-const FREE_SHIPPING_THRESHOLD = 1500;
-const SHIPPING_FEE = 140;
+// Kargo ücreti sitede tahsil edilmiyor — alıcı kargo firmasına kapıda öder.
+const SHIPPING_FEE = 0;
 
 type LineInput = { productId: string; size?: string; qty: number };
 
@@ -93,7 +93,7 @@ export const createOrder = createServerFn({ method: "POST" })
     }
 
     const subtotal = resolved.reduce((s, r) => s + r.product.price * r.qty, 0);
-    const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+    const shipping = SHIPPING_FEE;
     const tax = subtotal * 0.2;
 
     // İndirim kodu — sadece DB'deki gerçek (aktif) yüzdeye göre uygulanır,

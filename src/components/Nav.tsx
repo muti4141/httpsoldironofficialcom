@@ -44,7 +44,7 @@ export function Nav() {
     <>
       {/* Duyuru barı — her sayfada sabit üstte */}
       <div className="announcement-bar oi-annbdark">
-        <span>1500₺ üzeri ücretsiz kargo · Almanya kalitesi · Lab onaylı</span>
+        <span>Kargo ücreti alıcı öder · Almanya kalitesi · Lab onaylı</span>
       </div>
 
       <nav

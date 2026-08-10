@@ -10,8 +10,8 @@ import { products, type Product } from "@/data/products";
 import { createOrder, validateDiscountCode } from "@/lib/checkout.functions";
 import { translateError } from "@/lib/error-messages";
 
-const FREE_SHIPPING_THRESHOLD = 1500;
-const SHIPPING_FEE = 140;
+// Kargo ücreti sitede tahsil edilmiyor — alıcı kargo firmasına kapıda öder.
+const SHIPPING_FEE = 0;
 
 /* ── Karanlık tema jetonları ─────────────────────────────────────────────── */
 const BG     = "#080808";
@@ -83,7 +83,7 @@ export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
       { title: "Sepetim — OLD IRON" },
-      { name: "description", content: "OLD IRON sepetiniz. Güvenli ödeme, 1500₺ ve üzeri ücretsiz kargo." },
+      { name: "description", content: "OLD IRON sepetiniz. Güvenli ödeme, kargo ücreti alıcı öder." },
     ],
   }),
   component: CartPage,
@@ -168,7 +168,7 @@ function CartPage() {
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
   const kdv      = subtotal * 0.20;
-  const shipping = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
+  const shipping = SHIPPING_FEE;
   const discountAmount = discount ? subtotal * (discount.percentOff / 100) : 0;
   const total    = Math.max(0, subtotal + shipping - discountAmount);
 
@@ -187,9 +187,6 @@ function CartPage() {
       setCheckingDiscount(false);
     }
   };
-  const remaining = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
-  const progress  = Math.min(100, (subtotal / FREE_SHIPPING_THRESHOLD) * 100);
-
   const inCart = new Set(items.map((i) => i.productId));
   const crossSell = products.filter((p) => !inCart.has(p.id)).slice(0, 3);
 
@@ -323,21 +320,9 @@ function CartPage() {
 
   const ShippingProgress = () => (
     <div className="rounded-[10px] p-4 md:p-5 mb-6" style={cardStyle}>
-      {remaining > 0 ? (
-        <>
-          <p className="text-[13px] mb-2" style={{ color: TEXT }}>
-            Ücretsiz kargoya <span style={priceStyle}>{tl(remaining)}</span> kaldı
-          </p>
-          <div className="h-[3px] w-full rounded-full" style={{ background: HAIR }}>
-            <div className="h-[3px] rounded-full transition-all duration-500"
-              style={{ width: `${progress}%`, background: BONE }} />
-          </div>
-        </>
-      ) : (
-        <p className="flex items-center gap-2" style={{ ...microLabel, color: TEXT }}>
-          <CheckIcon /> Kargo bedava
-        </p>
-      )}
+      <p className="flex items-center gap-2" style={{ ...microLabel, color: TEXT }}>
+        <CheckIcon /> Kargo ücreti alıcı öder (kapıda kargo firmasına ödenir)
+      </p>
     </div>
   );
 
@@ -445,8 +430,8 @@ function CartPage() {
                       </div>
                       <div className="flex justify-between items-baseline">
                         <span className="text-[14px]" style={{ color: MUTED }}>Kargo</span>
-                        <span className="text-right" style={priceLg}>
-                          {shipping === 0 ? "Ücretsiz" : tl(shipping)}
+                        <span className="text-right text-[13px]" style={{ color: MUTED }}>
+                          Alıcı öder
                         </span>
                       </div>
                       {discount && (

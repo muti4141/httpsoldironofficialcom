@@ -324,7 +324,7 @@ function Home() {
           fontFamily: "'JetBrains Mono', monospace", fontSize: "12px",
           letterSpacing: ".14em", textTransform: "uppercase", color: "rgba(255,255,255,.45)",
         }}>
-          1500₺ üzeri ücretsiz kargo · 14 gün koşulsuz iade · 1–3 iş günü teslimat
+          Kargo ücreti alıcı öder · 14 gün koşulsuz iade · 1–3 iş günü teslimat
         </p>
 
         <Link to="/shop" className="oi-cta-big oi-cta-solid">

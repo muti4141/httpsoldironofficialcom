@@ -35,20 +35,15 @@ function Versand() {
               </tr>
             </thead>
             <tbody className="text-[15px]">
-              <tr className="border-b border-outline-variant/60">
-                <td className="py-3">Türkiye</td>
-                <td className="font-mono">₺140,00</td>
-                <td>3–7 iş günü</td>
-              </tr>
               <tr>
-                <td className="py-3">1500₺ ve üzeri siparişler</td>
-                <td className="font-mono">Ücretsiz</td>
+                <td className="py-3">Türkiye</td>
+                <td className="font-mono">Alıcı öder</td>
                 <td>3–7 iş günü</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <p className="text-[13px] text-secondary mt-2">1500₺ ve üzeri sipariş tutarında kargo ücretsizdir.</p>
+        <p className="text-[13px] text-secondary mt-2">Kargo ücreti sitede tahsil edilmez; kargo teslimatında alıcı tarafından kargo firmasına ödenir.</p>
       </section>
 
       <section>
