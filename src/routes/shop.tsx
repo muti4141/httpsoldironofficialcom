@@ -18,7 +18,8 @@ export const Route = createFileRoute("/shop")({
 });
 
 const APPAREL_CATEGORIES = [
-  { value: "tops",        label: "Üst Giyim" },
+  { value: "tops",   label: "Üst Giyim" },
+  { value: "shorts", label: "Şortlar" },
 ];
 
 const SUPPLEMENT_CATEGORIES: { value: string; label: string }[] = [
@@ -160,7 +161,7 @@ function Shop() {
   const categories =
     activeTab === "supplement" ? SUPPLEMENT_CATEGORIES :
     activeTab === "apparel"    ? APPAREL_CATEGORIES :
-    [...APPAREL_CATEGORIES, ...SUPPLEMENT_CATEGORIES];
+    [...SUPPLEMENT_CATEGORIES, ...APPAREL_CATEGORIES];
 
   const hasFilters = selectedCategories.length > 0 || maxPrice < 2000 || q.length > 0;
 
@@ -207,9 +208,9 @@ function Shop() {
 
             <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 22 }}>
               {([
-                { tab: "all" as Tab,        label: "Tümü",       n: counts.all },
-                { tab: "apparel" as Tab,    label: "Spor Giyim", n: counts.apparel },
+                { tab: "all" as Tab,        label: "Tümü",             n: counts.all },
                 { tab: "supplement" as Tab, label: "Elite Supplement", n: counts.supplement },
+                { tab: "apparel" as Tab,    label: "Kıyafet",          n: counts.apparel },
               ]).map(({ tab, label, n }) => (
                 <button
                   key={tab}

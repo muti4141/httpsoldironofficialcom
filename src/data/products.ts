@@ -93,6 +93,27 @@ export const products: Product[] = [
     subtitle: "Kesik Kol · Ağır Pamuk",
     description: "Derin kol açıklığı, ağır gramaj pamuk. Salonda maksimum hareket özgürlüğü ve pump'ı gösteren oversize kesim.",
   },
+  {
+    id: "krem-short",
+    name: "Old Iron Krem Şort",
+    category: "shorts",
+    categoryLabel: "Şortlar",
+    type: "apparel",
+    price: 500,
+    image: "/images/products/shorts/f-1.jpg",
+    gallery: [
+      "/images/products/shorts/f-1.jpg",
+      "/images/products/shorts/f-2.jpg",
+      "/images/products/shorts/f-3.jpg",
+      "/images/products/shorts/f-4.jpg",
+      "/images/products/shorts/f-5.jpg",
+    ],
+    video: "/videos/short-cream.mp4",
+    videoPoster: "/images/products/shorts/f-1.jpg",
+    badge: "Yeni",
+    subtitle: "Krem · Kırmızı Detaylı · Ağır Pamuk",
+    description: "Krem tonunda, kırmızı kontrast dikişli ve bağcıklı ağır gramaj şort. Elastik beli ve rahat kesimi ile hem salonda hem günlük kullanımda maksimum konfor sağlar. Cepteki kırmızı Old Iron kafatası etiketiyle imzalı, dayanıklı pamuklu kumaş.",
+  },
 
   // ── SUPPLEMENT ──────────────────────────────────────────────────────────────
   {
