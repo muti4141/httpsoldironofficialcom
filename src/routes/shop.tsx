@@ -280,17 +280,36 @@ function Shop() {
 
           <p className="oi-mono" style={{ marginBottom: 16 }}>{filtered.length} ürün</p>
 
-          {/* ── Ürün ızgarası ── */}
+          {/* ── Ürün ızgarası — Elite Supplement ve Kıyafet ayrı başlıklarla ── */}
           {filtered.length > 0 ? (
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-              gap: 16,
-            }}>
-              {filtered.map((p) => (
-                <Card key={p.id} p={p} onAdd={handleAdd} />
-              ))}
-            </div>
+            <>
+              {([
+                { type: "supplement" as const, heading: "Elite Supplement" },
+                { type: "apparel" as const,    heading: "Kıyafet" },
+              ]).map(({ type, heading }) => {
+                const group = filtered.filter((p) => p.type === type);
+                if (!group.length) return null;
+                return (
+                  <div key={type} style={{ marginBottom: 40 }}>
+                    <h2 style={{
+                      fontSize: "clamp(20px, 2.4vw, 28px)", fontWeight: 700,
+                      letterSpacing: "-0.03em", color: "#f4f4f4", marginBottom: 16,
+                    }}>
+                      {heading}
+                    </h2>
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+                      gap: 16,
+                    }}>
+                      {group.map((p) => (
+                        <Card key={p.id} p={p} onAdd={handleAdd} />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+            </>
           ) : (
             <div className="oi-card" style={{ padding: 48, alignItems: "center", textAlign: "center" }}>
               <p style={{ fontSize: 18, fontWeight: 600, color: "#f4f4f4", letterSpacing: "-0.02em" }}>
